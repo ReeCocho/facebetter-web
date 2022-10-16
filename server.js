@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const path = require('path');           
+const PORT = process.env.PORT || 5000;  
 const app = express();
+app.set('port', (process.env.PORT || 5000));
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -110,10 +112,11 @@ var cardList =
 ];
 
 const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb+srv://RickLeinecker:WeLoveCOP4331@cluster0.ehunp00.mongodb.net/?retryWrites=true&w=majority';
-
+require('dotenv').config();
+const url = process.env.MONGODB_URI;
 const client = new MongoClient(url);
 client.connect();
+
 
 app.post('/api/addcard', async (req, res, next) =>
 {
@@ -127,8 +130,8 @@ app.post('/api/addcard', async (req, res, next) =>
 
   try
   {
-    const db = client.db("COP4331Cards");
-    const result = db.collection('Cards').insertOne(newCard);
+    const db = client.db("SocialNetwork");
+    const result = db.collection('Test').insertOne(newCard);
   }
   catch(e)
   {
@@ -141,6 +144,7 @@ app.post('/api/addcard', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
+
 app.post('/api/login', async (req, res, next) => 
 {
   // incoming: login, password
@@ -150,7 +154,7 @@ app.post('/api/login', async (req, res, next) =>
 
   const { login, password } = req.body;
 
-  const db = client.db("COP4331Cards");
+  const db = client.db("SocialNetwork");
   const results = await db.collection('Users').find({Login:login,Password:password}).toArray();
 
   var id = -1;
@@ -159,7 +163,7 @@ app.post('/api/login', async (req, res, next) =>
 
   if( results.length > 0 )
   {
-    id = results[0].UserID;
+    id = results[0]._id;
     fn = results[0].FirstName;
     ln = results[0].LastName;
   }
@@ -167,6 +171,7 @@ app.post('/api/login', async (req, res, next) =>
   var ret = { id:id, firstName:fn, lastName:ln, error:''};
   res.status(200).json(ret);
 });
+
 
 app.post('/api/searchcards', async (req, res, next) => 
 {
@@ -179,8 +184,8 @@ app.post('/api/searchcards', async (req, res, next) =>
 
   var _search = search.trim();
   
-  const db = client.db("COP4331Cards");
-  const results = await db.collection('Cards').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
+  const db = client.db("SocialNetwork");
+  const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
   
   var _ret = [];
   for( var i=0; i<results.length; i++ )
@@ -190,7 +195,7 @@ app.post('/api/searchcards', async (req, res, next) =>
   
   var ret = {results:_ret, error:error};
   res.status(200).json(ret);
-})
+});
 
 app.use((req, res, next) => 
 {
@@ -206,4 +211,22 @@ app.use((req, res, next) =>
   next();
 });
 
-app.listen(5000); // start Node + Express server on port 5000
+app.listen(PORT, () => 
+{
+  console.log('Server listening on port ' + PORT);
+});
+
+// For Heroku deployment
+
+// Server static assets if in production
+if (process.env.NODE_ENV === 'production') 
+{
+  // Set static folder
+  app.use(express.static('frontend/build'));
+
+  app.get('*', (req, res) => 
+ {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}
+
