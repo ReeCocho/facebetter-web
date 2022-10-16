@@ -110,8 +110,7 @@ var cardList =
 ];
 
 const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb+srv://RickLeinecker:WeLoveCOP4331@cluster0.ehunp00.mongodb.net/?retryWrites=true&w=majority';
-
+const url = 'mongodb+srv://datakeeper:cop4331@cluster0.vslaoyl.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 client.connect();
 
@@ -127,8 +126,8 @@ app.post('/api/addcard', async (req, res, next) =>
 
   try
   {
-    const db = client.db("COP4331Cards");
-    const result = db.collection('Cards').insertOne(newCard);
+    const db = client.db("SocialNetwork");
+    const result = db.collection('Test').insertOne(newCard);
   }
   catch(e)
   {
@@ -141,6 +140,7 @@ app.post('/api/addcard', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
+
 app.post('/api/login', async (req, res, next) => 
 {
   // incoming: login, password
@@ -150,7 +150,7 @@ app.post('/api/login', async (req, res, next) =>
 
   const { login, password } = req.body;
 
-  const db = client.db("COP4331Cards");
+  const db = client.db("SocialNetwork");
   const results = await db.collection('Users').find({Login:login,Password:password}).toArray();
 
   var id = -1;
@@ -159,7 +159,7 @@ app.post('/api/login', async (req, res, next) =>
 
   if( results.length > 0 )
   {
-    id = results[0].UserID;
+    id = results[0]._id;
     fn = results[0].FirstName;
     ln = results[0].LastName;
   }
@@ -167,6 +167,7 @@ app.post('/api/login', async (req, res, next) =>
   var ret = { id:id, firstName:fn, lastName:ln, error:''};
   res.status(200).json(ret);
 });
+
 
 app.post('/api/searchcards', async (req, res, next) => 
 {
@@ -179,8 +180,8 @@ app.post('/api/searchcards', async (req, res, next) =>
 
   var _search = search.trim();
   
-  const db = client.db("COP4331Cards");
-  const results = await db.collection('Cards').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
+  const db = client.db("SocialNetwork");
+  const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
   
   var _ret = [];
   for( var i=0; i<results.length; i++ )
@@ -190,7 +191,7 @@ app.post('/api/searchcards', async (req, res, next) =>
   
   var ret = {results:_ret, error:error};
   res.status(200).json(ret);
-})
+});
 
 app.use((req, res, next) => 
 {
