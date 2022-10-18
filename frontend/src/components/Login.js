@@ -2,22 +2,10 @@ import React, { useState } from 'react';
 
 function Login()
 {
+    var bp = require('./Path.js');
 
     var loginName;
     var loginPassword;
-
-    const app_name = 'facebetter'
-    function buildPath(route)
-    {
-        if (process.env.NODE_ENV === 'production') 
-        {
-            return 'https://' + app_name +  '.herokuapp.com/' + route;
-        }
-        else
-        {        
-            return 'http://localhost:5000/' + route;
-        }
-    }
 
 
     const [message,setMessage] = useState('');
@@ -31,7 +19,7 @@ function Login()
 
         try
         {    
-            const response = await fetch(buildPath('api/login'),
+            const response = await fetch(bp.buildPath('api/login'),
                 {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
 
             var res = JSON.parse(await response.text());
