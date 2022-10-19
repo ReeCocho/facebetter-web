@@ -14,7 +14,7 @@ function Login()
     {
         event.preventDefault();
 
-        var obj = {login:loginName.value,password:loginPassword.value};
+        var obj = {Login:loginName.value,Password:loginPassword.value};
         var js = JSON.stringify(obj);
 
         try
@@ -24,7 +24,7 @@ function Login()
 
             var res = JSON.parse(await response.text());
 
-            if( res.id <= 0 )
+            if (res.Error !== null)
             {
                 setMessage('User/Password combination incorrect');
             }
