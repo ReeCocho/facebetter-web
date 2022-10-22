@@ -39,8 +39,10 @@ exports.setApp = function ( app, client )
         Password: "string"
       }
     );
+
+    var ret ;
   
-    if (err !== null)
+    if (err !== null && err !== undefined)
     {
       var ret = { Error: err };
       res.status(200).json(ret);
@@ -48,7 +50,6 @@ exports.setApp = function ( app, client )
     }
   
     // Find the user
-    let results;
     try 
     {
       const db = client.db("SocialNetwork");
@@ -61,8 +62,18 @@ exports.setApp = function ( app, client )
     {
       err = e.toString();
     }
+
+    try
+    {
+      const token = require("./createJWT.js");
+      var ret = token.createToken(results[0]._id, results[0].FirstName, results[0].LastName);      
+    }
+    catch(e)
+    {
+      err = e.toString();
+    }
   
-    if (err !== null)
+    if (err !== null && err !== undefined)
     {
       var ret = { Error: err };
       res.status(200).json(ret);
@@ -77,13 +88,13 @@ exports.setApp = function ( app, client )
       return;
     }
   
-    var ret = 
-    { 
-      Id: results[0]._id, 
-      FirstName: results[0].FirstName, 
-      LastName: results[0].LastName, 
-      Error: err
-    };
+    //var ret = 
+    //{ 
+    //  Id: results[0]._id, 
+    //  FirstName: results[0].FirstName, 
+    //  LastName: results[0].LastName, 
+    //  Error: err
+    //};
     res.status(200).json(ret);
   });
   

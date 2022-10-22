@@ -4,6 +4,8 @@ function Login()
 {
     var bp = require('./Path.js');
 
+    var storage = require('../tokenStorage.js');
+
     var loginName;
     var loginPassword;
 
@@ -21,17 +23,22 @@ function Login()
         {    
             const response = await fetch(bp.buildPath('api/login'),
                 {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
-
             var res = JSON.parse(await response.text());
 
-            if (res.Error !== null)
-            {
+            if (res.Error !== null && res.Error !== undefined)
+            {              
                 setMessage('User/Password combination incorrect');
             }
             else
             {
-                var user = {firstName:res.FirstName,lastName:res.LastName,id:res.Id}
-                localStorage.setItem('user_data', JSON.stringify(user));
+                storage.storeToken(res);
+
+                let userId = res.id;
+                let firstName = res.fn;
+                let lastName = res.ln;
+
+                //var user = {firstName:res.FirstName,lastName:res.LastName,id:res.Id}
+                //localStorage.setItem('user_data', JSON.stringify(user));
 
                 setMessage('');
                 window.location.href = '/cards';
