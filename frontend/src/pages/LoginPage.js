@@ -2,12 +2,13 @@ import React from 'react';
 
 import PageTitle from '../components/PageTitle';
 import Login from '../components/Login';
+import '../App.css';
 
 const LoginPage = () =>
 {
 
     return(
-      <div>
+      <div class="background">
         <PageTitle />
         <Login />
       </div>

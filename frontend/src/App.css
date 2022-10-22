@@ -36,3 +36,69 @@
     transform: rotate(360deg);
   }
 }
+
+.background{
+  background-color: #e1e9e8;
+  height: 100vh;
+}
+
+#loginDiv {
+  font-size: 20px;
+  width:25%;
+  height: 30%;
+  margin-left: 50%;
+  margin-top: 10%;
+  padding: 25px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.inputBox {
+	font-size: 20px;
+  border-style: solid;
+  border-radius: 0%;
+  padding: 0%;
+  border-width: 1px;
+  height: 50px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 5px;
+  margin: 5px;
+  width: 100%;
+}
+
+#loginButton {
+  font-size: 20px;
+  border-radius: 5px;
+  margin: 5px;
+  width: 100%;
+  border-width: 1px;
+  height: 50px;
+  font-family: 'Arial', sans-serif;
+  border-style: solid;
+  background-color: #4267B2;
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 5px;
+}
+
+#registerButton {
+  font-size: 20px;
+  border-radius: 5px;
+  margin: 5px;
+  width: 100%;
+  border-width: 1px;
+  height: 50px;
+  font-family: 'Arial', sans-serif;
+  border-style: solid;
+  background-color:#42B72A;
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 2px 5px;
+}
+
+#title{
+  width: 15%;
+  height: 17%;
+  background-image: url('Logo.png');
+  background-size: 100%;
+  margin: auto;
+  
+
+}
