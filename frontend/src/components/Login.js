@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { isExpired, decodeToken } from "react-jwt";
 
 function Login()
 {
@@ -33,12 +34,14 @@ function Login()
             {
                 storage.storeToken(res);
 
-                let userId = res.id;
-                let firstName = res.fn;
-                let lastName = res.ln;
-
-                //var user = {firstName:res.FirstName,lastName:res.LastName,id:res.Id}
-                //localStorage.setItem('user_data', JSON.stringify(user));
+                const ud = decodeToken(storage.retrieveToken());
+                console.log(ud);
+                const userData = JSON.stringify({
+                    firstName: ud.firstName,
+                    lastName: ud.lastName,
+                    id: ud.userId
+                });
+                localStorage.setItem("user_data", userData);
 
                 setMessage('');
                 window.location.href = '/cards';
@@ -57,7 +60,7 @@ function Login()
         <span id="inner-title">PLEASE LOG IN</span><br />
         <input type="text" id="loginName" placeholder="Username" ref={(c) => loginName = c} /><br />
         <input type="password" id="loginPassword" placeholder="Password" ref={(c) => loginPassword = c} /><br />
-        <input type="submit" id="loginButton" class="buttons" value = "Do It"
+        <input type="submit" id="loginButton" value = "Do It"
           onClick={doLogin} />
         </form>
         <span id="loginResult">{message}</span>

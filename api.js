@@ -1,5 +1,6 @@
 require('express');
 require('mongodb');
+const token = require("./createJWT.js");
 
 exports.setApp = function ( app, client )
 {
@@ -8,22 +9,53 @@ exports.setApp = function ( app, client )
     // incoming: userId, color
     // outgoing: error
     
-    const { userId, card } = req.body;
-  
-    const newCard = {Card:card,UserId:userId};
-    var error = '';
-  
+    // Verify input
+    const obj = req.body;
+    let err = verifyObject(
+      obj,
+      {
+        userId: "string",
+        card: "string",
+        jwtToken: "string"
+      }
+    );
+
+    if (err !== null) {
+      let ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    // Verify token
+    try
+    {
+      if (token.isExpired(obj.jwtToken))
+      {
+        throw "Token is expired";
+      }
+    }
+    catch (e)
+    {
+      let ret = { Error: e.toString() };
+      res.status(200).json(ret);
+      return;
+    }
+
+    const newCard = {Card: obj.card, UserId: obj.userId};
+    let refreshedToken = null;
+
     try
     {
       const db = client.db("SocialNetwork");
       const result = db.collection('Test').insertOne(newCard);
+      refreshedToken = token.refresh(obj.jwtToken);
     }
     catch(e)
     {
-      error = e.toString();
+      err = e.toString();
     }
   
-    var ret = { error: error };
+    const ret = { Error: err, jwtToken: refreshedToken };
     res.status(200).json(ret);
   });
   
@@ -65,8 +97,7 @@ exports.setApp = function ( app, client )
 
     try
     {
-      const token = require("./createJWT.js");
-      var ret = token.createToken(results[0]._id, results[0].FirstName, results[0].LastName);      
+      var ret = token.createToken(results[0].FirstName, results[0].LastName, results[0]._id);      
     }
     catch(e)
     {
@@ -203,22 +234,66 @@ exports.setApp = function ( app, client )
     // incoming: userId, search
     // outgoing: results[], error
   
-    var error = '';
-  
-    const { userId, search } = req.body;
-  
-    var _search = search.trim();
+    // Verify input
+    const obj = req.body;
+    let err = verifyObject(
+      obj,
+      {
+        userId: "string",
+        search: "string",
+        jwtToken: "string"
+      }
+    );
+
+    if (err !== null) 
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    // Verify token hasn't expired
+    try
+    {
+      if (token.isExpired(obj.jwtToken))
+      {
+        err = "JWT token is expired";
+      }
+    }
+    catch (e)
+    {
+      err = e.toString();
+    }
+
+    if (err !== null) 
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    var _search = obj.search.trim();
     
     const db = client.db("SocialNetwork");
     const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
-    
+    let refreshedToken = null;
+
+    try
+    {
+      refreshedToken = token.refresh(obj.jwtToken);
+    }
+    catch(e)
+    {
+      err = e.toString();
+    }
+  
     var _ret = [];
     for( var i=0; i<results.length; i++ )
     {
       _ret.push( results[i].Card );
     }
     
-    var ret = {results:_ret, error:error};
+    var ret = {results:_ret, Error: err, jwtToken: refreshedToken};
     res.status(200).json(ret);
   });  
 
