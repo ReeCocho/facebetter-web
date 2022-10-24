@@ -29,166 +29,35 @@ exports.setApp = function ( app, client )
     res.status(200).json(ret);
   });
   
-
+  
   app.post('/api/login', async (req, res, next) => 
   {
-    // Verification
-    const obj = req.body;
-    let err = verifyObject(
-      obj,
-      {
-        Login: "string",
-        Password: "string"
-      }
-    );
+    // incoming: login, password
+    // outgoing: id, firstName, lastName, error
+    
+   var error = '';
   
-    if (err !== null)
+    const { login, password } = req.body;
+  
+    const db = client.db("SocialNetwork");
+    const results = await db.collection('Users').find({Login:login,Password:password}).toArray();
+  
+    var id = -1;
+    var fn = '';
+    var ln = '';
+  
+    if( results.length > 0 )
     {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
+      id = results[0]._id;
+      fn = results[0].FirstName;
+      ln = results[0].LastName;
     }
   
-    // Find the user
-    let results;
-    try 
-    {
-      const db = client.db("SocialNetwork");
-      results = await db
-        .collection('Users')
-        .find({Login: obj.Login, Password: obj.Password})
-        .toArray();
-    } 
-    catch(e) 
-    {
-      err = e.toString();
-    }
-  
-    if (err !== null)
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-  
-    // Check if it exists
-    if (results.length === 0)
-    {
-      var ret = { Error: "bad username or password" };
-      res.status(200).json(ret);
-      return;
-    }
-  
-    var ret = 
-    { 
-      Id: results[0]._id, 
-      FirstName: results[0].FirstName, 
-      LastName: results[0].LastName, 
-      Error: err
-    };
+    var ret = { id:id, firstName:fn, lastName:ln, error:''};
     res.status(200).json(ret);
   });
   
-
-  app.post('/api/register', async (req, res, next) => 
-  {
-    // Verification
-    const obj = req.body;
-    let err = verifyObject(
-      obj,
-      {
-        Login: "string",
-        Password: "string",
-        FirstName: "string",
-        LastName: "string",
-        School: "string",
-        Work: "string"
-      }
-    );
   
-    if (err !== null)
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-  
-    if (obj.Login.length === 0) 
-    {
-      err = "login is empty";
-    }
-  
-    if (obj.Password.length === 0) 
-    {
-      err = "password is empty";
-    }
-  
-    if (obj.FirstName.length === 0) 
-    {
-      err = "first name is empty";
-    }
-  
-    if (obj.LastName.length === 0) 
-    {
-      err = "last name is empty";
-    }
-  
-    if (err !== null)
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-  
-    // Verify a user with the same login doesn't already exist
-    let db;
-    try 
-    {
-      db = client.db("SocialNetwork");
-      results = await db.collection('Users').find({Login:obj.Login}).toArray();
-  
-      if (results.length !== 0) 
-      {
-        err = "user with existing login already exists";
-      }
-    } catch(e) 
-    {
-      err = e.toString();
-    }
-  
-    if (err !== null) 
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-  
-    // Construct new user and add it to the database
-    const newUser = 
-    {
-      Login: obj.Login,
-      Password: obj.Password,
-      FirstName: obj.FirstName,
-      LastName: obj.LastName,
-      Following: [],
-      School: obj.School,
-      Work: obj.Work
-    };
-  
-    try 
-    {
-      db.collection('Users').insertOne(newUser);
-    } 
-    catch(e) 
-    {
-      err = e.toString();
-    }
-  
-    var ret = { Error: err };
-    res.status(200).json(ret);
-  });
-  
-
   app.post('/api/searchcards', async (req, res, next) => 
   {
     // incoming: userId, search
