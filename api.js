@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 require('express');
 require('mongodb');
 
@@ -211,6 +213,64 @@ exports.setApp = function ( app, client )
     res.status(200).json(ret);
   });  
 
+  app.post('/api/retrieveprofile', async (req, res, next) => {
+    // incoming: _id (ex: {_id: "6344e4ea7c568d2a25ed0f6f"})
+    // outgoing: {FirstName: 'John', LastName: 'Doe', Following: ['uuid1', 'uuid2', ...], School: 'UCF', Work: 'Disney'} 
+    const obj = req.body;
+
+    let err = verifyObject(obj, {_id: "string"});
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    let results;
+    try 
+    {
+      const db = client.db("SocialNetwork");
+      let objId = new ObjectId(obj._id)
+      results = await db
+        .collection('Users')
+        .find({_id: objId})
+        .toArray();
+    } 
+    catch(e) 
+    {
+      err = e.toString();
+    }
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    // check if there is a profile with this ID
+    if (results.length === 0)
+    {
+      var ret = { Error: "cannot find user with that ID" };
+      res.status(200).json(ret);
+      return;
+    }
+  
+    var ret = 
+    { 
+      Id: results[0]._id, 
+      FirstName: results[0].FirstName, 
+      LastName: results[0].LastName, 
+      Following: results[0].Following,
+      School: results[0].School,
+      Work: results[0].Work,
+      Error: err
+    };
+    res.status(200).json(ret);
+
+
+  });
 
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data
