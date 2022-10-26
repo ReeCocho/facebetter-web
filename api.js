@@ -92,6 +92,82 @@ exports.setApp = function ( app, client )
       res.status(200).json(ret);
     }
   });
+
+
+  app.post('/api/register', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Login: "string",
+          Password: "string",
+          FirstName: "string",
+          LastName: "string",
+          School: "string",
+          Work: "string"
+        }
+      );
+
+      if (err !== null) 
+      {
+        throw err;
+      }
+
+      if (obj.Login.length === 0) 
+      {
+        throw "login is empty";
+      }
+    
+      if (obj.Password.length === 0) 
+      {
+        throw "password is empty";
+      }
+    
+      if (obj.FirstName.length === 0) 
+      {
+        throw "first name is empty";
+      }
+    
+      if (obj.LastName.length === 0) 
+      {
+        throw "last name is empty";
+      }
+
+      // User must not already exist
+      const db = client.db("SocialNetwork");
+      results = await db.collection('Users').find({ Login: obj.Login}).toArray();
+  
+      if (results.length !== 0) 
+      {
+        throw "user with existing login already exists";
+      }
+
+      // Add user
+      const newUser = 
+      {
+        Login: obj.Login,
+        Password: obj.Password,
+        FirstName: obj.FirstName,
+        LastName: obj.LastName,
+        Following: [],
+        School: obj.School,
+        Work: obj.Work
+      };
+
+      db.collection('Users').insertOne(newUser);
+
+      const ret = { Error: null };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
   
   
   app.post('/api/searchcards', async (req, res, next) => 
