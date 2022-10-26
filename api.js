@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 require('express');
 require('mongodb');
 const token = require("./createJWT.js");
@@ -59,7 +61,7 @@ exports.setApp = function ( app, client )
     res.status(200).json(ret);
   });
   
-
+  
   app.post('/api/login', async (req, res, next) => 
   {
     // Verification
@@ -111,40 +113,53 @@ exports.setApp = function ( app, client )
       return;
     }
   
-    // Check if it exists
-    if (results.length === 0)
+    if( results.length > 0 )
     {
-      var ret = { Error: "bad username or password" };
-      res.status(200).json(ret);
-      return;
+      id = results[0]._id;
+      fn = results[0].FirstName;
+      ln = results[0].LastName;
     }
   
-    //var ret = 
-    //{ 
-    //  Id: results[0]._id, 
-    //  FirstName: results[0].FirstName, 
-    //  LastName: results[0].LastName, 
-    //  Error: err
-    //};
+    var ret = { id:id, firstName:fn, lastName:ln, error:''};
     res.status(200).json(ret);
   });
   
-
-  app.post('/api/register', async (req, res, next) => 
+  
+  app.post('/api/searchcards', async (req, res, next) => 
   {
-    // Verification
+    // incoming: userId, search
+    // outgoing: results[], error
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+  
+    const { userId, search } = req.body;
+  
+    var _search = search.trim();
+    
+    const db = client.db("SocialNetwork");
+    const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
+    
+    var _ret = [];
+    for( var i=0; i<results.length; i++ )
+    {
+      _ret.push( results[i].Card );
+    }
+    
+    var ret = {results:_ret, error:error};
+    res.status(200).json(ret);
+  });  
+
+  app.post('/api/retrieveprofile', async (req, res, next) => {
+    // incoming: _id (ex: {_id: "6344e4ea7c568d2a25ed0f6f"})
+    // outgoing: {FirstName: 'John', LastName: 'Doe', Following: ['uuid1', 'uuid2', ...], School: 'UCF', Work: 'Disney'} 
     const obj = req.body;
-    let err = verifyObject(
-      obj,
-      {
-        Login: "string",
-        Password: "string",
-        FirstName: "string",
-        LastName: "string",
-        School: "string",
-        Work: "string"
-      }
-    );
+
+    let err = verifyObject(obj, {_id: "string"});
   
     if (err !== null)
     {
@@ -152,79 +167,47 @@ exports.setApp = function ( app, client )
       res.status(200).json(ret);
       return;
     }
-  
-    if (obj.Login.length === 0) 
-    {
-      err = "login is empty";
-    }
-  
-    if (obj.Password.length === 0) 
-    {
-      err = "password is empty";
-    }
-  
-    if (obj.FirstName.length === 0) 
-    {
-      err = "first name is empty";
-    }
-  
-    if (obj.LastName.length === 0) 
-    {
-      err = "last name is empty";
-    }
-  
-    if (err !== null)
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-  
-    // Verify a user with the same login doesn't already exist
-    let db;
+
+    let results;
     try 
     {
-      db = client.db("SocialNetwork");
-      results = await db.collection('Users').find({Login:obj.Login}).toArray();
-  
-      if (results.length !== 0) 
-      {
-        err = "user with existing login already exists";
-      }
-    } catch(e) 
-    {
-      err = e.toString();
-    }
-  
-    if (err !== null) 
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-  
-    // Construct new user and add it to the database
-    const newUser = 
-    {
-      Login: obj.Login,
-      Password: obj.Password,
-      FirstName: obj.FirstName,
-      LastName: obj.LastName,
-      Following: [],
-      School: obj.School,
-      Work: obj.Work
-    };
-  
-    try 
-    {
-      db.collection('Users').insertOne(newUser);
+      const db = client.db("SocialNetwork");
+      let objId = new ObjectId(obj._id)
+      results = await db
+        .collection('Users')
+        .find({_id: objId})
+        .toArray();
     } 
     catch(e) 
     {
       err = e.toString();
     }
   
-    var ret = { Error: err };
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    // check if there is a profile with this ID
+    if (results.length === 0)
+    {
+      var ret = { Error: "cannot find user with that ID" };
+      res.status(200).json(ret);
+      return;
+    }
+  
+    var ret = 
+    { 
+      Id: results[0]._id, 
+      FirstName: results[0].FirstName, 
+      LastName: results[0].LastName, 
+      Following: results[0].Following,
+      School: results[0].School,
+      Work: results[0].Work,
+      Error: err
+    };
     res.status(200).json(ret);
   });
   
@@ -296,7 +279,6 @@ exports.setApp = function ( app, client )
     var ret = {results:_ret, Error: err, jwtToken: refreshedToken};
     res.status(200).json(ret);
   });  
-
 
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data
