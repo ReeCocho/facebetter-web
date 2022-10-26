@@ -8,150 +8,138 @@ exports.setApp = function ( app, client )
 {
   app.post('/api/addcard', async (req, res, next) =>
   {
-    // incoming: userId, color
-    // outgoing: error
-    
-    // Verify input
-    const obj = req.body;
-    let err = verifyObject(
-      obj,
-      {
-        userId: "string",
-        card: "string",
-        jwtToken: "string"
-      }
-    );
-
-    if (err !== null) {
-      let ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-
-    // Verify token
     try
     {
-      if (token.isExpired(obj.jwtToken))
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          card: "string",
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
       {
         throw "Token is expired";
       }
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // Add the card to the data base
+      const newCard = { Card: obj.card, UserId: obj._id };
+      const db = client.db("SocialNetwork");
+      db.collection('Test').insertOne(newCard);
+      
+      // Refresh JwtToken
+      const ret = { Error: err, JwtToken: refreshedToken };
+      res.status(200).json(ret);
     }
     catch (e)
     {
-      let ret = { Error: e.toString() };
+      const ret = { Error: e.toString() };
       res.status(200).json(ret);
-      return;
     }
-
-    const newCard = {Card: obj.card, UserId: obj.userId};
-    let refreshedToken = null;
-
-    try
-    {
-      const db = client.db("SocialNetwork");
-      const result = db.collection('Test').insertOne(newCard);
-      refreshedToken = token.refresh(obj.jwtToken);
-    }
-    catch(e)
-    {
-      err = e.toString();
-    }
-  
-    const ret = { Error: err, jwtToken: refreshedToken };
-    res.status(200).json(ret);
   });
   
   
   app.post('/api/login', async (req, res, next) => 
   {
-    // Verification
-    const obj = req.body;
-    let err = verifyObject(
-      obj,
-      {
-        Login: "string",
-        Password: "string"
-      }
-    );
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Login: "string",
+          Password: "string"
+        }
+      );
 
-    var ret ;
-  
-    if (err !== null && err !== undefined)
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-  
-    // Find the user
-    try 
-    {
+      if (err !== null) 
+      {
+        throw err;
+      }
+
+      // Find the user
       const db = client.db("SocialNetwork");
       results = await db
         .collection('Users')
         .find({Login: obj.Login, Password: obj.Password})
         .toArray();
-    } 
-    catch(e) 
-    {
-      err = e.toString();
-    }
 
-    try
-    {
-      var ret = token.createToken(results[0].FirstName, results[0].LastName, results[0]._id);      
-    }
-    catch(e)
-    {
-      err = e.toString();
-    }
-  
-    if (err !== null && err !== undefined)
-    {
-      var ret = { Error: err };
+      if (results.length == 0) 
+      {
+        throw "Username/password is incorrect.";
+      }
+
+      // Create a token from the user info and send to the client
+      const tok = token.createToken(results[0].FirstName, results[0].LastName, results[0]._id);
+      const ret = { JwtToken: tok, Error: null};
       res.status(200).json(ret);
-      return;
     }
-  
-    if( results.length > 0 )
+    catch (e)
     {
-      id = results[0]._id;
-      fn = results[0].FirstName;
-      ln = results[0].LastName;
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
     }
-  
-    var ret = { id:id, firstName:fn, lastName:ln, error:''};
-    res.status(200).json(ret);
   });
   
   
   app.post('/api/searchcards', async (req, res, next) => 
   {
-    // incoming: userId, search
-    // outgoing: results[], error
-  
-    if (err !== null)
+    try
     {
-      var ret = { Error: err };
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          search: "string",
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // Perform search and collect results
+      let _search = obj.search.trim();
+      const db = client.db("SocialNetwork");
+      const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
+      
+      let _ret = [];
+      for (let i = 0; i < results.length; i++)
+      {
+        _ret.push(results[i].Card);
+      }
+      
+      const ret = { results: _ret, Error: null, JwtToken: refreshedToken };
       res.status(200).json(ret);
-      return;
     }
-  
-    const { userId, search } = req.body;
-  
-    var _search = search.trim();
-    
-    const db = client.db("SocialNetwork");
-    const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
-    
-    var _ret = [];
-    for( var i=0; i<results.length; i++ )
+    catch (e)
     {
-      _ret.push( results[i].Card );
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
     }
-    
-    var ret = {results:_ret, error:error};
-    res.status(200).json(ret);
   });  
 
   app.post('/api/retrieveprofile', async (req, res, next) => {
@@ -211,75 +199,6 @@ exports.setApp = function ( app, client )
     res.status(200).json(ret);
   });
   
-
-  app.post('/api/searchcards', async (req, res, next) => 
-  {
-    // incoming: userId, search
-    // outgoing: results[], error
-  
-    // Verify input
-    const obj = req.body;
-    let err = verifyObject(
-      obj,
-      {
-        userId: "string",
-        search: "string",
-        jwtToken: "string"
-      }
-    );
-
-    if (err !== null) 
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-
-    // Verify token hasn't expired
-    try
-    {
-      if (token.isExpired(obj.jwtToken))
-      {
-        err = "JWT token is expired";
-      }
-    }
-    catch (e)
-    {
-      err = e.toString();
-    }
-
-    if (err !== null) 
-    {
-      var ret = { Error: err };
-      res.status(200).json(ret);
-      return;
-    }
-
-    var _search = obj.search.trim();
-    
-    const db = client.db("SocialNetwork");
-    const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
-    let refreshedToken = null;
-
-    try
-    {
-      refreshedToken = token.refresh(obj.jwtToken);
-    }
-    catch(e)
-    {
-      err = e.toString();
-    }
-  
-    var _ret = [];
-    for( var i=0; i<results.length; i++ )
-    {
-      _ret.push( results[i].Card );
-    }
-    
-    var ret = {results:_ret, Error: err, jwtToken: refreshedToken};
-    res.status(200).json(ret);
-  });  
-
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data
    * data from a client (whether that be from a POST or over a socket).

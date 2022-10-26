@@ -19,13 +19,24 @@ function CardUI()
     {
 	    event.preventDefault();
 
-        var obj = {userId:userId, card:card.value, jwtToken: storage.retrieveToken()};
+        var obj = 
+        {
+            _id: userId, 
+            card: card.value, 
+            JwtToken: storage.retrieveToken()
+        };
         var js = JSON.stringify(obj);
 
         try
         {
-            const response = await fetch(bp.buildPath('api/addcard'),
-            {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
+            const response = await fetch(
+                bp.buildPath('api/addcard'),
+                {
+                    method:'POST',
+                    body: js,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
 
             var txt = await response.text();
             var res = JSON.parse(txt);
@@ -37,7 +48,7 @@ function CardUI()
             else
             {
                 setMessage('Card has been added');
-                storage.storeToken(res.jwtToken);
+                storage.storeToken(res.JwtToken);
             }
         }
         catch(e)
@@ -53,16 +64,22 @@ function CardUI()
         		
         const obj = 
         {
-            userId: userId,
+            _id: userId,
             search: search.value,
-            jwtToken: storage.retrieveToken()
+            JwtToken: storage.retrieveToken()
         };
         const js = JSON.stringify(obj);
 
         try
         {
-            const response = await fetch(bp.buildPath('api/searchcards'),
-            {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
+            const response = await fetch(
+                bp.buildPath('api/searchcards'),
+                {
+                    method: 'POST',
+                    body: js,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
 
             const txt = await response.text();
             const res = JSON.parse(txt);
@@ -74,16 +91,16 @@ function CardUI()
 
             let _results = res.results;
             let resultText = '';
-            for( let i=0; i<_results.length; i++ )
+            for (let i = 0; i < _results.length; i++)
             {
                 resultText += _results[i];
-                if( i < _results.length - 1 )
+                if (i < _results.length - 1)
                 {
                     resultText += ', ';
                 }
             }
 
-            storage.storeToken( res.jwtToken );
+            storage.storeToken( res.JwtToken );
             setResults('Card(s) have been retrieved');
             setCardList(resultText);
         }

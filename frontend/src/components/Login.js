@@ -17,25 +17,33 @@ function Login()
     {
         event.preventDefault();
 
-        var obj = {Login:loginName.value,Password:loginPassword.value};
+        var obj = 
+        {
+            Login: loginName.value,
+            Password: loginPassword.value
+        };
         var js = JSON.stringify(obj);
 
         try
         {    
-            const response = await fetch(bp.buildPath('api/login'),
-                {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
+            const response = await fetch(
+                bp.buildPath('api/login'),
+                {
+                    method:'POST',
+                    body: js,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
             var res = JSON.parse(await response.text());
 
-            if (res.Error !== null && res.Error !== undefined)
+            if (res.Error !== null)
             {              
                 setMessage('User/Password combination incorrect');
             }
             else
             {
-                storage.storeToken(res);
-
+                storage.storeToken(res.JwtToken);
                 const ud = decodeToken(storage.retrieveToken());
-                console.log(ud);
                 const userData = JSON.stringify({
                     firstName: ud.firstName,
                     lastName: ud.lastName,

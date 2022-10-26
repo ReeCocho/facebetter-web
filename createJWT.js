@@ -20,7 +20,7 @@ _createToken = function ( fn, ln, id )
                        '24h'
                       '365d'
       */
-      var ret = {accessToken:accessToken, fn:fn, ln:ln, id:id};
+      var ret = { accessToken: accessToken };
     }
     catch(e)
     {
