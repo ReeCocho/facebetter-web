@@ -2,85 +2,310 @@ const { ObjectId } = require('mongodb');
 
 require('express');
 require('mongodb');
+const token = require("./createJWT.js");
 
 exports.setApp = function ( app, client )
 {
   app.post('/api/addcard', async (req, res, next) =>
   {
-    // incoming: userId, color
-    // outgoing: error
-    
-    const { userId, card } = req.body;
-  
-    const newCard = {Card:card,UserId:userId};
-    var error = '';
-  
     try
     {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          card: "string",
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // Add the card to the data base
+      const newCard = { Card: obj.card, UserId: obj._id };
       const db = client.db("SocialNetwork");
-      const result = db.collection('Test').insertOne(newCard);
+      db.collection('Test').insertOne(newCard);
+      
+      // Refresh JwtToken
+      const ret = { Error: err, JwtToken: refreshedToken };
+      res.status(200).json(ret);
     }
-    catch(e)
+    catch (e)
     {
-      error = e.toString();
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
     }
-  
-    var ret = { error: error };
-    res.status(200).json(ret);
   });
   
   
   app.post('/api/login', async (req, res, next) => 
   {
-    // incoming: login, password
-    // outgoing: id, firstName, lastName, error
-    
-   var error = '';
-  
-    const { login, password } = req.body;
-  
-    const db = client.db("SocialNetwork");
-    const results = await db.collection('Users').find({Login:login,Password:password}).toArray();
-  
-    var id = -1;
-    var fn = '';
-    var ln = '';
-  
-    if( results.length > 0 )
+    try
     {
-      id = results[0]._id;
-      fn = results[0].FirstName;
-      ln = results[0].LastName;
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Login: "string",
+          Password: "string"
+        }
+      );
+
+      if (err !== null) 
+      {
+        throw err;
+      }
+
+      // Find the user
+      const db = client.db("SocialNetwork");
+      results = await db
+        .collection('Users')
+        .find({Login: obj.Login, Password: obj.Password})
+        .toArray();
+
+      if (results.length == 0) 
+      {
+        throw "Username/password is incorrect.";
+      }
+
+      // Create a token from the user info and send to the client
+      const tok = token.createToken(results[0].FirstName, results[0].LastName, results[0]._id);
+      const ret = { JwtToken: tok, Error: null};
+      res.status(200).json(ret);
     }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+
+  app.post('/api/register', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Login: "string",
+          Password: "string",
+          FirstName: "string",
+          LastName: "string",
+          School: "string",
+          Work: "string"
+        }
+      );
+
+      if (err !== null) 
+      {
+        throw err;
+      }
+
+      if (obj.Login.length === 0) 
+      {
+        throw "login is empty";
+      }
+    
+      if (obj.Password.length === 0) 
+      {
+        throw "password is empty";
+      }
+    
+      if (obj.FirstName.length === 0) 
+      {
+        throw "first name is empty";
+      }
+    
+      if (obj.LastName.length === 0) 
+      {
+        throw "last name is empty";
+      }
+
+      // User must not already exist
+      const db = client.db("SocialNetwork");
+      results = await db.collection('Users').find({ Login: obj.Login}).toArray();
   
-    var ret = { id:id, firstName:fn, lastName:ln, error:''};
-    res.status(200).json(ret);
+      if (results.length !== 0) 
+      {
+        throw "user with existing login already exists";
+      }
+
+      // Add user
+      const newUser = 
+      {
+        Login: obj.Login,
+        Password: obj.Password,
+        FirstName: obj.FirstName,
+        LastName: obj.LastName,
+        Following: [],
+        School: obj.School,
+        Work: obj.Work
+      };
+
+      db.collection('Users').insertOne(newUser);
+
+      const ret = { Error: null };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
   });
   
   
   app.post('/api/searchcards', async (req, res, next) => 
   {
-    // incoming: userId, search
-    // outgoing: results[], error
-  
-    var error = '';
-  
-    const { userId, search } = req.body;
-  
-    var _search = search.trim();
-    
-    const db = client.db("SocialNetwork");
-    const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
-    
-    var _ret = [];
-    for( var i=0; i<results.length; i++ )
+    try
     {
-      _ret.push( results[i].Card );
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          search: "string",
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // Perform search and collect results
+      let _search = obj.search.trim();
+      const db = client.db("SocialNetwork");
+      const results = await db.collection('Test').find({"Card":{$regex:_search+'.*', $options:'r'}}).toArray();
+      
+      let _ret = [];
+      for (let i = 0; i < results.length; i++)
+      {
+        _ret.push(results[i].Card);
+      }
+      
+      const ret = { results: _ret, Error: null, JwtToken: refreshedToken };
+      res.status(200).json(ret);
     }
-    
-    var ret = {results:_ret, error:error};
-    res.status(200).json(ret);
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
   });  
+
+  app.post('/api/follow', async (req, res, next) => {
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          ToFollow: "string",
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // Get the ID of the person want to follow
+      const db = client.db("SocialNetwork");
+      let results = await db
+        .collection('Users')
+        .find({ Login: obj.ToFollow })
+        .toArray();
+      
+      if (results.length === 0)
+      {
+        throw "User does not exist";
+      }
+
+      const toFollowId = results[0]._id;
+
+      // Make sure we aren't trying following ourselves
+      if (toFollowId.equals(ObjectId(obj._id)))
+      {
+        throw "Attempted to follow yourself";
+      }
+
+      // Find our current follower list
+      results = await db
+        .collection('Users')
+        .find({ _id: ObjectId(obj._id) })
+        .toArray();
+
+      if (results.length === 0)
+      {
+        throw "Bad user ID";
+      }
+
+      let following = results[0].Following;
+
+      // Check if we're already following this user
+      // NOTE: Consider adding elements in their sorted position so we can use binary search to
+      // search for users.
+      for (let i = 0; i < following.length; i++)
+      {
+        if (ObjectId(following[i]).equals(toFollowId))
+        {
+          throw "Already following.";
+        }
+      }
+
+      // Add the new follower
+      following.push(toFollowId);
+      await db
+        .collection('Users')
+        .updateOne(
+          { _id: ObjectId(obj._id) }, 
+          { $set: { Following: following } }
+        );
+      
+      const ret = { Error: null, JwtToken: refreshedToken };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
 
   app.post('/api/retrieveprofile', async (req, res, next) => {
     // incoming: _id (ex: {_id: "6344e4ea7c568d2a25ed0f6f"})
@@ -137,10 +362,8 @@ exports.setApp = function ( app, client )
       Error: err
     };
     res.status(200).json(ret);
-
-
   });
-
+  
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data
    * data from a client (whether that be from a POST or over a socket).

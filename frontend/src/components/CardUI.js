@@ -6,39 +6,49 @@ function CardUI()
     var search = '';
 
     var bp = require('./Path.js');
+    var storage = require('../tokenStorage.js');
 
     const [message,setMessage] = useState('');
     const [searchResults,setResults] = useState('');
     const [cardList,setCardList] = useState('');
 
-    var _ud = localStorage.getItem('user_data');
-    var ud = JSON.parse(_ud);
-    var userId = ud.id;
-    var firstName = ud.firstName;
-    var lastName = ud.lastName;
+    const ud = JSON.parse(localStorage.getItem('user_data'));
+    const userId = ud.id;
 
     const addCard = async event => 
     {
 	    event.preventDefault();
 
-        var obj = {userId:userId,card:card.value};
+        var obj = 
+        {
+            _id: userId, 
+            card: card.value, 
+            JwtToken: storage.retrieveToken()
+        };
         var js = JSON.stringify(obj);
 
         try
         {
-            const response = await fetch(bp.buildPath('api/addcard'),
-            {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
+            const response = await fetch(
+                bp.buildPath('api/addcard'),
+                {
+                    method:'POST',
+                    body: js,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
 
             var txt = await response.text();
             var res = JSON.parse(txt);
 
-            if( res.error.length > 0 )
+            if(res.Error !== null)
             {
                 setMessage( "API Error:" + res.error );
             }
             else
             {
                 setMessage('Card has been added');
+                storage.storeToken(res.JwtToken);
             }
         }
         catch(e)
@@ -52,26 +62,45 @@ function CardUI()
     {
         event.preventDefault();
         		
-        var obj = {userId:userId,search:search.value};
-        var js = JSON.stringify(obj);
+        const obj = 
+        {
+            _id: userId,
+            search: search.value,
+            JwtToken: storage.retrieveToken()
+        };
+        const js = JSON.stringify(obj);
 
         try
         {
-            const response = await fetch(bp.buildPath('api/searchcards'),
-            {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
+            const response = await fetch(
+                bp.buildPath('api/searchcards'),
+                {
+                    method: 'POST',
+                    body: js,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
 
-            var txt = await response.text();
-            var res = JSON.parse(txt);
-            var _results = res.results;
-            var resultText = '';
-            for( var i=0; i<_results.length; i++ )
+            const txt = await response.text();
+            const res = JSON.parse(txt);
+
+            if (res.Error !== null)
+            {
+                throw res.Error;
+            }
+
+            let _results = res.results;
+            let resultText = '';
+            for (let i = 0; i < _results.length; i++)
             {
                 resultText += _results[i];
-                if( i < _results.length - 1 )
+                if (i < _results.length - 1)
                 {
                     resultText += ', ';
                 }
             }
+
+            storage.storeToken( res.JwtToken );
             setResults('Card(s) have been retrieved');
             setCardList(resultText);
         }
@@ -87,11 +116,11 @@ function CardUI()
         <div id="cardUIDiv">
         <br />
         <input type="text" id="searchText" placeholder="Card To Search For" ref={(c) => search = c} />
-        <button type="button" id="searchCardButton" class="buttons" onClick={searchCard}> Search Card</button><br />
+        <button type="button" id="searchCardButton" onClick={searchCard}> Search Card</button><br />
         <span id="cardSearchResult">{searchResults}</span>
         <p id="cardList">{cardList}</p><br /><br />
         <input type="text" id="cardText" placeholder="Card To Add" ref={(c) => card = c} />
-        <button type="button" id="addCardButton" class="buttons" onClick={addCard}> Add Card </button><br />
+        <button type="button" id="addCardButton" onClick={addCard}> Add Card </button><br />
         <span id="cardAddResult">{message}</span>
         </div>
     );
