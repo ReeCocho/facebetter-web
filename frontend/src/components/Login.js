@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { isExpired, decodeToken } from "react-jwt";
 
 function Login()
 {
     var bp = require('./Path.js');
+
+    var storage = require('../tokenStorage.js');
 
     var loginName;
     var loginPassword;
@@ -14,24 +17,39 @@ function Login()
     {
         event.preventDefault();
 
-        var obj = {Login:loginName.value,Password:loginPassword.value};
+        var obj = 
+        {
+            Login: loginName.value,
+            Password: loginPassword.value
+        };
         var js = JSON.stringify(obj);
 
         try
         {    
-            const response = await fetch(bp.buildPath('api/login'),
-                {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
-
+            const response = await fetch(
+                bp.buildPath('api/login'),
+                {
+                    method:'POST',
+                    body: js,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
             var res = JSON.parse(await response.text());
 
             if (res.Error !== null)
-            {
+            {              
                 setMessage('User/Password combination incorrect');
             }
             else
             {
-                var user = {firstName:res.FirstName,lastName:res.LastName,id:res.Id}
-                localStorage.setItem('user_data', JSON.stringify(user));
+                storage.storeToken(res.JwtToken);
+                const ud = decodeToken(storage.retrieveToken());
+                const userData = JSON.stringify({
+                    firstName: ud.firstName,
+                    lastName: ud.lastName,
+                    id: ud.userId
+                });
+                localStorage.setItem("user_data", userData);
 
                 setMessage('');
                 window.location.href = '/cards';
@@ -50,7 +68,7 @@ function Login()
         <span id="inner-title">PLEASE LOG IN</span><br />
         <input type="text" id="loginName" placeholder="Username" ref={(c) => loginName = c} /><br />
         <input type="password" id="loginPassword" placeholder="Password" ref={(c) => loginPassword = c} /><br />
-        <input type="submit" id="loginButton" class="buttons" value = "Do It"
+        <input type="submit" id="loginButton" value = "Do It"
           onClick={doLogin} />
         </form>
         <span id="loginResult">{message}</span>
