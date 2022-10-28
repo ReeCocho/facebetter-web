@@ -364,6 +364,72 @@ exports.setApp = function ( app, client )
     res.status(200).json(ret);
   });
   
+  app.post('/api/editprofile', async (req, res, next) => {
+    // incoming: _id (ex: {_id: "6344e4ea7c568d2a25ed0f6f"})
+    // outgoing: {FirstName: 'John', LastName: 'Doe', Following: ['uuid1', 'uuid2', ...], School: 'UCF', Work: 'Disney'} 
+    const obj = req.body;
+
+    let err = verifyObject(obj, {
+      _id: "string",
+      FirstName: "string", 
+      LastName: "string", 
+      School: "string", 
+      Work: "string"
+    });
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    let results;
+    try 
+    {
+      const db = client.db("SocialNetwork");
+      let objId = new ObjectId(obj._id)
+      let newFirstName = obj.FirstName;
+      let newLastName = obj.LastName;
+      let newSchool = obj.School;
+      let newWork = obj.Work;
+
+      let filter = {_id: objId}
+      let updates = {
+        FirstName: newFirstName,
+        LastName: newLastName,
+        School: newSchool,
+        Work: newWork
+      }
+
+      results = await db
+        .collection('Users')
+        .updateMany(filter, {$set: updates})
+    } 
+    catch(e) 
+    {
+      err = e.toString();
+    }
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    // if there are no matches, that means we cannot find a user with that ID
+    if (results.matchedCount === 0)
+    {
+      var ret = { Error: "cannot find user with that ID" };
+      res.status(200).json(ret);
+      return;
+    }
+  
+    var ret = {Error: null};
+    res.status(200).json(ret);
+  });
+  
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data
    * data from a client (whether that be from a POST or over a socket).
