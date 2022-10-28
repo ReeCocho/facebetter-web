@@ -364,9 +364,12 @@ exports.setApp = function ( app, client )
     res.status(200).json(ret);
   });
   
+  // requires ALL fields to be sent
+  // send original/old info for things not to be updated,
+  // send updated text for things to be updated
   app.post('/api/editprofile', async (req, res, next) => {
-    // incoming: _id (ex: {_id: "6344e4ea7c568d2a25ed0f6f"})
-    // outgoing: {FirstName: 'John', LastName: 'Doe', Following: ['uuid1', 'uuid2', ...], School: 'UCF', Work: 'Disney'} 
+    // incoming: {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "NewFirst", LastName: "NewLast", ...}
+    // outgoing: {err: "error message"}
     const obj = req.body;
 
     let err = verifyObject(obj, {
