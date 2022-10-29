@@ -1,79 +1,91 @@
-import React, { useState } from 'react';
-import { isExpired, decodeToken } from "react-jwt";
+import React, { useState } from "react";
+import "../components/login.css";
 
-function Login()
-{
-    var bp = require('./Path.js');
+function Login({registerPop}) {
+  var bp = require("./Path.js");
 
-    var storage = require('../tokenStorage.js');
+  var loginName;
+  var loginPassword;
 
-    var loginName;
-    var loginPassword;
+  const [message, setMessage] = useState("");
 
+  const doLogin = async (event) => {
+    event.preventDefault();
 
-    const [message,setMessage] = useState('');
+    var obj = { Login: loginName.value, Password: loginPassword.value };
+    var js = JSON.stringify(obj);
 
-    const doLogin = async event => 
-    {
-        event.preventDefault();
+    try {
+      const response = await fetch(bp.buildPath("api/login"), {
+        method: "POST",
+        body: js,
+        headers: { "Content-Type": "application/json" },
+      });
 
-        var obj = 
-        {
-            Login: loginName.value,
-            Password: loginPassword.value
+      var res = JSON.parse(await response.text());
+
+      if (res.Error !== null) {
+        setMessage("User/Password combination incorrect");
+      } else {
+        var user = {
+          firstName: res.FirstName,
+          lastName: res.LastName,
+          id: res.Id,
         };
-        var js = JSON.stringify(obj);
+        localStorage.setItem("user_data", JSON.stringify(user));
 
-        try
-        {    
-            const response = await fetch(
-                bp.buildPath('api/login'),
-                {
-                    method:'POST',
-                    body: js,
-                    headers: { 'Content-Type': 'application/json' }
-                }
-            );
-            var res = JSON.parse(await response.text());
+        setMessage("");
+        window.location.href = "/cards";
+      }
+    } catch (e) {
+      alert(e.toString());
+      return;
+    }
+  };
 
-            if (res.Error !== null)
-            {              
-                setMessage('User/Password combination incorrect');
-            }
-            else
-            {
-                storage.storeToken(res.JwtToken);
-                const ud = decodeToken(storage.retrieveToken());
-                const userData = JSON.stringify({
-                    firstName: ud.firstName,
-                    lastName: ud.lastName,
-                    id: ud.userId
-                });
-                localStorage.setItem("user_data", userData);
 
-                setMessage('');
-                window.location.href = '/cards';
-            }
-        }
-        catch(e)
-        {
-            alert(e.toString());
-            return;
-        }    
-    };
 
-    return(
-      <div id="loginDiv">
-        <form onSubmit={doLogin}>
-        <span id="inner-title">PLEASE LOG IN</span><br />
-        <input type="text" id="loginName" placeholder="Username" ref={(c) => loginName = c} /><br />
-        <input type="password" id="loginPassword" placeholder="Password" ref={(c) => loginPassword = c} /><br />
-        <input type="submit" id="loginButton" value = "Do It"
-          onClick={doLogin} />
+
+  return (
+    <div id="loginDiv">
+        <form class="login__form">
+          <div className="login__container">
+          <input
+            class="inputBox"
+            type="text"
+            id="loginName"
+            placeholder="  Username"
+            ref={(c) => (loginName = c)}
+            />
+          <input
+            class="inputBox"
+            type="password"
+            id="loginPassword"
+            placeholder="  Password"
+            ref={(c) => (loginPassword = c)}
+            />
+          <input
+            type="submit"
+            id="loginButton"
+            class="buttons inputBox"
+            value="Log In"
+            onClick={doLogin}
+            />
+            </div>
+            <span id="loginResult">{message}</span>
+            <div class="line"></div>  
+          <button
+            type="submit"
+            id="registerButton"
+            class="buttons inputBox"
+            value="Create New Account"
+            onClick={registerPop}
+          >
+            Create New Account
+          </button>
         </form>
-        <span id="loginResult">{message}</span>
-      </div>
-    );
-};
+    </div>
+  );
+}
 
 export default Login;

@@ -1,0 +1,11 @@
+.organize{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.subtitle{
+    max-width: 500px;
+    font-size: 28px;
+    text-align: left;  
+}

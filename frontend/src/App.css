@@ -1,3 +1,11 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+
+}
+
 .App {
   text-align: center;
 }
@@ -36,3 +44,15 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+.background{
+  background-color: #e1e9e8;
+  height: 100vh;
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: space-around;
+}
+
