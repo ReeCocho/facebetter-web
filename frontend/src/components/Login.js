@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "../App.css";
+import "../components/login.css";
 
-function Login() {
+function Login({registerPop}) {
   var bp = require("./Path.js");
 
   var loginName;
@@ -43,43 +43,47 @@ function Login() {
     }
   };
 
+
+
+
   return (
     <div id="loginDiv">
-      <form onSubmit={doLogin} class="login__form">
-        <div class='not__register'>
+        <form class="login__form">
+          <div className="login__container">
           <input
             class="inputBox"
             type="text"
             id="loginName"
-            placeholder="Username"
+            placeholder="  Username"
             ref={(c) => (loginName = c)}
-          />
-          <br />
+            />
           <input
             class="inputBox"
             type="password"
             id="loginPassword"
-            placeholder="Password"
+            placeholder="  Password"
             ref={(c) => (loginPassword = c)}
-          />
-          <br />
+            />
           <input
             type="submit"
             id="loginButton"
-            class="buttons"
+            class="buttons inputBox"
             value="Log In"
             onClick={doLogin}
-          />
-        </div>
-        <div class="line"></div>
-        <input
-          type="submit"
-          id="registerButton"
-          class="buttons"
-          value="Create New Account"
-        />
-      </form>
-      <span id="loginResult">{message}</span>
+            />
+            </div>
+            <span id="loginResult">{message}</span>
+            <div class="line"></div>  
+          <button
+            type="submit"
+            id="registerButton"
+            class="buttons inputBox"
+            value="Create New Account"
+            onClick={registerPop}
+          >
+            Create New Account
+          </button>
+        </form>
     </div>
   );
 }
