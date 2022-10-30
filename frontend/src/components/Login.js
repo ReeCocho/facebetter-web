@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import "../components/login.css";
+import axios from 'axios';
 
 function Login({registerPop}) {
+
   var bp = require("./Path.js");
 
   var loginName;
@@ -12,7 +14,20 @@ function Login({registerPop}) {
   const doLogin = async (event) => {
     event.preventDefault();
 
-    var obj = { Login: loginName.value, Password: loginPassword.value };
+    axios.post("http://localhost:3000/api/login",{
+      Login: loginName,
+      Password: loginPassword,
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+
+
+
+    /*var obj = { Login: loginName.value, Password: loginPassword.value };
     var js = JSON.stringify(obj);
 
     try {
@@ -40,7 +55,7 @@ function Login({registerPop}) {
     } catch (e) {
       alert(e.toString());
       return;
-    }
+    }*/
   };
 
 
@@ -48,42 +63,44 @@ function Login({registerPop}) {
 
   return (
     <div id="loginDiv">
-        <form class="login__form">
-          <div className="login__container">
+      <form class="login__form">
+        <div className="login__container">
           <input
             class="inputBox"
             type="text"
             id="loginName"
             placeholder="  Username"
             ref={(c) => (loginName = c)}
-            />
+            required
+          />
           <input
             class="inputBox"
             type="password"
             id="loginPassword"
             placeholder="  Password"
             ref={(c) => (loginPassword = c)}
-            />
+            required
+          />
           <input
             type="submit"
             id="loginButton"
             class="buttons inputBox"
             value="Log In"
             onClick={doLogin}
-            />
-            </div>
-            <span id="loginResult">{message}</span>
-            <div class="line"></div>  
-          <button
-            type="submit"
-            id="registerButton"
-            class="buttons inputBox"
-            value="Create New Account"
-            onClick={registerPop}
-          >
-            Create New Account
-          </button>
-        </form>
+          />
+        </div>
+        <span id="loginResult">{message}</span>
+        <div class="line"></div>
+        <button
+          type="submit"
+          id="registerButton"
+          class="buttons inputBox"
+          value="Create New Account"
+          onClick={registerPop}
+        >
+          Create New Account
+        </button>
+      </form>
     </div>
   );
 }
