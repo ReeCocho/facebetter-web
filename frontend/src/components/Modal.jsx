@@ -1,6 +1,6 @@
 import "./Modal.css";
 
-function Modal({ title, confirmDelete, cancelDelete }) {
+function Modal({ unRegisterPop, confirmDelete, cancelDelete }) {
   return (
     <>
       <div className="modal">
@@ -30,12 +30,12 @@ function Modal({ title, confirmDelete, cancelDelete }) {
           <div className="name">
             <input
               class="inputBoxR loginPasswordR"
-              type="password"
+              type="Text"
               placeholder="  First Name"
             />
             <input
               class="inputBoxR loginPasswordR"
-              type="password"
+              type="Text"
               placeholder="  Last Name"
             />
           </div>
@@ -50,7 +50,7 @@ function Modal({ title, confirmDelete, cancelDelete }) {
         </form>
         </div>
       </div>
-      <div className="backdrop" />
+      <div className="backdrop" onClick={unRegisterPop} />
     </>
   );
 }

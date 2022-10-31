@@ -11,6 +11,7 @@ function App() {
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<LoginPage />} />
+      
     </Routes>
   </BrowserRouter>
 );

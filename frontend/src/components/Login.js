@@ -1,10 +1,9 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "../components/login.css";
-import axios from 'axios';
-import jwt_decode from 'jwt-decode';
+import axios from "axios";
+import jwt_decode from "jwt-decode";
 
-function Login({registerPop}) {
-
+function Login({ registerPop }) {
   var bp = require("./Path.js");
 
   var loginName;
@@ -12,26 +11,35 @@ function Login({registerPop}) {
 
   const [message, setMessage] = useState("");
 
+  function yesError() {
+    setMessage("Username/password are incorrect");
+  }
+
+  function noError() {
+    setMessage("");
+  }
+
   const doLogin = async (event) => {
     event.preventDefault();
     var obj = { Login: loginName.value, Password: loginPassword.value };
     var js = JSON.stringify(obj);
 
-    axios.post("http://facebetter.herokuapp.com/api/login",{
-      Login: loginName.value,
-      Password: loginPassword.value
-    })
-    .then((res) => {
+    axios
+      .post("http://facebetter.herokuapp.com/api/login", {
+        Login: loginName.value,
+        Password: loginPassword.value,
+      })
+      .then((res) => {
+        noError();
         console.log(res);
         const token = res.data.JwtToken.accessToken;
         var decode1 = jwt_decode(token);
         console.log(decode1);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-
-
+      })
+      .catch((error) => {
+        console.error(error);
+        yesError();
+      });
 
     /*var obj = { Login: loginName.value, Password: loginPassword.value };
     var js = JSON.stringify(obj);
@@ -63,9 +71,6 @@ function Login({registerPop}) {
       return;
     }*/
   };
-
-
-
 
   return (
     <div id="loginDiv">
