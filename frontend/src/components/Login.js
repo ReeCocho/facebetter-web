@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import "../components/login.css";
 import axios from 'axios';
+import jwt_decode from 'jwt-decode';
 
 function Login({registerPop}) {
 
@@ -13,13 +14,18 @@ function Login({registerPop}) {
 
   const doLogin = async (event) => {
     event.preventDefault();
+    var obj = { Login: loginName.value, Password: loginPassword.value };
+    var js = JSON.stringify(obj);
 
-    axios.post("http://localhost:3000/api/login",{
-      Login: loginName,
-      Password: loginPassword,
+    axios.post("http://facebetter.herokuapp.com/api/login",{
+      Login: loginName.value,
+      Password: loginPassword.value
     })
     .then((res) => {
-      console.log(res);
+        console.log(res);
+        const token = res.data.JwtToken.accessToken;
+        var decode1 = jwt_decode(token);
+        console.log(decode1);
     })
     .catch((error) => {
       console.error(error);
