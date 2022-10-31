@@ -14,13 +14,17 @@ const LoginPage = () => {
     setShowModal(true);
     console.log("onTodoDelete()");
   }
+
+  function unRegisterPop(){
+    setShowModal(false);
+  }
   
 
   return (
       <div class="background" >
         <PageTitle />
         <Login registerPop={registerPop}/>
-        {showModal && <Modal/>}
+        {showModal && <Modal unRegisterPop={unRegisterPop}/>}
         {/* <Modal/> */}
       </div>
   );

@@ -13,7 +13,7 @@
   width: 460px;
   z-index: 1000;
   position: fixed;
-  top: 400px;
+  top: 15%;
   left: 50%;
   transform: translateX(-50%);
 }
