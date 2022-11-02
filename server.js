@@ -31,7 +31,7 @@ app.use((req, res, next) =>
   next();
 });
 
-app.listen(PORT, () => 
+const server = app.listen(PORT, () => 
 {
   console.log('Server listening on port ' + PORT);
 });
@@ -50,3 +50,4 @@ if (process.env.NODE_ENV === 'production')
   });
 }
 
+module.exports = { app, client, server };
