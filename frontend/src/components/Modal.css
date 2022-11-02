@@ -61,4 +61,9 @@
   margin-right: -8px;
 }
 
-
+span{
+  font-size: 16px;
+  color: red;
+  width: 100%;
+  text-align: center;
+}
