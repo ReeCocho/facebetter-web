@@ -5,9 +5,9 @@ import "../components/pageTitle.css"
 function PageTitle()
 {
    return(
-     <div class='organize'>
-      <img class="title" src={logo} ></img>
-      <p class="subtitle">We dont steal your private information</p>
+     <div className='organize'>
+      <img className="title" src={logo} ></img>
+      <p className="subtitle">We dont steal your private information</p>
      </div>
    );
 };
