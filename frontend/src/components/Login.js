@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../components/login.css";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import md5 from './md5'
 
 function Login({ registerPop }) {
   var bp = require("./Path.js");
@@ -20,14 +21,16 @@ function Login({ registerPop }) {
   }
 
   const doLogin = async (event) => {
+    let password1 = loginPassword.value
+    var hash = md5(password1)
     event.preventDefault();
-    var obj = { Login: loginName.value, Password: loginPassword.value };
+    var obj = { Login: loginName.value, Password: hash };
     var js = JSON.stringify(obj);
 
     axios
       .post("https://facebetter.herokuapp.com/api/login", {
         Login: loginName.value,
-        Password: loginPassword.value,
+        Password: hash,
       })
       .then((res) => {
         noError();
@@ -78,10 +81,10 @@ function Login({ registerPop }) {
   return (
     <div id="loginDiv">
       <div className="loginSquare">
-        <form class="login__form">
+        <form className="login__form">
           <div className="login__container">
             <input
-              class="inputBox"
+              className="inputBox"
               type="text"
               id="loginName"
               placeholder="  Username"
@@ -89,7 +92,7 @@ function Login({ registerPop }) {
               required
             />
             <input
-              class="inputBox"
+              className="inputBox"
               type="password"
               id="loginPassword"
               placeholder="  Password"
@@ -99,18 +102,18 @@ function Login({ registerPop }) {
             <input
               type="submit"
               id="loginButton"
-              class="buttons inputBox"
+              className="buttons inputBox"
               value="Log In"
               onClick={doLogin}
             />
           <span id="loginResult">{message}</span>
           </div>
         </form>
-          <div class="line"></div>
+          <div className="line"></div>
           <button
             type="submit"
             id="registerButton"
-            class="buttons inputBox"
+            className="buttons inputBox"
             value="Create New Account"
             onClick={registerPop}
           >

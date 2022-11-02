@@ -21,7 +21,7 @@ const LoginPage = () => {
   
 
   return (
-      <div class="background" >
+      <div className="background" >
         <PageTitle />
         <Login registerPop={registerPop}/>
         {showModal && <Modal unRegisterPop={unRegisterPop}/>}
