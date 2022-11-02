@@ -25,7 +25,7 @@ function Login({ registerPop }) {
     var js = JSON.stringify(obj);
 
     axios
-      .post("http://facebetter.herokuapp.com/api/login", {
+      .post("https://facebetter.herokuapp.com/api/login", {
         Login: loginName.value,
         Password: loginPassword.value,
       })
@@ -74,44 +74,46 @@ function Login({ registerPop }) {
 
   return (
     <div id="loginDiv">
-      <form class="login__form">
-        <div className="login__container">
-          <input
-            class="inputBox"
-            type="text"
-            id="loginName"
-            placeholder="  Username"
-            ref={(c) => (loginName = c)}
-            required
-          />
-          <input
-            class="inputBox"
-            type="password"
-            id="loginPassword"
-            placeholder="  Password"
-            ref={(c) => (loginPassword = c)}
-            required
-          />
-          <input
+      <div className="loginSquare">
+        <form class="login__form">
+          <div className="login__container">
+            <input
+              class="inputBox"
+              type="text"
+              id="loginName"
+              placeholder="  Username"
+              ref={(c) => (loginName = c)}
+              required
+            />
+            <input
+              class="inputBox"
+              type="password"
+              id="loginPassword"
+              placeholder="  Password"
+              ref={(c) => (loginPassword = c)}
+              required
+            />
+            <input
+              type="submit"
+              id="loginButton"
+              class="buttons inputBox"
+              value="Log In"
+              onClick={doLogin}
+            />
+          <span id="loginResult">{message}</span>
+          </div>
+        </form>
+          <div class="line"></div>
+          <button
             type="submit"
-            id="loginButton"
+            id="registerButton"
             class="buttons inputBox"
-            value="Log In"
-            onClick={doLogin}
-          />
-        </div>
-        <span id="loginResult">{message}</span>
-        <div class="line"></div>
-        <button
-          type="submit"
-          id="registerButton"
-          class="buttons inputBox"
-          value="Create New Account"
-          onClick={registerPop}
-        >
-          Create New Account
-        </button>
-      </form>
+            value="Create New Account"
+            onClick={registerPop}
+          >
+            Create New Account
+          </button>
+      </div>
     </div>
   );
 }

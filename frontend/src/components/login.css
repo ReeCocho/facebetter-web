@@ -16,15 +16,23 @@
   max-width: 400px;
 }
 
-.login__form {
+.loginSquare{
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+
+}
+
+.login__form {
+  height:70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: 30px;
 }
 
 .login__container {
-  height: 60%;
+  height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -60,7 +68,8 @@
 
 .line{
     border: 1px solid black;
-    margin-top: -25px;
+    margin-top: -20px;
+    margin-bottom: 30px;
 }
 
 span{
