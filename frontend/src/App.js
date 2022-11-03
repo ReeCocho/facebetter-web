@@ -5,13 +5,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import LoginPage from './pages/LoginPage';
 import CardPage from './pages/CardPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
-    <BrowserRouter>
+  <BrowserRouter>
     <Routes>
-      <Route path="/" index element={<LoginPage />} />
-      <Route path="/cards" index element={<CardPage />} />
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/pages/ProfilePage" element={<ProfilePage />} />
+      
     </Routes>
   </BrowserRouter>
 );
