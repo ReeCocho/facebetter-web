@@ -1,6 +1,6 @@
 import "./Modal.css";
 import axios from "axios";
-import jwt_decode from "jwt-decode";
+// import jwt_decode from "jwt-decode";
 import React, { useState } from "react";
 import md5 from './md5'
 
@@ -29,13 +29,13 @@ function Modal({ unRegisterPop }) {
 
 
   const doRegister = async (event) => {
+    
     event.preventDefault();
     let password1 = registerPassword.value;
     let password2 = registerPasswordConfirmation.value;
 
-    if(password1 === password2){
+    if(password1 === password2 && password1 !== ""){
       var hash = md5(password1)
-      
     var obj = { Login: registerName.value, Password: hash, FirstName: registerFirst.value, LastName: registerLast.value, School: null, Work: null};
     var js = JSON.stringify(obj);
 
@@ -54,11 +54,14 @@ function Modal({ unRegisterPop }) {
         Work: ""
       })
       .then((res) => {
-        yesError("")
-        console.log(res);
-        const token = res.data.JwtToken.accessToken;
-        var decode1 = jwt_decode(token);
-        console.log(decode1);
+        if(res.data.Error)
+        {
+          yesError(res.data.Error);
+        }
+        else{
+          window.location.href = "./";
+          yesError("")
+        }
       })
       .catch((e) => {
         console.log(e)
@@ -90,36 +93,37 @@ function Modal({ unRegisterPop }) {
             className="inputBoxR loginNameR"
             type="text"
             placeholder="  Username"
-            required
             ref={(c) => (registerName = c)}
+            required
           />
           <input
             className="inputBoxR loginPasswordR password1"
             type="password"
             placeholder="  Password"
-            required
             ref={(c) => (registerPassword = c)}
+            required
           />
           <input
             className="inputBoxR loginPasswordR password2"
             type="password"
             placeholder="  Confirm Password"
-            required
             ref={(c) => (registerPasswordConfirmation = c)}
+            required
           />
           <div className="name">
             <input
               className="inputBoxR loginPasswordR"
               type="Text"
               placeholder="  First Name"
-              required
               ref={(c) => (registerFirst = c)}
+              required
             />
             <input
               className="inputBoxR loginPasswordR"
               type="Text"
               placeholder="  Last Name"
               ref={(c) => (registerLast = c)}
+              required
             />
           </div>
           <span id="registerResult">{message} </span>
@@ -129,7 +133,6 @@ function Modal({ unRegisterPop }) {
             className="buttons inputBoxR"
             value="Create New Account"
             onClick={doRegister}
-            onSubmit={unRegisterPop}
           >
             Create New Account
           </button >
