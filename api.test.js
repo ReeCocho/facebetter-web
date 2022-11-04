@@ -7,7 +7,7 @@ afterAll(async () => {
 });
 
 describe("API Tests", () => {
-    test('tests login on the test user', async () => {
+    test('login on the test user', async () => {
         const data = {
             Login: "test",
             Password: "test"
@@ -16,7 +16,7 @@ describe("API Tests", () => {
         expect(res.body.Error).toBe(null); 
     });
 
-    test('tests login on the test user with the incorrect password', async () => {
+    test('login on the test user with the incorrect password', async () => {
         const data = {
             Login: "test",
             Password: "wrong_password_bozo"
@@ -25,7 +25,7 @@ describe("API Tests", () => {
         expect(res.body.Error).not.toBe(null); 
     });
 
-    test("tests login to a user that doesn't exist", async() => {
+    test("login to a user that doesn't exist", async() => {
         const data = {
             Login: "$BAD_LOGIN$",
             Password: "$BAD_PASSWORD$"
@@ -34,7 +34,7 @@ describe("API Tests", () => {
         expect(res.body.Error).not.toBe(null);
     });
 
-    test("tests registering a user that already exist", async() => {
+    test("registering a user that already exist", async() => {
         const data = {
             Login: "test",
             Password: "totally_secure_password",
@@ -47,7 +47,7 @@ describe("API Tests", () => {
         expect(res.body.Error).not.toBe(null);
     });
 
-    test("tests registering a user with bad credentials", async() => {
+    test("registering a user with bad credentials", async() => {
         let data = {
             Login: "",
             Password: "password",
@@ -104,7 +104,7 @@ describe("API Tests", () => {
         expect(res.body.Error).not.toBe(null);
     });
 
-    test('tests retrieving the profile of the test user', async () => {
+    test('retrieving the profile of the test user', async () => {
         const data = {
             _id: "634b740db076952180cb8e5a",
         };
@@ -114,7 +114,7 @@ describe("API Tests", () => {
         expect(res.body.LastName).toBe("User");
     });
 
-    test("tests retrieving the profile of a user that doesn't exist", async () => {
+    test("retrieving the profile of a user that doesn't exist", async () => {
         const data = {
             _id: "bad_id",
         };
