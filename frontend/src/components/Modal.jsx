@@ -30,7 +30,6 @@ function Modal({ unRegisterPop }) {
 
   const doRegister = async (event) => {
     var bp = require('./Path.js');
-
     event.preventDefault();
     let password1 = registerPassword.value;
     let password2 = registerPasswordConfirmation.value;
