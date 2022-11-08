@@ -471,6 +471,118 @@ exports.setApp = function ( app, client )
     res.status(200).json(ret);
   });
   
+
+  app.post('/api/searchprofiles', async (req, res, next) => {
+    // incoming: search (ex: {"search": "dennis"})
+    // outgoing: {Results: [ {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "Dennis", LastName: "Cepero", School: "UCF", Work: "Full Sail"}, {_id: "someoneelse", ...} ]}
+    const obj = req.body;
+
+    let err = verifyObject(obj, {search: "string"});
+    let regexSearchString = obj.search + ".*";
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    let results;
+    try 
+    {
+      const db = client.db("SocialNetwork");
+      let objId = new ObjectId(obj._id)
+      results = await db
+        .collection('Users')
+        .find(
+          {
+            "$or": [
+              {"FirstName":    {"$regex": regexSearchString, "$options": "i"}},
+              {"LastName":     {"$regex": regexSearchString, "$options": "i"}},
+            ]
+          }
+        )
+        .project(
+          {
+            FirstName: 1,
+            LastName: 1,
+            School: 1,
+            Work: 1
+          }
+        )
+        .toArray();
+    } 
+    catch(e) 
+    {
+      err = e.toString();
+    }
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+  
+    var ret = 
+    { 
+      Results: results
+    };
+    res.status(200).json(ret);
+  });
+
+
+  app.post('/api/searchfollowing', async (req, res, next) => {
+    // incoming: search (ex: {_id:"thepersonwhosefollowersyouwanttosearch", "search": "whatyouwanttosearchfor"})
+    // outgoing: {Results: [ {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "Dennis", LastName: "Cepero", School: "UCF", Work: "Full Sail"}, {_id: "someoneelse", ...} ]}
+    const obj = req.body;
+
+    let err = verifyObject(obj, {_id: "string", search: "string"});
+    let regexSearchString = obj.search + ".*";
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+
+    let results;
+    try 
+    {
+      const db = client.db("SocialNetwork");
+      results = await db
+      .collection('Users')
+      .find(
+        {
+          Followers: new ObjectId(obj._id), // to search this user's Followings, search who Follows this user
+          "$or": [
+            {"FirstName":    {"$regex": regexSearchString, "$options": "i"}},
+            {"LastName":     {"$regex": regexSearchString, "$options": "i"}},
+          ]
+        }
+      )
+      .project({FirstName: 1, LastName: 1, School: 1, Work: 1})
+      .toArray()
+    } 
+    catch(e) 
+    {
+      err = e.toString();
+    }
+  
+    if (err !== null)
+    {
+      var ret = { Error: err };
+      res.status(200).json(ret);
+      return;
+    }
+  
+    var ret = 
+    { 
+      Results: results
+    };
+    res.status(200).json(ret);
+  });
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data
    * data from a client (whether that be from a POST or over a socket).
