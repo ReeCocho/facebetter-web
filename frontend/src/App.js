@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from './pages/LoginPage';
 import CardPage from './pages/CardPage';
 import ProfilePage from './pages/ProfilePage';
+import ConfirmationPage from './pages/ConfirmationPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/pages/ProfilePage" element={<ProfilePage />} />
+      <Route path="/pagesConfirmationPage" element={<ConfirmationPage />} />
       
     </Routes>
   </BrowserRouter>

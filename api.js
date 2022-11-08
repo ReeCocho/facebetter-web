@@ -3,6 +3,7 @@ const { ObjectId } = require('mongodb');
 require('express');
 require('mongodb');
 const token = require("./createJWT.js");
+const mailer = require("./emailConfirmation.js");
 
 exports.setApp = function ( app, client )
 {
@@ -51,7 +52,7 @@ exports.setApp = function ( app, client )
   
   
   app.post('/api/login', async (req, res, next) => 
-  {
+  {    
     try
     {
       // Verification
@@ -87,6 +88,12 @@ exports.setApp = function ( app, client )
       res.status(200).json(ret);
     }
     catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+    
+    if(mailer.sendEmail(1, "kastnqnjkvjsupwhgx@tmmbt.com") !== null)
     {
       const ret = { Error: e.toString() };
       res.status(200).json(ret);

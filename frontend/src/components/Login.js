@@ -28,7 +28,7 @@ function Login({ registerPop }) {
     var js = JSON.stringify(obj);
 
     axios
-      .post("https://facebetter.herokuapp.com/api/login", {
+      .post(bp.buildPath("api/login"), {
         Login: loginName.value,
         Password: hash,
       })
