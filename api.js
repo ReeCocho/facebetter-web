@@ -81,6 +81,12 @@ exports.setApp = function ( app, client )
         throw "Username/password is incorrect.";
       }
 
+      // Error if the account is not verified
+      if (!results[0].AccountVerified)
+      {
+        throw "Account not verified";
+      }
+
       // Create a token from the user info and send to the client
       const tok = token.createToken(results[0].FirstName, results[0].LastName, results[0]._id);
       const ret = { JwtToken: tok, Error: null};
@@ -154,10 +160,60 @@ exports.setApp = function ( app, client )
         LastName: obj.LastName,
         Following: [],
         School: obj.School,
-        Work: obj.Work
+        Work: obj.Work,
+        AccountVerified: false
       };
 
       db.collection('Users').insertOne(newUser);
+
+      const ret = { Error: null };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+
+  app.post('/api/verifyemail', async (req, res, next) => {
+    try
+    {
+      // Verification of input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Login: "string",
+          Password: "string"
+        }
+      );
+
+      if (err !== null) 
+      {
+        throw err;
+      }
+
+      // Find the user
+      const db = client.db("SocialNetwork");
+      results = await db
+        .collection('Users')
+        .find({Login: obj.Login, Password: obj.Password})
+        .toArray();
+
+      if (results.length == 0) 
+      {
+        throw "Username/password is incorrect.";
+      }
+
+      // Verify the account
+      await db
+        .collection('Users')
+        .updateOne(
+          { _id: results[0]._id }, 
+          {$set: { AccountVerified: true }}
+        );
 
       const ret = { Error: null };
       res.status(200).json(ret);
