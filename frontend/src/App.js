@@ -14,7 +14,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/pages/ProfilePage" element={<ProfilePage />} />
-      <Route path="/pagesConfirmationPage" element={<ConfirmationPage />} />
+      <Route path="/pages/ConfirmationPage/:token" element={<ConfirmationPage />} />
       
     </Routes>
   </BrowserRouter>

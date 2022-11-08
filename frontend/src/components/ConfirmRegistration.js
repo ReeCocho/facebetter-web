@@ -1,19 +1,16 @@
-import { application } from 'express';
 import React from 'react';
+import jwt_decode from "jwt-decode";
 
 function ConfirmRegistration()
 {
     const ConfirmRegistration = event => 
     {
-        application.get('/confirmation/:token'), async (req, res) => {
-            try {
-                const {user: { id } } = jwt.verify(req.params.token, process.env.EMAIL_SECRET);
-            } catch (e) {
-                console.log(e.toString());
-            }
-    
-        }
-        console.log("Confirmed");
+      let urlElements = window.location.href.split('/');
+      let token = urlElements[urlElements.length - 1];
+      let decoded = jwt_decode(token);
+      let id = decoded.user;
+
+      console.log("Confirmed " + id);
     };    
 
   return(

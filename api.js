@@ -92,11 +92,11 @@ exports.setApp = function ( app, client )
       const ret = { Error: e.toString() };
       res.status(200).json(ret);
     }
-    
-    if(mailer.sendEmail(1, "kastnqnjkvjsupwhgx@tmmbt.com") !== null)
+
+    let e = mailer.sendEmail(1, "nzljdviwqbpqertvwr@tmmbt.com");
+    if(e !== null)
     {
-      const ret = { Error: e.toString() };
-      res.status(200).json(ret);
+      console.log(e.toString());
     }
   });
 

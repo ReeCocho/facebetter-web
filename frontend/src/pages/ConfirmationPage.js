@@ -9,6 +9,7 @@ const ConfirmationPage = () =>
     return(
         <div>
             <PageTitle />
+            <ConfirmRegistration />
         </div>
     );
 }
