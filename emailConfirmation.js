@@ -17,7 +17,6 @@ exports.sendEmail = function ( username, password, email )
 
 _sendEmail = function ( username, password, email )
 {
-  console.log("TESTING");
     try
     {
         const emailToken = jwt.sign(
