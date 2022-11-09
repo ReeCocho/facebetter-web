@@ -29,7 +29,7 @@ function Modal({ unRegisterPop }) {
 
 
   const doRegister = async (event) => {
-    
+    var bp = require('./Path.js');
     event.preventDefault();
     let password1 = registerPassword.value;
     let password2 = registerPasswordConfirmation.value;
@@ -45,7 +45,7 @@ function Modal({ unRegisterPop }) {
     // LastName: "string",
 
     axios
-      .post("https://facebetter.herokuapp.com/api/register", {
+      .post(bp.buildPath("api/register"), {
         Login: registerName.value,
         Password: hash,
         FirstName: registerFirst.value, 

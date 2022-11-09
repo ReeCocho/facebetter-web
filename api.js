@@ -154,7 +154,8 @@ exports.setApp = function ( app, client )
         LastName: obj.LastName,
         Following: [],
         School: obj.School,
-        Work: obj.Work
+        Work: obj.Work,
+        Followers: []
       };
 
       db.collection('Users').insertOne(newUser);
@@ -270,43 +271,80 @@ exports.setApp = function ( app, client )
         throw "Attempted to follow yourself";
       }
 
-      // Find our current follower list
-      results = await db
-        .collection('Users')
-        .find({ _id: ObjectId(obj._id) })
-        .toArray();
-
-      if (results.length === 0)
-      {
-        throw "Bad user ID";
-      }
-
-      let following = results[0].Following;
-
-      // Check if we're already following this user
-      // NOTE: Consider adding elements in their sorted position so we can use binary search to
-      // search for users.
-      for (let i = 0; i < following.length; i++)
-      {
-        if (ObjectId(following[i]).equals(toFollowId))
-        {
-          throw "Already following.";
-        }
-      }
-
-      // Add the new follower
-      following.push(toFollowId);
+      // Add the user to our following list
       await db
         .collection('Users')
         .updateOne(
           { _id: ObjectId(obj._id) }, 
-          { $set: { Following: following } }
+          { $addToSet: { Following: toFollowId } }
         );
-      
+        
+      // Add ourselves to the other users to our followers list
+      await db
+        .collection('Users')
+        .updateOne(
+          { _id: ObjectId(toFollowId) }, 
+          { $addToSet: { Followers: ObjectId(obj._id) } }
+        );
+
       const ret = { Error: null, JwtToken: refreshedToken };
       res.status(200).json(ret);
     }
     catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/unfollow', async (req, res, next) => {
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          ToUnfollow: "string",
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      const db = client.db("SocialNetwork");
+
+      // Remove the user from our following list
+      await db
+        .collection('Users')
+        .updateOne(
+          { _id: ObjectId(obj._id) }, 
+          { $pull: { Following: ObjectId(obj.ToUnfollow) } }
+        );
+
+      // Remove ourselves from the users followers list
+      await db
+        .collection('Users')
+        .updateOne(
+          { _id: ObjectId(obj.ToUnfollow) }, 
+          { $pull: { Followers: ObjectId(obj._id) } }
+        );
+
+      const ret = { Error: null, JwtToken: refreshedToken };
+      res.status(200).json(ret);
+    }
+    catch(e)
     {
       const ret = { Error: e.toString() };
       res.status(200).json(ret);
@@ -499,95 +537,95 @@ exports.setApp = function ( app, client )
       }
       const obj_ty = typeof obj[field];
           
-        switch (obj_ty) 
+      switch (obj_ty) 
+      {
+        // Primitives are handled simply
+        case "string":
+        case "number":
+        case "boolean":
+        if (desc_ty !== obj_ty)
         {
-          // Primitives are handled simply
-          case "string":
-          case "number":
-          case "boolean":
-          if (desc_ty !== obj_ty)
+          return "field `" + field + "` expected type of `" + desc_ty + "` but received `" + obj_ty + "`";
+        }
+        break;
+            
+        // Objects are special because technically arrays are also objects
+        case "object":
+          // Cannot be null
+          if (desc[field] === null || obj[field] === null)
           {
-            return "field `" + field + "` expected type of `" + desc_ty + "` but received `" + obj_ty + "`";
+            return "field `" + field + "` cannot be `null`";
           }
-          break;
-              
-          // Objects are special because technically arrays are also objects
-          case "object":
-            // Cannot be null
-            if (desc[field] === null || obj[field] === null)
-            {
-              return "field `" + field + "` cannot be `null`";
-            }
 
-            // If one of the two fields is an array, they must both be arrays.
-            const desc_is_arr = Array.isArray(desc[field]);
-            const obj_is_arr = Array.isArray(obj[field]);
-            if (desc_is_arr || obj_is_arr) 
+          // If one of the two fields is an array, they must both be arrays.
+          const desc_is_arr = Array.isArray(desc[field]);
+          const obj_is_arr = Array.isArray(obj[field]);
+          if (desc_is_arr || obj_is_arr) 
+          {
+            if (!desc_is_arr)
             {
-              if (!desc_is_arr)
+              return "field `" + field + "` expected type of `object` but received `array`";
+            }
+            
+            if (!obj_is_arr)
+            {
+              return "field `" + field + "` expected type of `array` but received `object`";
+            }
+            
+            // Both are arrays. Now verify contents.
+            if (desc[field].length === 0)
+            {
+              return "field `" + field + "` is an array but contains no descriptor";
+            }
+            
+            // If the elements of the array are meant to be objects, recurse
+            const inner = desc[field][0];
+            if (typeof inner === "object")
+            {
+              // Cannot be null
+              if (desc[field][0] === null)
               {
-                return "field `" + field + "` expected type of `object` but received `array`";
+                return "field `" + field + "` cannot be `null`";
               }
               
-              if (!obj_is_arr)
-              {
-                return "field `" + field + "` expected type of `array` but received `object`";
-              }
-              
-              // Both are arrays. Now verify contents.
-              if (desc[field].length === 0)
-              {
-                return "field `" + field + "` is an array but contains no descriptor";
-              }
-              
-              // If the elements of the array are meant to be objects, recurse
-              const inner = desc[field][0];
-              if (typeof inner === "object")
+              for (let i = 0; i < obj[field].length; ++i)
               {
                 // Cannot be null
-                if (desc[field][0] === null)
+                if (obj[field][i] === null)
                 {
                   return "field `" + field + "` cannot be `null`";
                 }
-                
-                for (let i = 0; i < obj[field].length; ++i)
-                {
-                  // Cannot be null
-                  if (obj[field][i] === null)
-                  {
-                    return "field `" + field + "` cannot be `null`";
-                  }
 
-                  const res = verifyObject(obj[field][i], inner);
-                  if (res !== null)
-                  {
-                    return res;
-                  }
-                }
-              }
-              // Otherwise they are primitives
-              else
-              {
-                for (let i = 0; i < obj[field].length; ++i)
+                const res = verifyObject(obj[field][i], inner);
+                if (res !== null)
                 {
-                  if (typeof obj[field][i] !== inner)
-                  {
-                    return "field `" + field + "` is an array, but not all contents are of type `" + inner + "`.";
-                  }
+                  return res;
                 }
               }
             }
-            // Both the expected and actual types are not array, so recurse
+            // Otherwise they are primitives
             else
             {
-              const res = verifyObject(obj[field], desc[field]);
-              if (res !== null)
+              for (let i = 0; i < obj[field].length; ++i)
               {
-                return res;
+                if (typeof obj[field][i] !== inner)
+                {
+                  return "field `" + field + "` is an array, but not all contents are of type `" + inner + "`.";
+                }
               }
             }
-        break;
-          
+          }
+          // Both the expected and actual types are not array, so recurse
+          else
+          {
+            const res = verifyObject(obj[field], desc[field]);
+            if (res !== null)
+            {
+              return res;
+            }
+          }
+      break;
+        
         case "undefined":
           return "missing field `" + field + "`";
           

@@ -5,7 +5,7 @@ import jwt_decode from "jwt-decode";
 import md5 from './md5'
 
 function Login({ registerPop }) {
-  var bp = require("./Path.js");
+  var bp = require('./Path.js');
 
   var loginName;
   var loginPassword;
@@ -28,7 +28,7 @@ function Login({ registerPop }) {
     var js = JSON.stringify(obj);
 
     axios
-      .post(bp.buildPath("api/login"), {
+      .post(bp.buildPath("api/login") , {
         Login: loginName.value,
         Password: hash,
       })
