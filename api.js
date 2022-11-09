@@ -406,8 +406,8 @@ exports.setApp = function ( app, client )
   // send original/old info for things not to be updated,
   // send updated text for things to be updated
   app.post('/api/editprofile', async (req, res, next) => {
-    // incoming: {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "NewFirst", LastName: "NewLast", ...}
-    // outgoing: {err: "error message"}
+    // incoming: {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "NewFirst", LastName: "NewLast", ..., JwtToken: "tokennnnn"}
+    // outgoing: {err: "error message", JwtToken: "newtoken"}
     const obj = req.body;
 
     let err = verifyObject(obj, {
@@ -415,7 +415,8 @@ exports.setApp = function ( app, client )
       FirstName: "string", 
       LastName: "string", 
       School: "string", 
-      Work: "string"
+      Work: "string",
+      JwtToken: "string"
     });
   
     if (err !== null)
@@ -424,6 +425,13 @@ exports.setApp = function ( app, client )
       res.status(200).json(ret);
       return;
     }
+
+    // Verify and refresh token
+    if (token.isExpired(obj.JwtToken))
+    {
+      throw "Token is expired";
+    }
+    const refreshedToken = token.refresh(obj.JwtToken);
 
     let results;
     try 
@@ -454,7 +462,7 @@ exports.setApp = function ( app, client )
   
     if (err !== null)
     {
-      var ret = { Error: err };
+      var ret = { Error: err, JwtToken: refreshedToken };
       res.status(200).json(ret);
       return;
     }
@@ -462,12 +470,12 @@ exports.setApp = function ( app, client )
     // if there are no matches, that means we cannot find a user with that ID
     if (results.matchedCount === 0)
     {
-      var ret = { Error: "cannot find user with that ID" };
+      var ret = { Error: "cannot find user with that ID", JwtToken: refreshedToken };
       res.status(200).json(ret);
       return;
     }
   
-    var ret = {Error: null};
+    var ret = {Error: null, JwtToken: refreshedToken};
     res.status(200).json(ret);
   });
   
