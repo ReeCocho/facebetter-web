@@ -6,14 +6,29 @@ const token = require("./createJWT.js");
 const mailer = require("./emailConfirmation.js");
 const jwt = require("jsonwebtoken");
 
-exports.setApp = function ( app, client )
+exports.setApp = function ( app, wss, client )
 {
-  app.ws('/', function(ws, req) {
-    console.log(ws);
-    ws.on('connection', (ws) => {
-      console.log('Client connected');
-      ws.on('close', () => console.log('Client disconnected'));
+  app.clients = [];
+
+  app.ws('/', function(ws, req) 
+  {
+    // Assign client ID
+    ws.clientId = app.clients.length;
+    app.clients.push(ws);
+    console.log('Client ' + ws.clientId + ' connected.');
+
+    // Setup client
+    ws.on('close', (code) => 
+    {
+      console.log(typeof ws);
+      console.log('Client ' + ws.clientId + ' disconnected');
     });
+
+    //wss.getWss().clients.forEach(function each(client)
+    //{
+    //  console.log("T");
+      ws.send(JSON.stringify({msg: app.clients.length, id: ws.clientId}));
+    //});
   });
 
   app.post('/api/addcard', async (req, res, next) =>

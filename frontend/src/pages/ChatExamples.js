@@ -6,7 +6,7 @@ const ws = new WebSocket(buildPathWs());
 const ChatExamples = () =>
 {
     ws.addEventListener('message', function message(event) {
-        
+        console.log(JSON.parse(event.data));
     });
 
     return(
