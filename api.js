@@ -8,6 +8,14 @@ const jwt = require("jsonwebtoken");
 
 exports.setApp = function ( app, client )
 {
+  app.ws('/', function(ws, req) {
+    console.log(ws);
+    ws.on('connection', (ws) => {
+      console.log('Client connected');
+      ws.on('close', () => console.log('Client disconnected'));
+    });
+  });
+
   app.post('/api/addcard', async (req, res, next) =>
   {
     try
