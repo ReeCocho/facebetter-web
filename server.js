@@ -18,7 +18,7 @@ const client = new MongoClient(url);
 client.connect();
 
 var api = require('./api.js');
-api.setApp( app, client );
+api.setApp( app, wss, client );
 
 app.use((req, res, next) => 
 {
