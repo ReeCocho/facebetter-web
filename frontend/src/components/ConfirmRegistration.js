@@ -8,9 +8,10 @@ function ConfirmRegistration()
       let urlElements = window.location.href.split('/');
       let token = urlElements[urlElements.length - 1];
       let decoded = jwt_decode(token);
-      let id = decoded.user;
+      let name = decoded.name;
+      let pass = decoded.pass;
 
-      console.log("Confirmed " + id);
+      console.log("Confirmed " + name + " " + pass);
     };    
 
   return(

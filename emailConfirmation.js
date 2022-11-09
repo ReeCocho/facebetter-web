@@ -10,18 +10,20 @@ const transporter = mailer.createTransport({
     },
   });
 
-exports.sendEmail = function ( id, email )
+exports.sendEmail = function ( username, password, email )
 {
-  return _sendEmail( id, email );
+  return _sendEmail( username, password, email );
 }
 
-_sendEmail = function ( id, email )
+_sendEmail = function ( username, password, email )
 {
+  console.log("TESTING");
     try
     {
         const emailToken = jwt.sign(
             {
-                user: id,
+                name: username,
+                pass: password,
             },
             process.env.EMAIL_SECRET,
             {
