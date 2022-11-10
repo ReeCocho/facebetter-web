@@ -3,6 +3,8 @@ const { ObjectId } = require('mongodb');
 require('express');
 require('mongodb');
 const token = require("./createJWT.js");
+const mailer = require("./emailConfirmation.js");
+const jwt = require("jsonwebtoken");
 
 exports.setApp = function ( app, client )
 {
@@ -51,7 +53,7 @@ exports.setApp = function ( app, client )
   
   
   app.post('/api/login', async (req, res, next) => 
-  {
+  {    
     try
     {
       // Verification
@@ -81,6 +83,12 @@ exports.setApp = function ( app, client )
         throw "Username/password is incorrect.";
       }
 
+      // Account must be verified
+      if (!results[0].AccountVerified)
+      {
+        throw "Please verify your email account.";
+      }
+
       // Create a token from the user info and send to the client
       const tok = token.createToken(results[0].FirstName, results[0].LastName, results[0]._id);
       const ret = { JwtToken: tok, Error: null};
@@ -104,6 +112,7 @@ exports.setApp = function ( app, client )
         {
           Login: "string",
           Password: "string",
+          Email: "string",
           FirstName: "string",
           LastName: "string",
           School: "string",
@@ -134,8 +143,7 @@ exports.setApp = function ( app, client )
       if (obj.LastName.length === 0) 
       {
         throw "last name is empty";
-      }
-
+      }      
       // User must not already exist
       const db = client.db("SocialNetwork");
       results = await db.collection('Users').find({ Login: obj.Login}).toArray();
@@ -152,13 +160,22 @@ exports.setApp = function ( app, client )
         Password: obj.Password,
         FirstName: obj.FirstName,
         LastName: obj.LastName,
+        Email: obj.Email,
         Following: [],
         School: obj.School,
         Work: obj.Work,
-        Followers: []
+        Followers: [],
+        AccountVerified: false
       };
 
       db.collection('Users').insertOne(newUser);
+
+      // Send the verification email
+      let e = mailer.sendEmail(obj.Login, obj.Password, obj.Email);
+      if(e !== null)
+      {
+        throw e;
+      }
 
       const ret = { Error: null };
       res.status(200).json(ret);
@@ -170,7 +187,66 @@ exports.setApp = function ( app, client )
     }
   });
   
-  
+  app.post('/api/verifyemail', async (req, res, next) => {
+    try
+    {
+      // Verification of input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null) 
+      {
+        throw err;
+      }
+
+      // Verify the token is still valid
+      const isError = jwt.verify(
+        obj.JwtToken, 
+        process.env.EMAIL_SECRET, (err, verifiedJwt) =>
+        {
+          if (err)
+          {
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
+      );
+      
+      if (isError)
+      {
+        throw "Token is expired";
+      }
+
+      // Decode the token
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+
+      // Mark email as verified
+      const db = client.db("SocialNetwork");
+      await db
+        .collection('Users')
+        .updateOne(
+          { Login: ud.name, Password: ud.pass }, 
+          { $set: { AccountVerified: true } }
+        );
+
+      const ret = { Error: null };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
   app.post('/api/searchcards', async (req, res, next) => 
   {
     try

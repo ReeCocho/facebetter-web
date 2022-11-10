@@ -13,6 +13,7 @@ function Modal({ unRegisterPop }) {
   var registerPassword;
   var registerFirst;
   var registerLast;
+  var registerEmail;
   var registerPasswordConfirmation
   var registerSchool;
   var registerWork;
@@ -48,6 +49,7 @@ function Modal({ unRegisterPop }) {
       .post(bp.buildPath("api/register"), {
         Login: registerName.value,
         Password: hash,
+        Email: registerEmail.value,
         FirstName: registerFirst.value, 
         LastName: registerLast.value,
         School: "",
@@ -87,7 +89,7 @@ function Modal({ unRegisterPop }) {
             type="email"
             placeholder="  Email"
             required
-            // ref={(c) => (registerLogin = c)}
+            ref={(c) => (registerEmail = c)}
           />
           <input
             className="inputBoxR loginNameR"
