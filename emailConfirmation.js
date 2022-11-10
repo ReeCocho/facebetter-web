@@ -5,8 +5,8 @@ var bp = require('./Path.js');
 const transporter = mailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: "facebetter123",
-      pass: "yoyfqvmsxqzelvak",
+      user: process.env.EMAIL_LOGIN,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
