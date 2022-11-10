@@ -1,18 +1,26 @@
 import React from 'react';
 import jwt_decode from "jwt-decode";
+import axios from "axios";
 
 function ConfirmRegistration()
 {
-    const ConfirmRegistration = event => 
-    {
-      let urlElements = window.location.href.split('/');
-      let token = urlElements[urlElements.length - 1];
-      let decoded = jwt_decode(token);
-      let name = decoded.name;
-      let pass = decoded.pass;
+  var bp = require('./Path.js');
+  
+  const ConfirmRegistration = event => 
+  {
+    let urlElements = window.location.href.split('/');
+    let token = urlElements[urlElements.length - 1];
+    let decoded = jwt_decode(token);
+    let name = decoded.name;
+    let pass = decoded.pass;
 
-      console.log("Confirmed " + name + " " + pass);
-    };    
+    axios
+      .post(bp.buildPath("api/verifyemail"), {
+        JwtToken: token
+      });
+
+    console.log("Confirmed " + name + " " + pass);
+  };    
 
   return(
    <div id="confirmDiv">
