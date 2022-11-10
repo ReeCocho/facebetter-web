@@ -8,27 +8,114 @@ const jwt = require("jsonwebtoken");
 
 exports.setApp = function ( app, wss, client )
 {
-  app.clients = [];
-
-  app.ws('/', function(ws, req) 
+  wss.on('connection', function(ws, request) 
   {
-    // Assign client ID
-    ws.clientId = app.clients.length;
-    app.clients.push(ws);
-    console.log('Client ' + ws.clientId + ' connected.');
+    ws.on('message', function(msg) {
+      try
+      {
+        // Verify identification message was successful
+        const identification = JSON.parse(msg.toString());
+        let err = verifyObject(
+          identification,
+          {
+            JwtToken: "string",
+          }
+        );
+  
+        if (err !== null)
+        {
+          throw err;
+        }
 
-    // Setup client
-    ws.on('close', (code) => 
-    {
-      console.log(typeof ws);
-      console.log('Client ' + ws.clientId + ' disconnected');
+        // Verify JWT
+        if (token.isExpired(identification.JwtToken))
+        {
+          throw "Token is expired";
+        }
+
+        // Update the client object with their ID so we know who they are
+        let ud = jwt.decode(identification.JwtToken, { complete: true });
+        ws.clientId = ud.payload.userId;
+
+        console.log('Client ' + ws.clientId + ' connected.');
+      }
+      catch (e)
+      {
+        const err = {
+          Error: e.toString()
+        };
+        ws.send(JSON.stringify(err));
+      }
     });
 
-    //wss.getWss().clients.forEach(function each(client)
-    //{
-    //  console.log("T");
-      ws.send(JSON.stringify({msg: app.clients.length, id: ws.clientId}));
-    //});
+    ws.on('close', (code) => 
+    {
+      console.log('Client ' + ws.clientId + ' disconnected');
+    });
+  });  
+
+  app.post('/api/sendmessage', async (req, res, next) => {
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Channel: "string",
+          Message: "string",
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and decode token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      let ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+
+      // Add the message to the database
+      const db = client.db("SocialNetwork");
+      db.collection('Messages')
+        .insertOne({
+          Sender: ObjectId(ud.userId),
+          Channel: ObjectId(obj.Channel),
+          Content: obj.Message,
+          DateCreated: new Date(Date.now())
+        });
+
+      // Notify all clients of the new message
+      const msg = JSON.stringify(
+      {
+        Sender: "",
+        SenderId: ud.userId,
+        ChannelId: obj.Channel,
+        Message: obj.Message
+      });
+
+      wss.clients.forEach((ws) => {
+        // Skip if this client hasn't been identified
+        if (ws.clientId === undefined) {
+          return;
+        }
+
+        ws.send(msg);
+      });
+
+      const ret = { Error: null };
+      res.status(200).json(ret);
+    }
+    catch(e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
   });
 
   app.post('/api/addcard', async (req, res, next) =>
