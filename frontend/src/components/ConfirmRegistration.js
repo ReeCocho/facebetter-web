@@ -10,16 +10,12 @@ function ConfirmRegistration()
   {
     let urlElements = window.location.href.split('/');
     let token = urlElements[urlElements.length - 1];
-    let decoded = jwt_decode(token);
-    let name = decoded.name;
-    let pass = decoded.pass;
 
     axios
       .post(bp.buildPath("api/verifyemail"), {
         JwtToken: token
       });
-
-    console.log("Confirmed " + name + " " + pass);
+    window.localStorage.href = "./pages/LoginPage"
   };    
 
   return(
