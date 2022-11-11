@@ -38,6 +38,7 @@ function Login({ registerPop }) {
         const token = res.data.JwtToken.accessToken;
         var decode1 = jwt_decode(token);
         console.log(decode1);
+        localStorage.setItem("access_token", res.data.JwtToken.accessToken);
         localStorage.setItem("user_data", JSON.stringify(decode1));
         console.log(localStorage.getItem("user_data"));
         window.location.href = "./pages/ProfilePage";
