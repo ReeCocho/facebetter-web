@@ -3,15 +3,16 @@ import React from "react";
 import PageTitle from "../components/PageTitle";
 import Profile from "../components/Profile";
 import LoggedInName from '../components/LoggedInName';
+import Sidebar from '../components/Sidebar';
 import "../App.css";
 
 const ProfilePage = () =>
 {
     return(
         <div>
-            <PageTitle />
-            <LoggedInName />
-            <Profile />
+
+            <Sidebar/>
+
         </div>
     );
 }

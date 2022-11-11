@@ -42,7 +42,7 @@ function Login({ registerPop }) {
         console.log(decode1);
         localStorage.setItem("user_data", JSON.stringify(decode1));
         console.log(localStorage.getItem("user_data"));
-        // window.location.href = "./pages/ProfilePage";
+        window.location.href = "./pages/ProfilePage";
       })
       .catch((error) => {
         console.error(error);
