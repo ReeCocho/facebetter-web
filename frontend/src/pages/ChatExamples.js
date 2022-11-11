@@ -18,12 +18,15 @@ class ChatListener
         this.ws = new WebSocket(buildPathWs());
         this.ws.chat = {};
         this.ws.chat.callbacks = [];
+        this.ws.chat.channel = "";
+        this.ws.chat.jwt = jwt;
 
         this.ws.addEventListener('open', (event) => 
         {
             const identify = 
             {
-                JwtToken: jwt
+                JwtToken: jwt,
+                Channel: ""
             };
             this.ws.send(JSON.stringify(identify));
         });
@@ -33,6 +36,14 @@ class ChatListener
             try
             {
                 let json = JSON.parse(event.data);
+
+                // Ignore if not from our active channel
+                if (json.ChannelId !== this.ws.chat.channel)
+                {
+                    return;
+                }
+
+                // Run callbacks
                 this.ws.chat.callbacks.forEach((callback) => 
                 {
                     callback(json);
@@ -43,6 +54,56 @@ class ChatListener
                 console.log("Chat error: " + e.toString());
             }
         });
+    }
+
+    /** 
+     * Sets the active channel for the user. Users will only receive messages from their active
+     * channel.
+     * 
+     * @param channel The ID of the channel to connect to.
+     */
+    setActiveChannel(channel)
+    {
+        this.ws.chat.channel = channel;
+        const setChannel = 
+        {
+            JwtToken: this.ws.chat.jwt,
+            Channel: this.ws.chat.channel
+        };
+        this.ws.send(JSON.stringify(setChannel));
+    }
+
+    /**
+     * Sends a message to the active channel. If no active channel was set, the message will
+     * not be sent.
+     * 
+     * @param token The access token of the user.
+     * @param message Contents of the message to send.
+     */
+    sendMessage(token, message)
+    {
+        // Must be in a channel
+        if (this.ws.chat.channel === "")
+        {
+            return;
+        }
+
+        // Message cannot be empty
+        if (message.length === 0) {
+            return;
+        }
+
+        axios
+            .post(buildPath("api/sendmessage"), {
+                Channel: this.ws.chat.channel,
+                Message: message,
+                JwtToken: token
+            })
+            .then((res) => {
+                if (res.data.Error !== null) {
+                    throw res.data.Error;
+                }
+            })
     }
 
     /**
@@ -113,28 +174,13 @@ const ChatExamples = () =>
     const sendMessage = async event => {
         event.preventDefault();
 
-        // Don't send if the message is empty
-        if (msgInput.length === 0) {
-            return;
-        }
-
         // Send the message to the server.
         // NOTE: We don't need to add our message to the message list because once the server reads
         // it, it will be rebroadcasted back to us.
-        axios
-            .post(buildPath("api/sendmessage"), {
-                Channel: channelInput,
-                Message: msgInput,
-                JwtToken: localStorage.getItem("access_token")
-            })
-            .then((res) => {
-                if (res.data.Error !== null) {
-                    throw res.data.Error;
-                }
-            })
-            .catch((error) => {
-                console.error(error.toString());
-            });
+        chat.sendMessage(
+            localStorage.getItem("access_token"),
+            msgInput
+        );
     };
 
     const getChannels = async event => {
@@ -158,6 +204,8 @@ const ChatExamples = () =>
 
     const setChannel = async event => {
         event.preventDefault();
+
+        chat.setActiveChannel(channelInput);
 
         // Get messages from the channel we are in
         axios
