@@ -9,6 +9,7 @@ import md5 from './md5'
 
 function Modal({ unRegisterPop }) {
 
+  var sha256 = require('js-sha256');
   var registerName;
   var registerPassword;
   var registerFirst;
@@ -35,7 +36,7 @@ function Modal({ unRegisterPop }) {
     let password2 = registerPasswordConfirmation.value;
 
     if(password1 === password2 && password1 !== ""){
-      var hash = md5(password1)
+      var hash = sha256(password1)
     var obj = { Login: registerName.value, Password: hash, FirstName: registerFirst.value, LastName: registerLast.value, School: null, Work: null};
     var js = JSON.stringify(obj);
 

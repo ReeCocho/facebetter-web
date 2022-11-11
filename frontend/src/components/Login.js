@@ -7,6 +7,7 @@ import md5 from './md5'
 function Login({ registerPop }) {
   var bp = require('./Path.js');
 
+  var sha256 = require('js-sha256');
   var loginName;
   var loginPassword;
 
@@ -22,7 +23,8 @@ function Login({ registerPop }) {
 
   const doLogin = async (event) => {
     let password1 = loginPassword.value
-    var hash = md5(password1)
+    var hash = sha256(password1)
+    // var hash = md5(password1)
     event.preventDefault();
     var obj = { Login: loginName.value, Password: hash };
     var js = JSON.stringify(obj);
@@ -40,7 +42,7 @@ function Login({ registerPop }) {
         console.log(decode1);
         localStorage.setItem("user_data", JSON.stringify(decode1));
         console.log(localStorage.getItem("user_data"));
-        window.location.href = "./pages/ProfilePage";
+        // window.location.href = "./pages/ProfilePage";
       })
       .catch((error) => {
         console.error(error);
