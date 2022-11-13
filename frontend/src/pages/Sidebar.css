@@ -6,6 +6,19 @@
     padding: 0 20px;
 }
 
+a{
+    text-decoration: none;
+}
+
+a:visited{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover { text-decoration: none; color:yellow; }
+a:focus { text-decoration: none; color:orange; }
+a:active { text-decoration: none; color:teal; }
+
 .sidebar__twitterIcon{
     color: var(--twitter-color);
     font-size: 30px !important;

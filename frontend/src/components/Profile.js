@@ -23,12 +23,17 @@ function Profile() {
 
     return (
     <div className="profile_div">
-
       <div className="profile_body">
         <h2>First Name</h2>
         <h3>{user_info.FirstName}</h3>
         <h2>Last Name</h2>
-        <h3>{user_info.LastName}</h3>       
+        <h3>{user_info.LastName}</h3>  
+        <h2>Work</h2>
+        <h3>{user_info.Work}</h3>  
+        <h2>Work</h2>
+        <h3>{user_info.Work}</h3>  
+        <h2>Work</h2>
+        <h3>{user_info.Work}</h3>  
       </div>
     </div>
     );

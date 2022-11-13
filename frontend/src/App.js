@@ -13,6 +13,10 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/pages/HomePage" element={<HomePage />} />
+      <Route path="/pages/otherPages/Followers" element={<HomePage/>} />
+      <Route path="/pages/otherPages/Following" element={<HomePage/>} />
+      <Route path="/components/Profile" element={<HomePage/>} />
+      <Route path="/pages/otherPages/Chats" element={<HomePage/>} />
       
     </Routes>
   </BrowserRouter>
