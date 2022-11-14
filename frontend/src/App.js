@@ -17,6 +17,8 @@ function App() {
       <Route path="/pages/Following" element={<HomePage/>} />
       <Route path="/components/Profile" element={<HomePage/>} />
       <Route path="/pages/Chats" element={<HomePage/>} />
+      <Route path="/components/Edit" element={<HomePage/>} />
+      <Route path="/components/Home" element={<HomePage/>} />
       
     </Routes>
   </BrowserRouter>

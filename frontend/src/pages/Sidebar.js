@@ -16,7 +16,7 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <img className="title2" src={logo}></img>
-      <a href="/pages/HomePage">
+      <a href="/components/Home">
         <SidebarOption className="cursor" Icon={HomeIcon} text="Home" />
       </a>
       <a href="/pages/Followers">

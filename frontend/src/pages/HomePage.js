@@ -9,6 +9,8 @@ import "../App.css";
 import Followers from "./Followers";
 import Following from "./Following";
 import Chats from "./Chats";
+import Edit from "../components/Edit";
+import HomeComp from "../components/Home";
 
 const HomePage = () =>
 {
@@ -25,6 +27,12 @@ const HomePage = () =>
             break;
         case "/pages/Chats":
             component = <Chats/>
+            break;
+        case "/components/Edit":
+            component = <Edit/>
+            break;
+        case "/components/Home":
+            component = <HomeComp/>
             break;
         default:
             break;

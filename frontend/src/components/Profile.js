@@ -1,7 +1,7 @@
 import React from "react";
 import './Profile.css';
 import axios from "axios";
-import Feed from './Feed';
+
 
 function Profile() {
   let ud = JSON.parse(localStorage.getItem('user_data'));
@@ -25,11 +25,13 @@ function Profile() {
     <div className="main_div">
       <div className='header'>
         <h2>Profile</h2>
-        <input
+        <a href="/components/Edit" id="link">
+          <input
             type="submit"
             id="editButton"
             value="Edit"
-        />
+          />
+        </a>
       </div>
       <div className="profile_body">
         <h2>First Name</h2>
@@ -38,10 +40,8 @@ function Profile() {
         <h3>{user_info.LastName}</h3>  
         <h2>Work</h2>
         <h3>{user_info.Work}</h3>  
-        <h2>Work</h2>
-        <h3>{user_info.Work}</h3>  
-        <h2>Work</h2>
-        <h3>{user_info.Work}</h3>  
+        <h2>School</h2>
+        <h3>{user_info.School}</h3>  
       </div>
     </div>
     );

@@ -6,9 +6,8 @@ function Following() {
     <div className='main_div'>      
       <div className='header'>
         <h2>Following</h2>
-
+      </div>
     </div>
-  </div>
   )
 }
 

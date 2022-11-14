@@ -14,8 +14,13 @@
     color: white !important;
     text-transform: inherit !important;
     border-radius: 30px !important;
-    width: 80px;
+    width: 90px;
     height: auto !important;
+    margin-left: auto;
+
+}
+
+#link{
     margin-left: auto;
 
 }
