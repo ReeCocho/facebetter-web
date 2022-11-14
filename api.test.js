@@ -15,6 +15,7 @@ beforeAll(async () => {
         .send({
             Login: "$TEST_USER_A$",
             Password: "$TEST_USER_PASSWORD$",
+            Email: "dummy@email.com",
             FirstName: "Test",
             LastName: "User",
             School: "",
@@ -42,6 +43,7 @@ beforeAll(async () => {
         .send({
             Login: "$TEST_USER_B$",
             Password: "$TEST_USER_PASSWORD$",
+            Email: "dummy@email.com",
             FirstName: "Test",
             LastName: "User",
             School: "",
@@ -73,8 +75,8 @@ afterAll(async () => {
 describe("API Tests", () => {
     test('login on the test user', async () => {
         const data = {
-            Login: "test",
-            Password: "test"
+            Login: "$TEST_USER_A$",
+            Password: "$TEST_USER_PASSWORD$"
         };
         const res = await request(app).post('/api/login').send(data).expect(200);
         expect(res.body.Error).toBe(null); 
@@ -82,7 +84,7 @@ describe("API Tests", () => {
 
     test('login on the test user with the incorrect password', async () => {
         const data = {
-            Login: "test",
+            Login: "$TEST_USER_A$",
             Password: "wrong_password_bozo"
         };
         const res = await request(app).post('/api/login').send(data).expect(200);
