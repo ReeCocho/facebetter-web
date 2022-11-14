@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongodb');
+const { ObjectId, ObjectID } = require('mongodb');
 
 require('express');
 require('mongodb');
@@ -6,8 +6,362 @@ const token = require("./createJWT.js");
 const mailer = require("./emailConfirmation.js");
 const jwt = require("jsonwebtoken");
 
-exports.setApp = function ( app, client )
+exports.setApp = function ( app, wss, client )
 {
+  // Initializing state for the chat
+  wss.chat = {
+    // Maps channel `ObjectId`s to a set of clients connected to them.
+    channels: new Map(),
+    // Maps connected user `ObjectId`s to the channel `ObjectId` they are connected to.
+    userConnectedTo: new Map(),
+    // Maps conneted user `ObjectId`s to their websocket.
+    clients: new Map(),
+  };
+
+  wss.on('connection', function(ws, request) 
+  {
+    ws.on('message', function(msg) {
+      try
+      {
+        // Verify identification message was successful
+        const data = JSON.parse(msg.toString());
+        let err = verifyObject(
+          data,
+          {
+            JwtToken: "string",
+            Channel: "string"
+          }
+        );
+  
+        if (err !== null)
+        {
+          throw err;
+        }
+
+        // Verify JWT
+        if (token.isExpired(data.JwtToken))
+        {
+          throw "Token is expired";
+        }
+
+        // Update the client object with their ID so we know who they are
+        let ud = jwt.decode(data.JwtToken, { complete: true });
+
+        // Generate a unique ID for the connected client
+        while (true)
+        {
+          ws.clientId = ud.payload.userId + Math.random().toString(16).slice(2);
+          if (wss.chat.clients.get(ws.clientId) === undefined)
+          {
+            break;
+          }
+        }
+        
+        // Decode channel
+        let channel;
+        if (data.Channel === "")
+        {
+          channel = null;
+        }
+        else
+        {
+          channel = data.Channel;
+        }
+
+        // Remove client from old channel
+        if (ws.channel !== undefined)
+        {
+          wss.chat.channels.get(ws.channel).delete(ws.clientId);
+        }
+        ws.channel = channel;
+
+        // Insert client into sets
+        wss.chat.userConnectedTo.set(ws.clientId, channel);
+        wss.chat.clients.set(ws.clientId, ws);
+        if (wss.chat.channels.get(channel) === undefined)
+        {
+          wss.chat.channels.set(channel, new Set());
+        }
+        wss.chat.channels.get(channel).add(ws.clientId);
+
+        console.log('Client ' + ws.clientId + ' connected.');
+      }
+      catch (e)
+      {
+        const err = {
+          Error: e.toString()
+        };
+        ws.send(JSON.stringify(err));
+      }
+    });
+
+    ws.on('close', (code) => 
+    {
+      if (ws.clientId !== undefined) 
+      {
+        wss.chat.channels.delete(ws.clientId);
+        console.log('Client ' + ws.clientId + ' disconnected');
+      }
+    });
+  });  
+
+  app.post('/api/sendmessage', async (req, res, next) => {
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Channel: "string",
+          Message: "string",
+          JwtToken: "string",
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and decode token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      let ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+
+      // Ensure that the user has access to the channel
+      const db = client.db("SocialNetwork");
+      const userInChannel = await db.collection('Channels')
+        .findOne({
+          _id: ObjectId(obj.Channel),
+          Members: ObjectId(ud.userId)
+        }) !== null;
+
+      if (!userInChannel)
+      {
+        throw "User is not in this channel";
+      }
+
+      // Add the message to the database
+      const dateCreated = new Date(Date.now());
+      await db.collection('Messages')
+        .insertOne({
+          Sender: ObjectId(ud.userId),
+          Channel: ObjectId(obj.Channel),
+          Content: obj.Message,
+          DateCreated: dateCreated
+        });
+
+      // Notify all clients in the channel of the new message
+      const msg = JSON.stringify(
+      {
+        Sender: "",
+        SenderId: ud.userId,
+        ChannelId: obj.Channel,
+        Content: obj.Message,
+        DateCreated: dateCreated,
+      });
+
+      let channel = wss.chat.channels.get(obj.Channel);
+      if (channel !== undefined)
+      {
+        for (const clientId of channel)
+        {
+          let client = wss.chat.clients.get(clientId);
+          if (client !== undefined)
+          {
+            client.send(msg);
+          }
+        }
+      }
+
+      const ret = { Error: null };
+      res.status(200).json(ret);
+    }
+    catch(e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/getmessages', async (req, res, next) => {
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Channel: "string",
+          JwtToken: "string",
+          Before: "number",
+          Count: "number"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and decode token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+
+      // Ensure that the user has access to the channel
+      const db = client.db("SocialNetwork");
+      const userInChannel = await db.collection('Channels')
+        .findOne({
+          _id: ObjectId(obj.Channel),
+          Members: ObjectId(ud.userId)
+        }) !== null;
+
+      if (!userInChannel)
+      {
+        throw "User is not in this channel";
+      }
+
+      // Get messages sorted from newest to oldest using the offset and count
+      const messages = await db.collection('Messages')
+        .find({
+          Channel: ObjectId(obj.Channel),
+          DateCreated: {
+            $lt: new Date(obj.Before)
+          }
+        })
+        .limit(obj.Count)
+        .sort({
+          DateCreated: -1
+        })
+        .map((msg) => {
+          return {
+            SenderId: ObjectId(msg.Sender),
+            ChannelId: ObjectId(obj.Channel),
+            Content: msg.Content,
+            DateCreated: new Date(msg.DateCreated)
+          }
+        })
+        .toArray();
+
+      const ret = { Error: null, Messages: messages };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/createchannel', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          JwtToken: "string",
+          Title: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // Create the channel
+      const db = client.db("SocialNetwork");
+      const newChannel = await db.collection('Channels').insertOne({
+        Owner: ObjectId(ud.userId),
+        Title: obj.Title,
+        Members: [ObjectId(ud.userId)]
+      });
+
+      // Update the user with the new channel
+      await db
+        .collection('Users')
+        .updateOne(
+          { _id: ObjectId(ud.userId) }, 
+          { $addToSet: { Channels: newChannel.insertedId } }
+        );
+
+      const ret = { Error: null, JwtToken: refreshedToken };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/getchannels', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      const db = client.db("SocialNetwork");
+      const user = await db
+        .collection('Users')
+        .findOne(
+          { _id: ObjectId(ud.userId) }
+        );
+
+      if (user === null)
+      {
+        throw "No user found";
+      }
+
+      const ret = { 
+        Error: null, 
+        Channels: user.Channels, 
+        JwtToken: refreshedToken 
+      };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
   app.post('/api/addcard', async (req, res, next) =>
   {
     try
@@ -165,7 +519,8 @@ exports.setApp = function ( app, client )
         School: obj.School,
         Work: obj.Work,
         Followers: [],
-        AccountVerified: false
+        AccountVerified: false,
+        Channels: []
       };
 
       db.collection('Users').insertOne(newUser);
