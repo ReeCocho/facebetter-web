@@ -1,146 +1,42 @@
 import React from 'react';
-import { buildPathWs, buildPath } from '../components/Path';
+import { buildPath } from '../components/Path';
 import axios from "axios";
+import { ChatListener } from '../chat';
 
-const { useState, useRef } = React;
+/**
+ * HOW TO USE:
+ * 
+ * 1. Go to `http://localhost:3000/` and login to an account. Note that you might need to register
+ *    a new testing account if you are having issues with chat features.
+ * 
+ * 2. Do NOT close the browser. Navigate to `http://localhost:3000/pages/ChatExamples` in a
+ *    new tab.
+ * 
+ * 3. Type in a name for a new channel in the input field next to `Create Channel`. Then press
+ *    the `Create Channel` button.
+ * 
+ * 4. Press the `Get Channels` button to get the ID for the channel you just created.
+ * 
+ * 5. Copy and paste the ID of the channel into the field next to `Set Channel`. Then press the
+ *    `Set Channel` button.
+ * 
+ * 6. Type in a message next to the `Send Message` field and then press the button. You should
+ *    see the message pop up.
+ * 
+ * 7. From here, you can open new tabs to the same url `http://localhost:3000/pages/ChatExamples`
+ *    and see that messages are updated in both tabs. You can also create new channels and send
+ *    messages in them. There is currently no way to join an existing channel. I will add this
+ *    endpoint soon.
+ * 
+ * NOTES:
+ * - It is important that you use the `useRef` API to hold the `ChatListener` object. If you don't,
+ *   multiple instances of the listener can be instantiated which will result in duplicate messages
+ *   being received.
+ * - Read the other comments in here. They have implementation notes that might be useful.
+ * - The API is documented in `/frontend/src/chat.js`.
+ */
 
-class ChatListener
-{
-    /**
-     * Constructs a new chat listener object.
-     * 
-     * @param jwt The non-decoded JWT identifying the user which is received on login.
-     */
-    constructor(jwt) 
-    {
-        console.log("New chat listener");
-
-        this.ws = new WebSocket(buildPathWs());
-        this.ws.chat = {};
-        this.ws.chat.callbacks = [];
-        this.ws.chat.channel = "";
-        this.ws.chat.jwt = jwt;
-
-        this.ws.addEventListener('open', (event) => 
-        {
-            const identify = 
-            {
-                JwtToken: jwt,
-                Channel: ""
-            };
-            this.ws.send(JSON.stringify(identify));
-        });
-
-        this.ws.addEventListener('message', (event) => 
-        {
-            try
-            {
-                let json = JSON.parse(event.data);
-
-                // Ignore if not from our active channel
-                if (json.ChannelId !== this.ws.chat.channel)
-                {
-                    return;
-                }
-
-                // Run callbacks
-                this.ws.chat.callbacks.forEach((callback) => 
-                {
-                    callback(json);
-                });
-            }
-            catch (e) 
-            {
-                console.log("Chat error: " + e.toString());
-            }
-        });
-    }
-
-    /** 
-     * Sets the active channel for the user. Users will only receive messages from their active
-     * channel.
-     * 
-     * @param channel The ID of the channel to connect to.
-     */
-    setActiveChannel(channel)
-    {
-        this.ws.chat.channel = channel;
-        const setChannel = 
-        {
-            JwtToken: this.ws.chat.jwt,
-            Channel: this.ws.chat.channel
-        };
-        this.ws.send(JSON.stringify(setChannel));
-    }
-
-    /**
-     * Sends a message to the active channel. If no active channel was set, the message will
-     * not be sent.
-     * 
-     * @param token The access token of the user.
-     * @param message Contents of the message to send.
-     */
-    sendMessage(token, message)
-    {
-        // Must be in a channel
-        if (this.ws.chat.channel === "")
-        {
-            return;
-        }
-
-        // Message cannot be empty
-        if (message.length === 0) {
-            return;
-        }
-
-        axios
-            .post(buildPath("api/sendmessage"), {
-                Channel: this.ws.chat.channel,
-                Message: message,
-                JwtToken: token
-            })
-            .then((res) => {
-                if (res.data.Error !== null) {
-                    throw res.data.Error;
-                }
-            })
-    }
-
-    /**
-     * Adds a new listener callback function to receive chat messages. 
-     * 
-     * @param callback A function that receives a chat message object. The message object received
-     * is of the following form:
-     * 
-     * {
-     *  SenderId: "A string with the user ID of the person sending the message.",
-     *  ChannelId: "A string containing the ID of the channel the message was sent in."
-     *  Content: "A string containing the contents of the message."
-     *  DateCreated: "A `Date` object for when the message was sent. This can be used to implement 
-     *               strict ordering of messages."
-     * }
-     * 
-     * This is the same form as messages received from the `getmessages` endpoint.
-     * 
-     * Example Usage:
-     * ```
-     * chatListener.addListener(function(msg) {
-     *  console.log(msg.SenderId + " sent a message in the " + msg.ChannelId + "channel!");
-     *  console.log("The message says: " + msg.Message);
-     * });
-     * 
-     * ```
-     */
-    addListener(callback)
-    {
-        this.ws.chat.callbacks.push(callback);
-    }
-}
-
-// This initializes the chat with the users JWT
-const chat = new ChatListener(localStorage.getItem('access_token'));
-
-
+const { useState, useRef, useEffect } = React;
 
 const ChatExamples = () =>
 {
@@ -152,11 +48,25 @@ const ChatExamples = () =>
     const [ msgInput, setMsgInput ] = useState('');
     const [ channelInput, setChannelInput ] = useState('');
     const [ channelTitleInput, setChannelTitleInput ] = useState('');
+    const chat = useRef(null);
 
-    // This is a callback that listens for new messages from the server
-    chat.addListener(function (msg) {
-        // Set the messages to be whatever they were + the new message.
-        setMessages([...messages, msg.Content]);
+    useEffect(() => {
+        // This initializes the chat once on page load
+        if (chat.current === null)
+        {
+            // The chat listener requires the JWT access token during intialization
+            chat.current = new ChatListener(localStorage.getItem('access_token'));
+        }
+
+        // This is a callback that listens for new messages from the server
+        chat.current.setListener(function (msg) {
+            // Set the messages to be whatever they were + the new message.
+
+            // NOTE: It is technically possible for messages to arrive out of order.
+            // You can use the `DateCreated` field to sort incoming messages to ensure
+            // strict ordering.
+            setMessages([...messages, msg.Content]);
+        });
     });
 
     function handleMsgChange(e) {
@@ -177,7 +87,7 @@ const ChatExamples = () =>
         // Send the message to the server.
         // NOTE: We don't need to add our message to the message list because once the server reads
         // it, it will be rebroadcasted back to us.
-        chat.sendMessage(
+        chat.current.sendMessage(
             localStorage.getItem("access_token"),
             msgInput
         );
@@ -186,6 +96,7 @@ const ChatExamples = () =>
     const getChannels = async event => {
         event.preventDefault();
 
+        // This gets all the channels the user is in
         axios
             .post(buildPath("api/getchannels"), {
                 JwtToken: localStorage.getItem("access_token")
@@ -205,7 +116,7 @@ const ChatExamples = () =>
     const setChannel = async event => {
         event.preventDefault();
 
-        chat.setActiveChannel(channelInput);
+        chat.current.setActiveChannel(channelInput);
 
         // Get messages from the channel we are in
         axios
@@ -224,7 +135,7 @@ const ChatExamples = () =>
                 }
 
                 // NOTE: Messages are returned in reverse order, so we must reverse
-                // the messages as we append them
+                // the messages before we append them
                 let newMessages = [];
                 res.data.Messages.slice().reverse().forEach((msg) => {
                     newMessages.push(msg.Content);
