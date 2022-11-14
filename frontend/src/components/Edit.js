@@ -52,7 +52,7 @@ function Edit() {
         <input 
           type="text"
           id="editFirstName"
-          value={user_info.FirstName}
+          placeholder={user_info.FirstName}
           ref={(c) => (editFirstName = c)}
         />
         <h2>Last Name</h2>
