@@ -34,9 +34,13 @@ const HomePage = () =>
         case "/components/Home":
             component = <HomeComp/>
             break;
+        case "/pages/HomePage":
+            component = <HomeComp/>
+            break;
         default:
             break;
     }
+    
 
     console.log(window.location.pathname)
     return(
