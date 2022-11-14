@@ -6,24 +6,24 @@ import LoggedInName from '../components/LoggedInName';
 import Sidebar from './Sidebar';
 import Feed from '../components/Feed';
 import "../App.css";
-import Followers from "./otherPages/Followers";
-import Following from "./otherPages/Following";
-import Chats from "./otherPages/Chats";
+import Followers from "./Followers";
+import Following from "./Following";
+import Chats from "./Chats";
 
 const HomePage = () =>
 {
     let component
     switch (window.location.pathname) {
-        case "/pages/otherPages/Followers":
+        case "/pages/Followers":
             component = <Followers/>
             break;
-        case "/pages/otherPages/Following":
+        case "/pages/Following":
             component = <Following/>
             break;
         case "/components/Profile":
             component = <Profile/>
             break;
-        case "/pages/otherPages/Chats":
+        case "/pages/Chats":
             component = <Chats/>
             break;
         default:

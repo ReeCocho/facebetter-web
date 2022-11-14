@@ -1,4 +1,4 @@
-.profile__header{
+.header{
     position: sticky;
     top: 0;
     background-color: white;
@@ -38,4 +38,9 @@
     font-weight: 400;
     font-size: 20px;
     padding-bottom: 20px;
+}
+
+.main_div{
+    flex: 0.4;
+    border-right: 1px solid var(--twitter-background);
 }

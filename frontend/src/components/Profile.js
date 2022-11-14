@@ -22,7 +22,15 @@ function Profile() {
   let user_info = JSON.parse(localStorage.getItem("profile_info"));
 
     return (
-    <div className="profile_div">
+    <div className="main_div">
+      <div className='header'>
+        <h2>Profile</h2>
+        <input
+            type="submit"
+            id="editButton"
+            value="Edit"
+        />
+      </div>
       <div className="profile_body">
         <h2>First Name</h2>
         <h3>{user_info.FirstName}</h3>

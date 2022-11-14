@@ -19,17 +19,17 @@ function Sidebar() {
       <a href="/pages/HomePage">
         <SidebarOption className="cursor" Icon={HomeIcon} text="Home" />
       </a>
-      <a href="/pages/otherPages/Followers">
+      <a href="/pages/Followers">
         <SidebarOption className="cursor" Icon={SearchIcon} text="Followers" />
       </a>
-      <a href="/pages/otherPages/Following">
+      <a href="/pages/Following">
         <SidebarOption
           className="cursor"
           Icon={NotificationsNoneIcon}
           text="Following"
         />
       </a>
-      <a href="/pages/otherPages/Chats">
+      <a href="/pages/Chats">
         <SidebarOption className="cursor" Icon={MailOutlineIcon} text="Chats" />
       </a>
       <a href="/components/Profile">
