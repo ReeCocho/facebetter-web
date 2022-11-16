@@ -1023,6 +1023,66 @@ exports.setApp = function ( app, wss, client )
     };
     res.status(200).json(ret);
   });
+
+  app.post('/api/resetpassword', async (req, res, next) => {
+    // incoming: {_id: 'ID_of_user', NewPassword: 'their_new_password', JwtToken: 'thetoken'}
+    // outgoing: {err}
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          NewPassword: "string",
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      const db = client.db("SocialNetwork");
+      let ObjId = ObjectId(obj._id)
+      let filter = {_id: ObjId}
+
+      let results = await db
+        .collection('Users')
+        .updateOne(filter, {$set: {Password: NewPassword}});
+
+      if (results.matchedCount === 0)
+      {
+        throw "User does not exist";
+      }
+      
+      if (results.modifiedCount === 0)
+      {
+        throw "Already using this password";
+      }
+
+      const ret = { Error: null, JwtToken: refreshedToken };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+
+
+
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data
    * data from a client (whether that be from a POST or over a socket).
