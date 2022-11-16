@@ -826,6 +826,7 @@ exports.setApp = function ( app, wss, client )
       FirstName: results[0].FirstName, 
       LastName: results[0].LastName, 
       Following: results[0].Following,
+      Followers: results[0].Followers,
       School: results[0].School,
       Work: results[0].Work,
       Error: err
