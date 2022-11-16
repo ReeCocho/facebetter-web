@@ -290,7 +290,8 @@ exports.setApp = function ( app, wss, client )
       const newChannel = await db.collection('Channels').insertOne({
         Owner: ObjectId(ud.userId),
         Title: obj.Title,
-        Members: [ObjectId(ud.userId)]
+        Members: [ObjectId(ud.userId)],
+        DateCreated: new Date(Date.now())
       });
 
       // Update the user with the new channel
@@ -300,6 +301,229 @@ exports.setApp = function ( app, wss, client )
           { _id: ObjectId(ud.userId) }, 
           { $addToSet: { Channels: newChannel.insertedId } }
         );
+
+      const ret = { Error: null, JwtToken: refreshedToken };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/getinvitecode', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          JwtToken: "string",
+          Channel: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // User must be the owner of the channel in order to create an invite code
+      const db = client.db("SocialNetwork");
+      const userIsOwner = await db.collection('Channels')
+        .findOne({
+          _id: ObjectId(obj.Channel),
+          Owner: ObjectId(ud.userId)
+        }) !== null;
+
+      if (!userIsOwner)
+      {
+        throw "You must be the owner of the channel in order to create an invite code.";
+      }
+
+      // Create the invite code
+      const inviteCode = jwt.sign(
+        { channel: obj.Channel },
+        process.env.INVITE_CODE_SECRET,
+        { expiresIn: '1d' }
+      );
+
+      const ret = { Error: null, InviteCode: inviteCode, JwtToken: refreshedToken };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/joinchannel', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          JwtToken: "string",
+          InviteCode: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // Verify the invite code
+      const isValidInvite = jwt.verify(
+        obj.InviteCode, 
+        process.env.INVITE_CODE_SECRET, 
+        (err, verifiedJwt) =>
+        {
+          if (err)
+          {
+            return false;
+          }
+          else
+          {
+            return true;
+          }
+        }
+      );
+
+      if (!isValidInvite)
+      {
+        throw "Invite code expired";
+      }
+
+      // Add the user to the channel and update the users channel list
+      const channel = ObjectId(jwt.decode(obj.InviteCode, {complete:true}).payload.channel);
+      const db = client.db("SocialNetwork");
+      
+      await db
+        .collection('Channels')
+        .updateOne(
+          { _id: channel }, 
+          { $addToSet: { Members: ObjectId(ud.userId) } }
+        );
+
+      await db
+        .collection('Users')
+        .updateOne(
+          { _id: ObjectId(ud.userId) }, 
+          { $addToSet: { Channels: channel } }
+        );
+
+      const ret = { Error: null, JwtToken: refreshedToken };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/listmembers', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          JwtToken: "string",
+          Channel: "string",
+          Offset: "number",
+          Count: "number"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // Get the members only if the user is also a member
+      const db = client.db("SocialNetwork");
+      const channel = await db.collection('Channels')
+        .findOne({
+          _id: ObjectId(obj.Channel),
+          Members: ObjectId(ud.userId)
+        });
+
+      if (channel === null)
+      {
+        throw "Channel does not exist or you are not a member";
+      }
+
+      const ret = 
+      { 
+        Error: null, 
+        Members: channel.Members.slice(obj.Offset, obj.Offset + obj.Count), 
+        JwtToken: refreshedToken 
+      };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/verifytoken', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          JwtToken: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
 
       const ret = { Error: null, JwtToken: refreshedToken };
       res.status(200).json(ret);
