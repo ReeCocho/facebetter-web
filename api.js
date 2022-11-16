@@ -1025,7 +1025,7 @@ exports.setApp = function ( app, wss, client )
   });
 
   app.post('/api/resetpassword', async (req, res, next) => {
-    // incoming: {_id: 'ID_of_user', NewPassword: 'their_new_password', JwtToken: 'thetoken'}
+    // incoming: {NewPassword: 'their_new_password', JwtToken: 'thetoken'}
     // outgoing: {err}
     try
     {
@@ -1034,7 +1034,6 @@ exports.setApp = function ( app, wss, client )
       let err = verifyObject(
         obj,
         {
-          _id: "string",
           NewPassword: "string",
           JwtToken: "string"
         }
@@ -1052,9 +1051,10 @@ exports.setApp = function ( app, wss, client )
       }
       const refreshedToken = token.refresh(obj.JwtToken);
 
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
       const db = client.db("SocialNetwork");
-      let ObjId = ObjectId(obj._id)
-      let filter = {_id: ObjId}
+      let ObjId = ObjectId(ud.userId);
+      let filter = {_id: ObjId};
 
       let results = await db
         .collection('Users')
