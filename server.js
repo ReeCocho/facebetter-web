@@ -16,9 +16,8 @@ const url = process.env.MONGODB_URI;
 const client = new MongoClient(url);
 client.connect();
 
-var AWS = require('aws-sdk');
-
-var s3  = new AWS.S3({
+const AWS = require('aws-sdk');
+const s3  = new AWS.S3({
   accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
   region: 'us-east-1',
