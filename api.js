@@ -1304,6 +1304,47 @@ exports.setApp = function ( app, wss, client )
     }
   });
 
+  app.post('/api/checkemail', async (req, res, next) => {
+    // incoming: {Email: "person@mail.com"}
+    // outgoing: {_id: "97a8s7df98pa78s7dfpas", err: Error}
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Email: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+
+      const db = client.db("SocialNetwork");
+      let results = await db
+        .collection('Users')
+        .find( { Email: obj.Email } )
+        .toArray();
+
+      if (results.length === 0)
+      {
+        throw "User with this email does not exist";
+      }
+      
+      const ret = { Error: null, _id: results[0]._id };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
 
 
 
