@@ -1,6 +1,7 @@
 import React from 'react';
 import './Profile.css';
 import axios from "axios";
+import People from './People';
 
 function HomeComp() {
 
@@ -15,16 +16,17 @@ function HomeComp() {
       search: searchName.value,
     })
     .then((res) => {
-      //console.log(res.data.Results);
-      localStorage.setItem("search_result", JSON.stringify(res.data.Results));
-      
+      console.log(res.data.Results);
+      localStorage.setItem('search_result', JSON.stringify(res.data.Results)); 
+      window.location.href = "./Home";   
     })
     .catch((error) => {
       console.error(error);
     });
   }
-
+  
   var results = JSON.parse(localStorage.getItem("search_result"));
+
 
   return (
     <div className='main_div'>      
@@ -44,6 +46,10 @@ function HomeComp() {
         id="searchBtn"
         onClick={doSearch}
       />
+      {results.map(person => (
+          <People first={person.FirstName}
+          last={person.LastName} />
+      ))}
 
     </div>
   )

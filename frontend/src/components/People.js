@@ -10,6 +10,7 @@ function People({ first, last, work, school}) {
         </div>
 
         <button className='btn'>Chat</button>
+        <button className='btn'>Follow</button>
     </div>
 
   )
