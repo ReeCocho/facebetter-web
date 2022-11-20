@@ -63,7 +63,8 @@ function Following() {
           <People first={person.FirstName}
           last={person.LastName} 
           school={person.School}
-          work={person.Work} />
+          work={person.Work} 
+          id={person.Id}/>
         ))}
   </div>
   )

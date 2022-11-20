@@ -10,7 +10,7 @@ function People({ first, last}) {
     
     function doFollow(){
         axios
-        .post(bp.buildPath("/api/follow") , {
+        .post(bp.buildPath("api/follow") , {
           _id: ud.userId,
           ToFollow: first,
         })
@@ -28,8 +28,6 @@ function People({ first, last}) {
         <div>
         <h1>{first}{last}</h1>
         </div>
-
-        <button className='btn'>Chat</button>
         <input
             className='btn'
             type='submit'

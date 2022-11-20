@@ -38,6 +38,7 @@ function Login({ registerPop }) {
       .then((res) => {
         noError();
         console.log(res);
+        localStorage.setItem("JwtToken", res.data.JwtToken);
         const token = res.data.JwtToken.accessToken;
         var decode1 = jwt_decode(token);
         console.log(decode1);
