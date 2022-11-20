@@ -1,7 +1,7 @@
 import React from 'react';
 import './Profile.css';
 import axios from "axios";
-import People from './People';
+import People from './People_Search';
 
 function HomeComp() {
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import '../components/Profile.css';
 import axios from "axios";
-import People from '../components/People';
+import People from '../components/People_Following';
 
 function Following() {
 

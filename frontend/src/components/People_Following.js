@@ -10,7 +10,7 @@ function People({ first, last, work, school}) {
         </div>
 
         <button className='btn'>Chat</button>
-        <button className='btn'>Follow</button>
+        <button className='btn'>Unfollow</button>
     </div>
 
   )
