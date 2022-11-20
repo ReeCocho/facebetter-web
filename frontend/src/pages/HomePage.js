@@ -34,6 +34,9 @@ const HomePage = () =>
         case "/components/Home":
             component = <HomeComp/>
             break;
+        case "/components/Home/Search":
+            component = <HomeComp/>
+            break;
         case "/pages/HomePage":
             component = <HomeComp/>
             break;

@@ -7,6 +7,8 @@ function HomeComp() {
 
   var bp = require('./Path.js');
   var searchName;
+
+ 
   
   function doSearch(){
     // incoming: search (ex: {"search": "dennis"})
@@ -18,7 +20,7 @@ function HomeComp() {
     .then((res) => {
       console.log(res.data.Results);
       localStorage.setItem('search_result', JSON.stringify(res.data.Results)); 
-      window.location.href = "./Home";   
+      window.location.href = "/components/Home/Search";   
     })
     .catch((error) => {
       console.error(error);
@@ -26,6 +28,11 @@ function HomeComp() {
   }
   
   var results = JSON.parse(localStorage.getItem("search_result"));
+
+  if(window.location.pathname == "/components/Home"){
+    results = [];
+  }
+
 
 
   return (
@@ -46,7 +53,7 @@ function HomeComp() {
         id="searchBtn"
         onClick={doSearch}
       />
-      {results.map(person => (
+      {results !== null && results.map(person => (
           <People first={person.FirstName}
           last={person.LastName} />
       ))}

@@ -2,7 +2,7 @@ import React from 'react'
 import "./People.css"
 import axios from "axios";
 
-function People({ first, last, work, school}) {
+function People({ first, last}) {
 
     var bp = require('./Path.js');
     var results = JSON.parse(localStorage.getItem("search_result"));
@@ -27,7 +27,6 @@ function People({ first, last, work, school}) {
     <div className='container'>
         <div>
         <h1>{first}{last}</h1>
-        <h2>{work}   {school}</h2>
         </div>
 
         <button className='btn'>Chat</button>

@@ -22,6 +22,7 @@ function App() {
       <Route path="/pages/Chats" element={<HomePage/>} />
       <Route path="/components/Edit" element={<HomePage/>} />
       <Route path="/components/Home" element={<HomePage/>} />
+      <Route path="/components/Home/Search" element={<HomePage/>} />
       <Route path="/pages/ProfilePage" element={<ProfilePage />} />
       <Route path="/pages/ConfirmationPage/:token" element={<ConfirmationPage />} />
       <Route path="/pages/ChatExamples" element={<ChatExamples />} />
