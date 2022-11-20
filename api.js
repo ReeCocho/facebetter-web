@@ -1346,6 +1346,50 @@ exports.setApp = function ( app, wss, client )
   });
 
 
+  app.post('/api/customrequest', async (req, res, next) => {
+    // incoming: {_id: "...", Request: "Login"}
+    // outgoing: {_id: "97a8s7df98pa78s7dfpas", err: Error}
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(obj, {_id: "string", Request: "string"});
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      if (obj.Request == "Password")
+        throw "Not allowed to request this"
+
+
+      const db = client.db("SocialNetwork");
+      let results = await db
+        .collection('Users')
+        .find( { _id: ObjectId(obj._id) } )
+        .project( { _id: 0, [obj.Request]: 1} )
+        .toArray();
+
+      if (results.length === 0)
+      {
+        throw "User with this _id does not exist";
+      }
+
+      if (Object.keys(results[0]).length === 0)
+        throw "That attribute does not exist for this user"
+      
+      const ret = { Error: null, Result: results[0][obj.Request] };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+
 
 
   /**
