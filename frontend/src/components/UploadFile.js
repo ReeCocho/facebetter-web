@@ -7,8 +7,6 @@ const s3  = new AWS.S3({
   region: 'us-east-1',
 });
 
-const test = process.env.REACT_APP_BUCKETEER_BUCKET_NAME;
-
 function UploadFile(props) {
 
   let ud = JSON.parse(localStorage.getItem('user_data'));
@@ -23,7 +21,7 @@ function UploadFile(props) {
       let file = files[0];
       let fileName = file.name;
       let filePath = `public/${userId}/${fileName}`;
-      let fileUrl = 'https://' + 'facebetter.s3.amazonaws.com/' +  filePath;
+      let fileUrl = 'https://facebetter.s3.amazonaws.com/' +  filePath;
   
       let params = {
         Key: filePath,
@@ -54,7 +52,7 @@ function UploadFile(props) {
         <button onClick={doFileUpload}>Submit</button>    
       </div>
       <div>
-        <img src={fileData.fileUrl}></img>
+        <img src={fileData.fileUrl} alt=""></img>
       </div>
     </div>
   );
