@@ -9,7 +9,7 @@ const s3  = new AWS.S3({
 
 const test = process.env.REACT_APP_BUCKETEER_BUCKET_NAME;
 
-function UploadFile() {
+function UploadFile(props) {
 
   let ud = JSON.parse(localStorage.getItem('user_data'));
   let userId = ud.userId;
@@ -36,6 +36,7 @@ function UploadFile() {
           throw err;
         }
         setFileData({data, fileUrl});
+        props?.onComplete({data, fileUrl});
         console.log(`File uploaded successfully. ${data.Location}` );
       });
     }
