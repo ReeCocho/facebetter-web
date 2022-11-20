@@ -4,6 +4,7 @@ import PageTitle from "../components/PageTitle";
 import Profile from "../components/Profile";
 import LoggedInName from '../components/LoggedInName';
 import "../App.css";
+import UploadFile from "../components/UploadFile";
 
 const ProfilePage = () =>
 {
@@ -12,6 +13,7 @@ const ProfilePage = () =>
             <PageTitle />
             <LoggedInName />
             <Profile />
+            <UploadFile />
         </div>
     );
 }
