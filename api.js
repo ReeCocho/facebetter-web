@@ -1002,7 +1002,7 @@ exports.setApp = function ( app, wss, client )
 
   app.post('/api/retrieveprofile', async (req, res, next) => {
     // incoming: _id (ex: {_id: "6344e4ea7c568d2a25ed0f6f"})
-    // outgoing: {FirstName: 'John', LastName: 'Doe', Following: ['uuid1', 'uuid2', ...], School: 'UCF', Work: 'Disney'} 
+    // outgoing: {_id, Login, FirstName, LastName, Following, Followers, School, Work, Error} 
     const obj = req.body;
 
     let err = verifyObject(obj, {_id: "string"});
@@ -1046,7 +1046,8 @@ exports.setApp = function ( app, wss, client )
   
     var ret = 
     { 
-      Id: results[0]._id, 
+      Id: results[0]._id,
+      Login: results[0].Login, 
       FirstName: results[0].FirstName, 
       LastName: results[0].LastName, 
       Following: results[0].Following,
@@ -1138,7 +1139,7 @@ exports.setApp = function ( app, wss, client )
 
   app.post('/api/searchprofiles', async (req, res, next) => {
     // incoming: search (ex: {"search": "dennis"})
-    // outgoing: {Results: [ {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "Dennis", LastName: "Cepero", School: "UCF", Work: "Full Sail"}, {_id: "someoneelse", ...} ]}
+    // outgoing: {Results: [ {_id, Login, FirstName, LastName, School, Work}, {_id: "someoneelse", ...} ]}
     const obj = req.body;
 
     let err = verifyObject(obj, {search: "string"});
@@ -1168,6 +1169,7 @@ exports.setApp = function ( app, wss, client )
         )
         .project(
           {
+            Login: 1,
             FirstName: 1,
             LastName: 1,
             School: 1,
