@@ -1,5 +1,71 @@
 const request = require("supertest");
+const jwt = require("jsonwebtoken");
 const { app, client, server } = require("./server");
+
+let TEST_USER_A_JWT;
+let TEST_USER_A_ID;
+
+let TEST_USER_B_JWT;
+let TEST_USER_B_ID;
+
+beforeAll(async () => {
+    // Create test case users (if they don't already exist) and get their JWT tokens
+    await request(app)
+        .post('/api/register')
+        .send({
+            Login: "$TEST_USER_A$",
+            Password: "$TEST_USER_PASSWORD$",
+            Email: "dummy@email.com",
+            FirstName: "Test",
+            LastName: "User",
+            School: "",
+            Work: ""
+        })
+        .expect(200);
+
+    const loginARes = await request(app)
+        .post('/api/login')
+        .send({
+            Login: "$TEST_USER_A$",
+            Password: "$TEST_USER_PASSWORD$"
+        })
+        .expect(200);
+
+    TEST_USER_A_JWT = loginARes.body.JwtToken.accessToken;
+    TEST_USER_A_ID = jwt
+        .decode(TEST_USER_A_JWT, {complete:true})
+        .payload
+        .userId
+        .toString();
+
+    await request(app)
+        .post('/api/register')
+        .send({
+            Login: "$TEST_USER_B$",
+            Password: "$TEST_USER_PASSWORD$",
+            Email: "dummy@email.com",
+            FirstName: "Test",
+            LastName: "User",
+            School: "",
+            Work: ""
+        })
+        .expect(200);
+
+    const loginBRes = await request(app)
+        .post('/api/login')
+        .send({
+            Login: "$TEST_USER_B$",
+            Password: "$TEST_USER_PASSWORD$"
+        })
+        .expect(200);
+
+    TEST_USER_B_JWT = loginBRes.body.JwtToken.accessToken;
+    TEST_USER_B_ID = jwt
+        .decode(TEST_USER_B_JWT, {complete:true})
+        .payload
+        .userId
+        .toString();
+});
 
 afterAll(async () => {
     await client.close();
@@ -9,8 +75,8 @@ afterAll(async () => {
 describe("API Tests", () => {
     test('login on the test user', async () => {
         const data = {
-            Login: "test",
-            Password: "test"
+            Login: "$TEST_USER_A$",
+            Password: "$TEST_USER_PASSWORD$"
         };
         const res = await request(app).post('/api/login').send(data).expect(200);
         expect(res.body.Error).toBe(null); 
@@ -18,7 +84,7 @@ describe("API Tests", () => {
 
     test('login on the test user with the incorrect password', async () => {
         const data = {
-            Login: "test",
+            Login: "$TEST_USER_A$",
             Password: "wrong_password_bozo"
         };
         const res = await request(app).post('/api/login').send(data).expect(200);
@@ -119,6 +185,52 @@ describe("API Tests", () => {
             _id: "bad_id",
         };
         const res = await request(app).post('/api/retrieveprofile').send(data).expect(200);
+        expect(res.body.Error).not.toBe(null);
+    });
+
+    test("following another user", async () => {
+        let data = {
+            _id: TEST_USER_A_ID,
+            ToFollow: "$TEST_USER_B$",
+            JwtToken: TEST_USER_A_JWT
+        };
+        let res = await request(app).post('/api/follow').send(data).expect(200);
+        expect(res.body.Error).toBe(null);
+
+        data = {
+            _id: TEST_USER_B_ID,
+            ToFollow: "$TEST_USER_A$",
+            JwtToken: TEST_USER_B_JWT
+        };
+        res = await request(app).post('/api/follow').send(data).expect(200);
+        expect(res.body.Error).toBe(null);
+    });
+
+    test("unfollowing another user", async () => {
+        let data = {
+            _id: TEST_USER_B_ID,
+            ToUnfollow: TEST_USER_A_ID,
+            JwtToken: TEST_USER_B_JWT
+        };
+        let res = await request(app).post('/api/unfollow').send(data).expect(200);
+        expect(res.body.Error).toBe(null);
+
+        data = {
+            _id: TEST_USER_A_ID,
+            ToUnfollow: TEST_USER_B_ID,
+            JwtToken: TEST_USER_A_JWT
+        };
+        res = await request(app).post('/api/unfollow').send(data).expect(200);
+        expect(res.body.Error).toBe(null);
+    });
+
+    test("trying to follow ourselves", async () => {
+        const data = {
+            _id: TEST_USER_A_ID,
+            ToFollow: "$TEST_USER_A$",
+            JwtToken: TEST_USER_A_JWT
+        };
+        const res = await request(app).post('/api/follow').send(data).expect(200);
         expect(res.body.Error).not.toBe(null);
     });
 });

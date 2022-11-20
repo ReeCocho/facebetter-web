@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');           
+const ws = require('ws');
+
 const PORT = process.env.PORT || 5000;  
 const app = express();
 app.set('port', (process.env.PORT || 5000));
@@ -14,8 +16,6 @@ const url = process.env.MONGODB_URI;
 const client = new MongoClient(url);
 client.connect();
 
-var api = require('./api.js');
-api.setApp( app, client );
 
 app.use((req, res, next) => 
 {
@@ -36,6 +36,11 @@ const server = app.listen(PORT, () =>
   console.log('Server listening on port ' + PORT);
 });
 
+const wss = new ws.Server({ server: server });
+
+var api = require('./api.js');
+api.setApp( app, wss, client );
+
 // For Heroku deployment
 
 // Server static assets if in production
@@ -50,4 +55,4 @@ if (process.env.NODE_ENV === 'production')
   });
 }
 
-module.exports = { app, client, server };
+module.exports = { app, client, server, wss };
