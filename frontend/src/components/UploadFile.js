@@ -34,7 +34,7 @@ function UploadFile(props) {
           throw err;
         }
         setFileData({data, fileUrl});
-        props?.onComplete({data, fileUrl});
+        props?.onComplete?.({data, fileUrl});
         console.log(`File uploaded successfully. ${data.Location}` );
       });
     }
