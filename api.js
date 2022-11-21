@@ -925,7 +925,7 @@ exports.setApp = function ( app, wss, client )
         .collection('Users')
         .updateOne(
           { _id: ObjectId(obj._id) }, 
-          { $addToSet: { Following: toFollowId } }
+          { $addToSet: { Following: ObjectId(toFollowId) } }
         );
         
       // Add ourselves to the other users to our followers list

@@ -3,10 +3,13 @@ import axios from "axios";
 
 import PageTitle from "../components/PageTitle";
 import Profile from "../components/Profile";
-import LoggedInName from "../components/LoggedInName";
+
+import LoggedInName from '../components/LoggedInName';
+import Sidebar from './Sidebar';
 import "../App.css";
 import UploadFile from "../components/UploadFile";
 import bp from "../components/Path";
+
 
 const ProfilePage = () => {
   return (
@@ -34,5 +37,6 @@ const ProfilePage = () => {
     </div>
   );
 };
+
 
 export default ProfilePage;
