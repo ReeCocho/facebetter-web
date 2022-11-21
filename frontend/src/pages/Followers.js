@@ -9,26 +9,27 @@ function Followers() {
   var bp = require('../components/Path.js');
 
   axios
-      .post(bp.buildPath("api/retrieveprofile") , {
+      .post(bp.buildPath("api/customrequest") , {
         _id: ud.userId,
+        Request: "Followers"
       })
       .then((res) => {
-        localStorage.setItem("followers", JSON.stringify(res.data));
+        localStorage.setItem("followers", JSON.stringify(res.data.Result));
       })
       .catch((error) => {
         console.error(error);
       });
 
   let followers_info = JSON.parse(localStorage.getItem("followers"));
-  console.log(followers_info.Followers)
-  let times = followers_info.Followers.length
+  console.log(followers_info);
+  let times = followers_info.length;
   
   let arr = []
 
   for (let i = 0; i < times; i++) {
     axios
     .post(bp.buildPath("api/retrieveprofile") , {
-      _id: followers_info.Followers[i],
+      _id: followers_info[i],
     })
     .then((res) => {
       localStorage.setItem(`followingProfile${i}`, JSON.stringify(res.data));
@@ -40,18 +41,6 @@ function Followers() {
     
     arr.push(JSON.parse(localStorage.getItem(`followingProfile${i}`)))
   }
-
-  console.log(arr[0]);
-  console.log(arr[1]);
-  console.log(arr[2]);
-  console.log(arr[3]);
-  console.log(arr[4]);
-  console.log(arr[5]);
-  console.log(arr[6]);
-  console.log(arr[7]);
-
-
-
 
   return (
     <div className='main_div'>      
