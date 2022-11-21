@@ -2,20 +2,20 @@ import React from 'react'
 import "./People.css"
 import axios from "axios";
 
-function People({ first, last}) {
+function People({ first, last, login}) {
 
     var bp = require('./Path.js');
-    var results = JSON.parse(localStorage.getItem("search_result"));
     let ud = JSON.parse(localStorage.getItem('user_data'));
     
     function doFollow(){
         axios
         .post(bp.buildPath("api/follow") , {
           _id: ud.userId,
-          ToFollow: first,
+          ToFollow: login,
+          JwtToken: localStorage.getItem("access_token")
         })
         .then((res) => {
-          console.log(res.data.Results);
+          console.log(res.data);
         })
         .catch((error) => {
           console.error(error);
@@ -31,7 +31,8 @@ function People({ first, last}) {
         <input
             className='btn'
             type='submit'
-            value="Follow">
+            value="Follow"
+            onClick={doFollow}>
         </input>
 
     </div>

@@ -7,6 +7,7 @@ function People({ first, last, work, school, id}) {
   var bp = require('./Path.js');
   var results = JSON.parse(localStorage.getItem("search_result"));
   let ud = JSON.parse(localStorage.getItem('user_data'));
+  
   //console.log(localStorage.getItem("JwtToken"));
   
   function doUnfollow(){
@@ -18,6 +19,7 @@ function People({ first, last, work, school, id}) {
       })
       .then((res) => {
         console.log(res.data);
+        console.log(first);
       })
       .catch((error) => {
         console.error(error);
