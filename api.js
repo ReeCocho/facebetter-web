@@ -3,7 +3,7 @@ const { ObjectId, ObjectID } = require('mongodb');
 require('express');
 require('mongodb');
 const token = require("./createJWT.js");
-const mailer = require("./emailConfirmation.js");
+const mailer = require("./mailer.js");
 const jwt = require("jsonwebtoken");
 
 exports.setApp = function ( app, wss, client )
