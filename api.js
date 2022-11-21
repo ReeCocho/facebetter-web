@@ -1002,7 +1002,7 @@ exports.setApp = function ( app, wss, client )
 
   app.post('/api/retrieveprofile', async (req, res, next) => {
     // incoming: _id (ex: {_id: "6344e4ea7c568d2a25ed0f6f"})
-    // outgoing: {FirstName: 'John', LastName: 'Doe', Following: ['uuid1', 'uuid2', ...], School: 'UCF', Work: 'Disney'} 
+    // outgoing: {_id, Login, FirstName, LastName, Following, Followers, School, Work, Error} 
     const obj = req.body;
 
     let err = verifyObject(obj, {_id: "string"});
@@ -1046,7 +1046,8 @@ exports.setApp = function ( app, wss, client )
   
     var ret = 
     { 
-      Id: results[0]._id, 
+      Id: results[0]._id,
+      Login: results[0].Login, 
       FirstName: results[0].FirstName, 
       LastName: results[0].LastName, 
       Following: results[0].Following,
@@ -1138,7 +1139,7 @@ exports.setApp = function ( app, wss, client )
 
   app.post('/api/searchprofiles', async (req, res, next) => {
     // incoming: search (ex: {"search": "dennis"})
-    // outgoing: {Results: [ {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "Dennis", LastName: "Cepero", School: "UCF", Work: "Full Sail"}, {_id: "someoneelse", ...} ]}
+    // outgoing: {Results: [ {_id, Login, FirstName, LastName, School, Work}, {_id: "someoneelse", ...} ]}
     const obj = req.body;
 
     let err = verifyObject(obj, {search: "string"});
@@ -1168,6 +1169,7 @@ exports.setApp = function ( app, wss, client )
         )
         .project(
           {
+            Login: 1,
             FirstName: 1,
             LastName: 1,
             School: 1,
@@ -1336,6 +1338,178 @@ exports.setApp = function ( app, wss, client )
       }
       
       const ret = { Error: null, _id: results[0]._id };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/updateprofilepic', async (req, res, next) => {
+    // incoming: 
+    // outgoing: 
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          FileUrl: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+
+      let objId = new ObjectId(obj._id)
+      let filter = {_id: objId}
+      let updates = {
+        ProfilePicture: obj.FileUrl,
+      }
+      const db = client.db("SocialNetwork");
+      await db
+        .collection('Users')
+        .updateMany(filter, {$set: updates})
+
+      results = await db
+        .collection('Users')
+        .find({_id: objId})
+        .toArray();
+
+
+      if (results.length === 0)
+      {
+        throw "User with ID not found";
+      }
+      
+      var ret = 
+      { 
+        Id: results[0]._id, 
+        FirstName: results[0].FirstName, 
+        LastName: results[0].LastName, 
+        Following: results[0].Following,
+        Followers: results[0].Followers,
+        School: results[0].School,
+        Work: results[0].Work,
+        ProfilePicture: results[0].ProfilePicture,
+        Error: err
+      };
+
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+
+  app.post('/api/customrequest', async (req, res, next) => {
+    // incoming: {_id: "...", Request: "Login"}
+    // outgoing: {_id: "97a8s7df98pa78s7dfpas", err: Error}
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(obj, {_id: "string", Request: "string"});
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      if (obj.Request == "Password")
+        throw "Not allowed to request this"
+
+
+      const db = client.db("SocialNetwork");
+      let results = await db
+        .collection('Users')
+        .find( { _id: ObjectId(obj._id) } )
+        .project( { _id: 0, [obj.Request]: 1} )
+        .toArray();
+
+      if (results.length === 0)
+      {
+        throw "User with this _id does not exist";
+      }
+
+      if (Object.keys(results[0]).length === 0)
+        throw "That attribute does not exist for this user"
+      
+      const ret = { Error: null, Result: results[0][obj.Request] };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/updateprofilepic', async (req, res, next) => {
+    // incoming: 
+    // outgoing: 
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          FileUrl: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+
+      let objId = new ObjectId(obj._id)
+      let filter = {_id: objId}
+      let updates = {
+        ProfilePicture: obj.FileUrl,
+      }
+      const db = client.db("SocialNetwork");
+      await db
+        .collection('Users')
+        .updateMany(filter, {$set: updates})
+
+      results = await db
+        .collection('Users')
+        .find({_id: objId})
+        .toArray();
+
+
+      if (results.length === 0)
+      {
+        throw "User with ID not found";
+      }
+      
+      var ret = 
+      { 
+        Id: results[0]._id, 
+        FirstName: results[0].FirstName, 
+        LastName: results[0].LastName, 
+        Following: results[0].Following,
+        Followers: results[0].Followers,
+        School: results[0].School,
+        Work: results[0].Work,
+        ProfilePicture: results[0].ProfilePicture,
+        Error: err
+      };
+
       res.status(200).json(ret);
     }
     catch (e)
