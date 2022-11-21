@@ -29,7 +29,7 @@ function HomeComp() {
   
   var results = JSON.parse(localStorage.getItem("search_result"));
 
-  if(window.location.pathname == "/components/Home"){
+  if(window.location.pathname == "/components/Home" || window.location.pathname == "/pages/HomePage"){
     results = [];
   }
 
