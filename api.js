@@ -1054,6 +1054,7 @@ exports.setApp = function ( app, wss, client )
       Followers: results[0].Followers,
       School: results[0].School,
       Work: results[0].Work,
+      ProfilePicture: results[0].ProfilePicture,
       Error: err
     };
     res.status(200).json(ret);
