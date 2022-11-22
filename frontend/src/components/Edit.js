@@ -50,6 +50,7 @@ function Edit() {
       </div>
       <div className="profile_body">
         <img src={user_info.ProfilePicture} alt="" id="profile_picture"></img>
+        <h2>Profile Picture</h2>
         <UploadFile
           onComplete={(result) => {
             let ud = JSON.parse(localStorage.getItem("user_data"));
@@ -60,7 +61,9 @@ function Edit() {
                 FileUrl: result.fileUrl,
               })
               .then((res) => {
+                localStorage.setItem("profile_info", JSON.stringify(res.data));
                 console.log(res);
+                window.location.href = "Edit";
               })
               .catch((error) => {
                 console.error(error);
