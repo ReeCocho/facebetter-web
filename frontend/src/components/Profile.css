@@ -20,12 +20,28 @@
 
 }
 
+#uploadButton{
+    background-color: var(--twitter-color);
+    border: none !important;
+    color: white !important;
+    text-transform: inherit !important;
+    border-radius: 30px !important;
+    width: 90px;
+    height: auto !important;
+    margin-left: auto;
+
+}
+
 #link{
     margin-left: auto;
 
 }
 
 #editButton:hover{
+    background-color: #2990af;
+}
+
+#uploadButton:hover{
     background-color: #2990af;
 }
 

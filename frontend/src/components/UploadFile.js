@@ -45,15 +45,14 @@ function UploadFile(props) {
   return (
     <div>
       <div>
-        <p>Upload File</p>           
         <input type="file" id="fileUpload"/>    
       </div>    
       <div> 
-        <button onClick={doFileUpload}>Submit</button>    
+        <button onClick={doFileUpload} id="uploadButton">Upload</button>    
       </div>
-      <div>
-        <img src={fileData.fileUrl} alt="" id="profile_picture"></img>
-      </div>
+      {/* <div>
+        <img src={fileData.fileUrl} alt="" id="upload_picture"></img>
+      </div> */}
     </div>
   );
 };
