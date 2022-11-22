@@ -60,6 +60,7 @@ function Edit() {
                 FileUrl: result.fileUrl,
               })
               .then((res) => {
+                localStorage.setItem("profile_info", JSON.stringify(res.data));
                 console.log(res);
               })
               .catch((error) => {
