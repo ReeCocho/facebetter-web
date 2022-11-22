@@ -39,7 +39,7 @@ function People({ first, last, login}) {
   return (
     <div className='container'>
         <div>
-        <h1>{first}{last}</h1>
+          <h1>{first}&nbsp;{last}</h1>
         </div>
         <input
             className='btn'
