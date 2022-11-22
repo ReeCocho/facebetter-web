@@ -1,94 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../components/Profile.css';
 import axios from "axios";
 import People from '../components/People_Following';
 
-const getFollowing = async () => {
-  let ud = JSON.parse(localStorage.getItem('user_data'));
-  var bp = require('../components/Path.js');
-
-  try{
-    const res = await axios.post(bp.buildPath("api/customrequest"), {
-      _id: ud.userId,
-      Request: "Following"
-    })
-    console.log(res.data);
-    localStorage.setItem("following", JSON.stringify(res.data.Result));
-  } catch(error){
-    console.log(error);
-  }
-}
-
 function Following() {
-  getFollowing();
-  /*axios
-      .post(bp.buildPath("api/customrequest") , {
+  const [ followings, setFollowings ] = useState([]);
+
+  // This function gets called once on page load
+  useEffect(() => {
+    let ud = JSON.parse(localStorage.getItem('user_data'));
+    var bp = require('../components/Path.js');
+
+    // This is turning an async call into a sync one
+    (async () => {
+      // Gets our followings list (list of user IDs)
+      const res = await axios.post(bp.buildPath("api/customrequest"), {
         _id: ud.userId,
         Request: "Following"
-      })
-      .then((res) => {
-        //console.log(res.data.Result);
-        localStorage.setItem("following", JSON.stringify(res.data.Result));
-      })
-      .catch((error) => {
-        console.error(error);
-      });*/
+      });
 
-  let following_info = JSON.parse(localStorage.getItem("following"));
-  console.log(following_info)
-  let times = following_info.length
-  
-  let arr = []
-
-  for (let i = 0; i < times; i++) {
-    const getFollowing = async () => {
-      var bp = require('../components/Path.js');
-    
-      try{
-        const res = await axios.post(bp.buildPath("api/retrieveprofile"), {
-          _id: following_info[i],
-        })
-        localStorage.setItem(`followingProfile${i}`, JSON.stringify(res.data));
-      } catch(error){
-        console.log(error);
+      // Populate a new array with the actual profiles of the people we follow
+      let followingProfiles = [];
+      for (const id of res.data.Result) {
+        const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
+          _id: id,
+        });
+        followingProfiles.push(profile.data);
       }
-    }
 
-    getFollowing();
-    /*axios
-    .post(bp.buildPath("api/retrieveprofile") , {
-      _id: following_info[i],
-    })
-    .then((res) => {
-      localStorage.setItem(`followingProfile${i}`, JSON.stringify(res.data));
-      //console.log(res.data)
-    })
-    .catch((error) => {
-      console.error(error);
-    });*/
-    
-    arr.push(JSON.parse(localStorage.getItem(`followingProfile${i}`)))
-  }
-
-
-
-
-
+      // Set the `followings` variable to be our new array
+      setFollowings(followingProfiles);
+    })();
+  }, []);
 
   return (
     <div className='main_div'>      
       <div className='header'>
         <h2>Following</h2>
-
+      </div>
+        {followings.map((person, i) => {
+          console.log(person.FirstName + " " + i);
+          return (
+            <People 
+            first={person.FirstName}
+            last={person.LastName} 
+            school={person.School}
+            work={person.Work}
+            id={person.Id} />
+          );
+        })}
     </div>
-        {arr.map(person => (
-          <People first={person.FirstName}
-          last={person.LastName} 
-          school={person.School}
-          work={person.Work} 
-          id={person.Id}/>
-        ))}
-  </div>
   )
 }
 
