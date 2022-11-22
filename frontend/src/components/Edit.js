@@ -1,6 +1,7 @@
 import React from "react";
 import './Profile.css';
 import axios from "axios";
+import UploadFile from "./UploadFile";
 
 function Edit() {
   var editFirstName;
@@ -48,7 +49,24 @@ function Edit() {
           />
       </div>
       <div className="profile_body">
-        <img src={user_info.ProfilePicture} alt="" width="100%" height="auto"></img>
+        <img src={user_info.ProfilePicture} alt="" id="profile_picture"></img>
+        <UploadFile
+          onComplete={(result) => {
+            let ud = JSON.parse(localStorage.getItem("user_data"));
+            let userId = ud.userId;
+            axios
+              .post(bp.buildPath("api/updateprofilepic"), {
+                _id: userId,
+                FileUrl: result.fileUrl,
+              })
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          }}
+        />
         <h2>First Name</h2>
         <input 
           type="text"

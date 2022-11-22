@@ -34,7 +34,7 @@ function Profile() {
         </a>
       </div>
       <div className="profile_body">
-        <img src={user_info.ProfilePicture} alt="" width="100%" height="auto"></img>
+        <img src={user_info.ProfilePicture} alt="" id="profile_picture"></img>
         <h2>First Name</h2>
         <h3>{user_info.FirstName}</h3>
         <h2>Last Name</h2>

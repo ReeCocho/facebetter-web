@@ -52,7 +52,7 @@ function UploadFile(props) {
         <button onClick={doFileUpload}>Submit</button>    
       </div>
       <div>
-        <img src={fileData.fileUrl} alt=""></img>
+        <img src={fileData.fileUrl} alt="" id="profile_picture"></img>
       </div>
     </div>
   );
