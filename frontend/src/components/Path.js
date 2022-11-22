@@ -17,7 +17,7 @@ function buildPathWs()
 {
     if (process.env.NODE_ENV === 'production') 
     {
-        return 'ws://' + app_name +  '.herokuapp.com/';
+        return 'wss://' + app_name +  '.herokuapp.com/';
     }
     else
     {        

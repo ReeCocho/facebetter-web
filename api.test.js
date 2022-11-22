@@ -233,4 +233,115 @@ describe("API Tests", () => {
         const res = await request(app).post('/api/follow').send(data).expect(200);
         expect(res.body.Error).not.toBe(null);
     });
+
+    test("creating, joining, and deleting a channel + messages", async () => {
+        // Create the channel
+        const newChannelInfo = {
+            JwtToken: TEST_USER_A_JWT,
+            Title: "$TEST CHANNEL$"
+        };
+        let res = await request(app).post('/api/createchannel').send(newChannelInfo).expect(200);
+        expect(res.body.Error).toBe(null);
+
+        // Should be the only channel the user has
+        res = await request(app)
+            .post('/api/getchannels')
+            .send({ JwtToken: TEST_USER_A_JWT })
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+        expect(res.body.Channels.length).toBe(1);
+
+        // Create the invite code
+        const channelId = res.body.Channels[0];
+        const inviteCodeInfo = {
+            JwtToken: TEST_USER_A_JWT,
+            Channel: channelId
+        };
+        res = await request(app)
+            .post('/api/getinvitecode')
+            .send(inviteCodeInfo)
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+
+        // Join the channel
+        const joinInfo = {
+            JwtToken: TEST_USER_B_JWT,
+            InviteCode: res.body.InviteCode
+        };
+        res = await request(app)
+            .post('/api/joinchannel')
+            .send(joinInfo)
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+
+        // Should be the only channel the user has
+        res = await request(app)
+            .post('/api/getchannels')
+            .send({ JwtToken: TEST_USER_B_JWT })
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+        expect(res.body.Channels.length).toBe(1);
+
+        // Both users should be in the members list and should be the only ones
+        res = await request(app)
+            .post('/api/listmembers')
+            .send({ 
+                JwtToken: TEST_USER_A_JWT,
+                Channel: channelId,
+                Offset: 0,
+                Count: 999
+            })
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+        expect(res.body.Members.length).toBe(2);
+
+        // Send a message
+        res = await request(app)
+            .post('/api/sendmessage')
+            .send({ 
+                JwtToken: TEST_USER_A_JWT,
+                Channel: channelId,
+                Message: "$TEST MESSAGE$"
+            })
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+
+        // Get the message
+        res = await request(app)
+            .post('/api/getmessages')
+            .send({ 
+                JwtToken: TEST_USER_B_JWT,
+                Channel: channelId,
+                Before: Date.now(),
+                Count: 999
+            })
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+        expect(res.body.Messages.length).toBe(1);
+
+        // Delete the channel
+        res = await request(app)
+            .post('/api/deletechannel')
+            .send({ 
+                JwtToken: TEST_USER_A_JWT,
+                Channel: channelId
+            })
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+
+        // Both users should have 0 channels now
+        res = await request(app)
+            .post('/api/getchannels')
+            .send({ JwtToken: TEST_USER_A_JWT })
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+        expect(res.body.Channels.length).toBe(0);
+
+        res = await request(app)
+            .post('/api/getchannels')
+            .send({ JwtToken: TEST_USER_B_JWT })
+            .expect(200);
+        expect(res.body.Error).toBe(null);
+        expect(res.body.Channels.length).toBe(0);
+    });
 });
