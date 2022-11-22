@@ -48,6 +48,7 @@ function Edit() {
           />
       </div>
       <div className="profile_body">
+        <img src={user_info.ProfilePicture} alt="" width="100%" height="auto"></img>
         <h2>First Name</h2>
         <input 
           type="text"
