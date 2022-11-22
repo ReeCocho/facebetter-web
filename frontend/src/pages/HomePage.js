@@ -11,6 +11,7 @@ import Following from "./Following";
 import Chats from "./Chats";
 import Edit from "../components/Edit";
 import HomeComp from "../components/Home";
+import UploadFile from "../components/UploadFile";
 
 const HomePage = () =>
 {
@@ -39,6 +40,9 @@ const HomePage = () =>
             break;
         case "/pages/HomePage":
             component = <HomeComp/>
+            break;
+        case "/components/UploadFile":
+            component = <UploadFile/>
             break;
         default:
             break;
