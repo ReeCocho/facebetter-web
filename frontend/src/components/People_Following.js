@@ -2,15 +2,13 @@ import React from 'react'
 import "./People.css"
 import axios from "axios"
 
-function People({ first, last, work, school, id}) {
 
-  var bp = require('./Path.js');
-  var results = JSON.parse(localStorage.getItem("search_result"));
-  let ud = JSON.parse(localStorage.getItem('user_data'));
+
+function People({ first, last, work, school, id}) {
   
   //console.log(localStorage.getItem("JwtToken"));
   
-  function doUnfollow(){
+  /*function doUnfollow(){
       axios
       .post(bp.buildPath("api/unfollow") , {
         _id: ud.userId,
@@ -24,6 +22,23 @@ function People({ first, last, work, school, id}) {
       .catch((error) => {
         console.error(error);
       });
+  }*/
+
+  const doUnfollow = async () => {
+    let ud = JSON.parse(localStorage.getItem('user_data'));
+    var bp = require('./Path.js');
+    
+    try {
+      const res = await axios.post(bp.buildPath("api/unfollow"), {
+        _id: ud.userId,
+        ToUnfollow: id,
+        JwtToken: localStorage.getItem("access_token")
+      })
+      console.log(res.data);
+      console.log(first);
+    } catch (error){
+      console.log(error);
+    }
   }
 
   return (

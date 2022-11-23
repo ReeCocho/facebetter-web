@@ -4,10 +4,23 @@ import axios from "axios";
 
 function People({ first, last, login}) {
 
-    var bp = require('./Path.js');
-    let ud = JSON.parse(localStorage.getItem('user_data'));
+    const doFollow = async () => {
+      let ud = JSON.parse(localStorage.getItem('user_data'));
+      var bp = require('./Path.js');
+      
+      try {
+        const res = await axios.post(bp.buildPath("api/follow"), {
+          _id: ud.userId,
+          ToFollow: login,
+          JwtToken: localStorage.getItem("access_token")
+        })
+        console.log(res.data);
+      } catch (error){
+        console.log(error);
+      }
+    }
     
-    function doFollow(){
+    /*function doFollow(){
         axios
         .post(bp.buildPath("api/follow") , {
           _id: ud.userId,
@@ -20,7 +33,7 @@ function People({ first, last, login}) {
         .catch((error) => {
           console.error(error);
         });
-    }
+    }*/
 
 
   return (

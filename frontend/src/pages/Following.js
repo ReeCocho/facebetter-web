@@ -3,12 +3,25 @@ import '../components/Profile.css';
 import axios from "axios";
 import People from '../components/People_Following';
 
-function Following() {
-
+const getFollowing = async () => {
   let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('../components/Path.js');
 
-  axios
+  try{
+    const res = await axios.post(bp.buildPath("api/customrequest"), {
+      _id: ud.userId,
+      Request: "Following"
+    })
+    console.log(res.data);
+    localStorage.setItem("following", JSON.stringify(res.data.Result));
+  } catch(error){
+    console.log(error);
+  }
+}
+
+function Following() {
+  getFollowing();
+  /*axios
       .post(bp.buildPath("api/customrequest") , {
         _id: ud.userId,
         Request: "Following"
@@ -19,16 +32,30 @@ function Following() {
       })
       .catch((error) => {
         console.error(error);
-      });
+      });*/
 
   let following_info = JSON.parse(localStorage.getItem("following"));
-  //console.log(following_info)
+  console.log(following_info)
   let times = following_info.length
   
   let arr = []
 
   for (let i = 0; i < times; i++) {
-    axios
+    const getFollowing = async () => {
+      var bp = require('../components/Path.js');
+    
+      try{
+        const res = await axios.post(bp.buildPath("api/retrieveprofile"), {
+          _id: following_info[i],
+        })
+        localStorage.setItem(`followingProfile${i}`, JSON.stringify(res.data));
+      } catch(error){
+        console.log(error);
+      }
+    }
+
+    getFollowing();
+    /*axios
     .post(bp.buildPath("api/retrieveprofile") , {
       _id: following_info[i],
     })
@@ -38,7 +65,7 @@ function Following() {
     })
     .catch((error) => {
       console.error(error);
-    });
+    });*/
     
     arr.push(JSON.parse(localStorage.getItem(`followingProfile${i}`)))
   }
