@@ -312,6 +312,80 @@ exports.setApp = function ( app, wss, client )
     }
   });
 
+  app.post('/api/deletechannel', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          JwtToken: "string",
+          Channel: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
+
+      // User must be the owner of the channel
+      const db = client.db("SocialNetwork");
+      const userIsOwner = await db.collection('Channels')
+        .findOne({
+          _id: ObjectId(obj.Channel),
+          Owner: ObjectId(ud.userId)
+        }) !== null;
+
+      if (!userIsOwner)
+      {
+        throw "You must be the owner of the channel in order to delete the channel.";
+      }
+
+      // Remove the channel from every users channel list
+      const channel = await db.collection('Channels')
+        .findOne({
+          _id: ObjectId(obj.Channel),
+        });
+      
+      if (channel) 
+      {
+        for (const member of channel.Members)
+        {
+          await db
+            .collection('Users')
+            .update(
+              { _id: ObjectId(member) }, 
+              { $pull: { Channels: ObjectId(obj.Channel) } }
+            );
+        }
+      }
+      
+      // Delete the channel
+      await db.collection('Channels')
+        .deleteOne({
+          _id: ObjectId(obj.Channel),
+        });
+
+      const ret = { Error: null, JwtToken: refreshedToken };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
   app.post('/api/getinvitecode', async (req, res, next) => {
     try
     {
@@ -925,7 +999,7 @@ exports.setApp = function ( app, wss, client )
         .collection('Users')
         .updateOne(
           { _id: ObjectId(obj._id) }, 
-          { $addToSet: { Following: toFollowId } }
+          { $addToSet: { Following: ObjectId(toFollowId) } }
         );
         
       // Add ourselves to the other users to our followers list
@@ -1054,6 +1128,7 @@ exports.setApp = function ( app, wss, client )
       Followers: results[0].Followers,
       School: results[0].School,
       Work: results[0].Work,
+      ProfilePicture: results[0].ProfilePicture,
       Error: err
     };
     res.status(200).json(ret);
