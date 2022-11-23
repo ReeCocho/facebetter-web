@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import "../components/login.css";
 import axios from "axios";
-import { sendEmail } from "../../../mailer";
+var bp = require('./Path.js');
 
 function EmailCheck() {
 
@@ -18,25 +17,22 @@ function EmailCheck() {
   }
 
   const checkEnteredEmail = async (event) => {
-    
+    event.preventDefault();
     axios
-      .post("https://facebetter.herokuapp.com/api/checkemail", {
+      .post(bp.buildPath("api/checkemail"), {
         Email: emailAddress.value,
       })
       .then((res) => {
         noError();
         console.log(res);
-        window.location.href = "./pages/LoginPage";
+        window.location.href = '/';
       })
       .catch((error) => {
         console.error(error);
         yesError(error);
       });
-  };
-  
-  const switchToEmailPage = async (event) => {
-    window.location.href = "./pages/EnterEmailPage";
-  };
+  }; 
+
 
   return (
     <div id="emailSquare">
@@ -51,17 +47,17 @@ function EmailCheck() {
               required
             />
             <input
-              type="submit"
+              button type="button"
               id="sendButton"
               className="buttons inputBox"
               value="Recover Email"
-              onClick={sendEmail}
+              onClick={checkEnteredEmail}
             />
-          <span id="loginResult">{message}</span>
+          <span id="emailResult">{message}</span>
           </div>
         </form>
     </div>
   );
 }
 
-export default Login;
+export default EmailCheck;

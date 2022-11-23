@@ -750,7 +750,7 @@ exports.setApp = function ( app, wss, client )
       db.collection('Users').insertOne(newUser);
 
       // Send the verification email
-      let e = mailer.sendEmail(obj.Login, obj.Password, obj.Email);
+      let e = mailer.sendConfirmationEmail(obj.Login, obj.Password, obj.Email);
       if(e !== null)
       {
         throw e;
@@ -1336,6 +1336,14 @@ exports.setApp = function ( app, wss, client )
       {
         throw "User with this email does not exist";
       }
+
+      //Send Password Reset Link
+      let e = mailer.sendPwResetEmail(results[0]._id, obj.Email);
+      if(e !== null)
+      {
+        console.log(e.toString());
+        throw e;
+      } 
       
       const ret = { Error: null, _id: results[0]._id };
       res.status(200).json(ret);

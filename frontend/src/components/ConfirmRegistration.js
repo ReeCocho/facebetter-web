@@ -12,10 +12,10 @@ function ConfirmRegistration()
     let token = urlElements[urlElements.length - 1];
 
     axios
-      .post(bp.buildPath("api/verifyemail"), {
+      .get(bp.buildPath("api/verifyemail"), {
         JwtToken: token
       });
-    window.localStorage.href = "./pages/LoginPage"
+      window.location.href = '/';
   };    
 
   return(

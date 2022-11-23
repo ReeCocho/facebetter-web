@@ -20,6 +20,10 @@ function Login({ registerPop }) {
     setMessage("");
   }
 
+  const switchToEmailPage = async (event) => {
+    window.location.href = "./pages/EnterEmailPage";
+  };
+
   const doLogin = async (event) => {
     let password1 = loginPassword.value
     var hash = md5(password1)
@@ -47,7 +51,7 @@ function Login({ registerPop }) {
         console.error(error);
         yesError();
       });
-
+      
     /*var obj = { Login: loginName.value, Password: loginPassword.value };
     var js = JSON.stringify(obj);
 
@@ -106,6 +110,13 @@ function Login({ registerPop }) {
               className="buttons inputBox"
               value="Log In"
               onClick={doLogin}
+            />
+            <input
+              type="submit"
+              id="pwRecoveryButton"
+              className="buttons inputBox"
+              value="Forgot Password?"
+              onClick={switchToEmailPage}
             />
           <span id="loginResult">{message}</span>
           </div>
