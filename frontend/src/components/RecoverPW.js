@@ -9,6 +9,8 @@ function RecoverPW() {
   var newPW;
   var newPW2;
 
+  var sha256 = require('js-sha256');
+
   const [message, setMessage] = useState("");
 
   function yesError(error) {
@@ -29,7 +31,7 @@ function RecoverPW() {
 
     if(pass1 === pass2 && pass1 !== "")
     {
-        var hash = md5(pass1);
+        var hash = sha256(pass1);
         axios
         .post(bp.buildPath("api/resetpassword"), {
             NewPassword: hash,

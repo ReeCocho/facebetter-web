@@ -10,10 +10,10 @@ const transporter = mailer.createTransport({
     },
   });
 
-//exports.sendConfirmationEmail = function ( username, password, email )
-//{
-//  return _sendConfirmationEmail( username, password, email );
-//}
+exports.sendConfirmationEmail = function ( username, password, email )
+{
+  return _sendConfirmationEmail( username, password, email );
+}
 
 exports.sendPwResetEmail = function ( id, email )
 {
