@@ -26,6 +26,7 @@ function Edit() {
         LastName: editLastName.value,
         School: editSchool.value,
         Work: editWork.value,
+        JwtToken: localStorage.getItem("access_token")
       })
       .then((res) => {
         console.log(res.data);

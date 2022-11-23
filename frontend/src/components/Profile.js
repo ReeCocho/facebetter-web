@@ -1,10 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
 import './Profile.css';
 import axios from "axios";
 
 
 function Profile() {
-  let ud = JSON.parse(localStorage.getItem('user_data'));
+
+  const [ profile, setProfile ] = useState([]);
+
+  // This function gets called once on page load
+  useEffect(() => {
+    let ud = JSON.parse(localStorage.getItem('user_data'));
+    var bp = require('../components/Path.js');
+
+    // This is turning an async call into a sync one
+    (async () => {
+
+      const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
+        _id: ud.userId,
+      });
+
+
+      // Set the `profile` variable to be our new array
+      setProfile(profile.data);
+    })();
+  }, []);
+
+  /*let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('./Path.js');
 
   axios
@@ -19,7 +40,7 @@ function Profile() {
         console.error(error);
       });
 
-  let user_info = JSON.parse(localStorage.getItem("profile_info"));
+  let user_info = JSON.parse(localStorage.getItem("profile_info"));*/
 
     return (
     <div className="main_div">
@@ -34,15 +55,15 @@ function Profile() {
         </a>
       </div>
       <div className="profile_body">
-        <img src={user_info.ProfilePicture} alt="" id="profile_picture"></img>
+        <img src={profile.ProfilePicture} alt="" id="profile_picture"></img>
         <h2>First Name</h2>
-        <h3>{user_info.FirstName}</h3>
+        <h3>{profile.FirstName}</h3>
         <h2>Last Name</h2>
-        <h3>{user_info.LastName}</h3>  
+        <h3>{profile.LastName}</h3>  
         <h2>Work</h2>
-        <h3>{user_info.Work}</h3>  
+        <h3>{profile.Work}</h3>  
         <h2>School</h2>
-        <h3>{user_info.School}</h3>  
+        <h3>{profile.School}</h3>  
       </div>
     </div>
     );
