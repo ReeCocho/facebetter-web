@@ -3,12 +3,26 @@ import '../components/Profile.css';
 import axios from "axios";
 import People from '../components/People_Followers';
 
-function Followers() {
 
+const getFollowers = async () => {
   let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('../components/Path.js');
 
-  axios
+  try{
+    const res = await axios.post(bp.buildPath("api/customrequest"), {
+      _id: ud.userId,
+      Request: "Followers"
+    })
+    console.log(res.data);
+    localStorage.setItem("followers", JSON.stringify(res.data.Result));
+  } catch(error){
+    console.log(error);
+  }
+}
+
+function Followers() {
+
+  /*axios
       .post(bp.buildPath("api/customrequest") , {
         _id: ud.userId,
         Request: "Followers"
@@ -18,28 +32,44 @@ function Followers() {
       })
       .catch((error) => {
         console.error(error);
-      });
+      });*/
+
+  getFollowers();
 
   let followers_info = JSON.parse(localStorage.getItem("followers"));
-  console.log(followers_info);
+  //console.log(followers_info);
   let times = followers_info.length;
   
   let arr = []
 
   for (let i = 0; i < times; i++) {
-    axios
+    const getFollowers = async () => {
+      var bp = require('../components/Path.js');
+    
+      try{
+        const res = await axios.post(bp.buildPath("api/retrieveprofile"), {
+          _id: followers_info[i],
+        })
+        localStorage.setItem(`followerProfile${i}`, JSON.stringify(res.data));
+      } catch(error){
+        console.log(error);
+      }
+    }
+
+    getFollowers();
+    /*axios
     .post(bp.buildPath("api/retrieveprofile") , {
       _id: followers_info[i],
     })
     .then((res) => {
-      localStorage.setItem(`followingProfile${i}`, JSON.stringify(res.data));
+      localStorage.setItem(`followerProfile${i}`, JSON.stringify(res.data));
       // console.log(res.data)
     })
     .catch((error) => {
       console.error(error);
-    });
+    });*/
     
-    arr.push(JSON.parse(localStorage.getItem(`followingProfile${i}`)))
+    arr.push(JSON.parse(localStorage.getItem(`followerProfile${i}`)))
   }
 
   return (
