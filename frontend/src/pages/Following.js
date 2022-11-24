@@ -33,7 +33,7 @@ function Following() {
       // Set the `followings` variable to be our new array
       setFollowings(followingProfiles);
     })();
-  }, []);
+  }, [followings]);
 
   return (
     <div className='main_div'>      
