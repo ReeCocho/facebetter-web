@@ -1,15 +1,10 @@
-import React from 'react'
-import "./People.css"
-import axios from "axios"
+import React from "react";
+import "./People.css";
+import axios from "axios";
 
-
-
-
-function People({ first, last, work, school, id, picture}) {
-
-  
+function People({ first, last, work, school, id, picture }) {
   //console.log(localStorage.getItem("JwtToken"));
-  
+
   /*function doUnfollow(){
       axios
       .post(bp.buildPath("api/unfollow") , {
@@ -27,40 +22,39 @@ function People({ first, last, work, school, id, picture}) {
   }*/
 
   const doUnfollow = async () => {
-    let ud = JSON.parse(localStorage.getItem('user_data'));
-    var bp = require('./Path.js');
-    
+    let ud = JSON.parse(localStorage.getItem("user_data"));
+    var bp = require("./Path.js");
+
     try {
       const res = await axios.post(bp.buildPath("api/unfollow"), {
         _id: ud.userId,
         ToUnfollow: id,
-        JwtToken: localStorage.getItem("access_token")
-      })
+        JwtToken: localStorage.getItem("access_token"),
+      });
       console.log(res.data);
       console.log(first);
-    } catch (error){
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
-    <div className='container'>
-        <img src={picture} alt="" id="search_picture"></img>
-        <div>
-        <h1>{first}&nbsp;{last}</h1>
-        {/* <h2>{work}   {school}</h2> */}
-        </div>
+    <div className="container">
+      <img src={picture} alt="" id="search_picture"></img>
+      <div>
+        <h1>{first}&nbsp;</h1>
+        <h1>{last}</h1>
+      </div>
 
-        <button className='btn'>Chat</button>
-        <input
-            className='btn'
-            type='submit'
-            value="Unfollow"
-            onClick={doUnfollow}>
-        </input>
+      <button className="btn">Chat</button>
+      <input
+        className="btn"
+        type="submit"
+        value="Unfollow"
+        onClick={doUnfollow}
+      ></input>
     </div>
-
-  )
+  );
 }
 
-export default People
+export default People;

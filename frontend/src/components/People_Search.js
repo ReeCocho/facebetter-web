@@ -40,7 +40,8 @@ function People({ first, last, login, picture}) {
     <div className='container'>
         <img src={picture} alt="" id="search_picture"></img>
         <div>
-          <h1>{first}&nbsp;{last}</h1>
+          <h1>{first}&nbsp;</h1>
+          <h1>{last}</h1>
         </div>
         <input
             className='btn'
