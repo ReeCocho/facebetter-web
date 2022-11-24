@@ -9,10 +9,12 @@ import md5 from './md5'
 
 function Modal({ unRegisterPop }) {
 
+  var sha256 = require('js-sha256');
   var registerName;
   var registerPassword;
   var registerFirst;
   var registerLast;
+  var registerEmail;
   var registerPasswordConfirmation
   var registerSchool;
   var registerWork;
@@ -29,13 +31,13 @@ function Modal({ unRegisterPop }) {
 
 
   const doRegister = async (event) => {
-    
+    var bp = require('./Path.js');
     event.preventDefault();
     let password1 = registerPassword.value;
     let password2 = registerPasswordConfirmation.value;
 
     if(password1 === password2 && password1 !== ""){
-      var hash = md5(password1)
+      var hash = sha256(password1)
     var obj = { Login: registerName.value, Password: hash, FirstName: registerFirst.value, LastName: registerLast.value, School: null, Work: null};
     var js = JSON.stringify(obj);
 
@@ -45,9 +47,10 @@ function Modal({ unRegisterPop }) {
     // LastName: "string",
 
     axios
-      .post("https://facebetter.herokuapp.com/api/register", {
+      .post(bp.buildPath("api/register"), {
         Login: registerName.value,
         Password: hash,
+        Email: registerEmail.value,
         FirstName: registerFirst.value, 
         LastName: registerLast.value,
         School: "",
@@ -87,7 +90,7 @@ function Modal({ unRegisterPop }) {
             type="email"
             placeholder="  Email"
             required
-            // ref={(c) => (registerLogin = c)}
+            ref={(c) => (registerEmail = c)}
           />
           <input
             className="inputBoxR loginNameR"

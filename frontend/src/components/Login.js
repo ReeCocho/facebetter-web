@@ -5,10 +5,12 @@ import jwt_decode from "jwt-decode";
 import md5 from './md5'
 
 function Login({ registerPop }) {
-  var bp = require("./Path.js");
+  var bp = require('./Path.js');
 
+  var sha256 = require('js-sha256');
   var loginName;
   var loginPassword;
+  
 
   const [message, setMessage] = useState("");
 
@@ -22,25 +24,28 @@ function Login({ registerPop }) {
 
   const doLogin = async (event) => {
     let password1 = loginPassword.value
-    var hash = md5(password1)
+    var hash = sha256(password1)
+    // var hash = md5(password1)
     event.preventDefault();
     var obj = { Login: loginName.value, Password: hash };
     var js = JSON.stringify(obj);
 
     axios
-      .post("https://facebetter.herokuapp.com/api/login", {
+      .post(bp.buildPath("api/login") , {
         Login: loginName.value,
         Password: hash,
       })
       .then((res) => {
         noError();
         console.log(res);
+        localStorage.setItem("JwtToken", res.data.JwtToken);
         const token = res.data.JwtToken.accessToken;
         var decode1 = jwt_decode(token);
         console.log(decode1);
+        localStorage.setItem("access_token", res.data.JwtToken.accessToken);
         localStorage.setItem("user_data", JSON.stringify(decode1));
         console.log(localStorage.getItem("user_data"));
-        window.location.href = "./pages/ProfilePage";
+        window.location.href = "./pages/HomePage";
       })
       .catch((error) => {
         console.error(error);
