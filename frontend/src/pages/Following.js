@@ -46,7 +46,8 @@ function Following() {
             last={person.LastName} 
             school={person.School}
             work={person.Work}
-            id={person.Id} />
+            id={person.Id} 
+            picture={person.ProfilePicture}/>
           );
         })}
     </div>

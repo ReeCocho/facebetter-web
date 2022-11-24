@@ -56,7 +56,8 @@ function HomeComp() {
       {results !== null && results.map(person => (
           <People first={person.FirstName}
           last={person.LastName} 
-          login={person.Login}/>
+          login={person.Login}
+          picture={person.ProfilePicture}/>
       ))}
 
     </div>

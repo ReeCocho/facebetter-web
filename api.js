@@ -818,7 +818,8 @@ exports.setApp = function ( app, wss, client )
         Work: obj.Work,
         Followers: [],
         AccountVerified: false,
-        Channels: []
+        Channels: [],
+        ProfilePicture: "https://facebetter.s3.amazonaws.com/public/default.png"
       };
 
       db.collection('Users').insertOne(newUser);
@@ -1248,7 +1249,8 @@ exports.setApp = function ( app, wss, client )
             FirstName: 1,
             LastName: 1,
             School: 1,
-            Work: 1
+            Work: 1,
+            ProfilePicture: 1
           }
         )
         .toArray();

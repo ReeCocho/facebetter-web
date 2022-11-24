@@ -4,7 +4,7 @@ import axios from "axios"
 
 
 
-function People({ first, last, work, school, id}) {
+function People({ first, last, work, school, id, picture}) {
   
   //console.log(localStorage.getItem("JwtToken"));
   
@@ -43,9 +43,10 @@ function People({ first, last, work, school, id}) {
 
   return (
     <div className='container'>
+        <img src={picture} alt="" id="search_picture"></img>
         <div>
-        <h1>{first}{last}</h1>
-        <h2>{work}   {school}</h2>
+        <h1>{first}&nbsp;{last}</h1>
+        {/* <h2>{work}   {school}</h2> */}
         </div>
 
         <button className='btn'>Chat</button>
