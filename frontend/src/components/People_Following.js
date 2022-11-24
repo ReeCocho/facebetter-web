@@ -4,7 +4,9 @@ import axios from "axios"
 
 
 
+
 function People({ first, last, work, school, id, picture}) {
+
   
   //console.log(localStorage.getItem("JwtToken"));
   
