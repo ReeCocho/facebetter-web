@@ -1248,7 +1248,8 @@ exports.setApp = function ( app, wss, client )
             FirstName: 1,
             LastName: 1,
             School: 1,
-            Work: 1
+            Work: 1,
+            ProfilePicture: 1
           }
         )
         .toArray();

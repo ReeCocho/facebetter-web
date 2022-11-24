@@ -2,7 +2,7 @@ import React from 'react'
 import "./People.css"
 import axios from "axios";
 
-function People({ first, last, login}) {
+function People({ first, last, login, picture}) {
 
     const doFollow = async () => {
       let ud = JSON.parse(localStorage.getItem('user_data'));
@@ -38,6 +38,7 @@ function People({ first, last, login}) {
 
   return (
     <div className='container'>
+        <img src={picture} alt="" id="search_picture"></img>
         <div>
           <h1>{first}&nbsp;{last}</h1>
         </div>
