@@ -34,7 +34,7 @@ function UploadFile(props) {
           throw err;
         }
         setFileData({data, fileUrl});
-        props?.onComplete({data, fileUrl});
+        props?.onComplete?.({data, fileUrl});
         console.log(`File uploaded successfully. ${data.Location}` );
       });
     }
@@ -45,15 +45,14 @@ function UploadFile(props) {
   return (
     <div>
       <div>
-        <p>Upload File</p>           
         <input type="file" id="fileUpload"/>    
       </div>    
       <div> 
-        <button onClick={doFileUpload}>Submit</button>    
+        <button onClick={doFileUpload} id="uploadButton">Upload</button>    
       </div>
-      <div>
-        <img src={fileData.fileUrl} alt=""></img>
-      </div>
+      {/* <div>
+        <img src={fileData.fileUrl} alt="" id="upload_picture"></img>
+      </div> */}
     </div>
   );
 };
