@@ -1344,22 +1344,42 @@ exports.setApp = function ( app, wss, client )
       {
         throw err;
       }
-
-      // Verify and refresh token
-      if (token.isExpired(obj.JwtToken))
+      
+      // Verify the token is still valid
+      const isError = jwt.verify(
+        obj.JwtToken, 
+        process.env.EMAIL_SECRET, (err, verifiedJwt) =>
+        {
+          if (err)
+          {
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
+      );
+      
+      if (isError)
       {
         throw "Token is expired";
-      }
-      const refreshedToken = token.refresh(obj.JwtToken);
+      }      
+      // Verify and refresh token
+      //if (token.isExpired(obj.JwtToken))
+      //{
+      //  throw "Token is expired";
+      //}
+      //const refreshedToken = token.refresh(obj.JwtToken);
 
       const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
       const db = client.db("SocialNetwork");
-      let ObjId = ObjectId(ud.userId);
+      let ObjId = ObjectId(ud.id);
       let filter = {_id: ObjId};
 
       let results = await db
         .collection('Users')
-        .updateOne(filter, {$set: {Password: NewPassword}});
+        .updateOne(filter, {$set: {Password: obj.NewPassword}});
 
       if (results.matchedCount === 0)
       {
@@ -1371,11 +1391,12 @@ exports.setApp = function ( app, wss, client )
         throw "Already using this password";
       }
 
-      const ret = { Error: null, JwtToken: refreshedToken };
+      const ret = { Error: null };
       res.status(200).json(ret);
     }
     catch (e)
     {
+      console.log(e.toString());
       const ret = { Error: e.toString() };
       res.status(200).json(ret);
     }
