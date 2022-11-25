@@ -38,9 +38,16 @@ function RecoverPW() {
             JwtToken: token,
         })
         .then((res) => {
-          noError();
-          console.log(res);
-          window.location.href = '/';
+          if(res.data.Error != null)
+          {
+            yesError(res.data.Error);
+          }
+          else
+          {
+            noError();
+            console.log(res);
+            window.location.href = '/';
+          }
         })
         .catch((error) => {
           console.error(error);

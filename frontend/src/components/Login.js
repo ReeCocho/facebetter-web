@@ -14,8 +14,8 @@ function Login({ registerPop }) {
 
   const [message, setMessage] = useState("");
 
-  function yesError() {
-    setMessage("Username/password are incorrect");
+  function yesError(error) {
+    setMessage(error.toString());
   }
 
   function noError() {
@@ -40,20 +40,27 @@ function Login({ registerPop }) {
         Password: hash,
       })
       .then((res) => {
-        noError();
-        console.log(res);
-        localStorage.setItem("JwtToken", res.data.JwtToken);
-        const token = res.data.JwtToken.accessToken;
-        var decode1 = jwt_decode(token);
-        console.log(decode1);
-        localStorage.setItem("access_token", res.data.JwtToken.accessToken);
-        localStorage.setItem("user_data", JSON.stringify(decode1));
-        console.log(localStorage.getItem("user_data"));
-        window.location.href = "./pages/HomePage";
+        if(res.data.Error != null)
+        {
+          console.log(res.data.Error);
+          yesError(res.data.Error);
+        }
+        else
+        {
+          noError();
+          localStorage.setItem("JwtToken", res.data.JwtToken);
+          const token = res.data.JwtToken.accessToken;
+          var decode1 = jwt_decode(token);
+          console.log(decode1);
+          localStorage.setItem("access_token", res.data.JwtToken.accessToken);
+          localStorage.setItem("user_data", JSON.stringify(decode1));
+          console.log(localStorage.getItem("user_data"));
+          window.location.href = "./pages/HomePage";
+        }
       })
       .catch((error) => {
         console.error(error);
-        yesError();
+        yesError(error);
       });
       
     /*var obj = { Login: loginName.value, Password: loginPassword.value };
