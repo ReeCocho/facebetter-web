@@ -41,7 +41,22 @@ function People({ first, last, work, school, id, picture}) {
     } catch (error){
       console.log(error);
     }
+    window.location.href = "Following";
   }
+
+  function handleUnfollow(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    doUnfollow();
+  }
+
+  function handleChatClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    
+  }
+
 
   const viewProfile = async () => {
     console.log(id);
@@ -51,23 +66,37 @@ function People({ first, last, work, school, id, picture}) {
   }
 
   return (
-    <div className='container'>
-        <img src={picture} alt="" className="search_picture"></img>
-        <a href='../components/User'
-          onClick={viewProfile}>
-          <div>
-            <h1>{first}&nbsp;{last}</h1>
-          </div>    
-        </a>
+    // <div className='container'>
+    //     <img src={picture} alt="" className="search_picture"></img>
+    //     <a href='../components/User'
+    //       onClick={viewProfile}>
+    //       <div>
+    //         <h1>{first}&nbsp;{last}</h1>
+    //       </div>    
+    //     </a>
 
-        <button className='btn'>Chat</button>
-        <input
+    //     <button className='btn'>Chat</button>
+    //     <input
+    //         className='btn'
+    //         type='submit'
+    //         value="Unfollow"
+    //         onClick={doUnfollow}>
+    //     </input>
+    // </div>
+
+    <a href="../components/User" onClick={viewProfile}>
+      <div className='container'>
+          <img src={picture} alt="" className="search_picture"></img>
+          <h1>{first}&nbsp;{last}</h1>
+          <button className="btn" onClick={handleChatClick}>Chat</button>
+          <input
             className='btn'
             type='submit'
             value="Unfollow"
-            onClick={doUnfollow}>
-        </input>
-    </div>
+            onClick={handleUnfollow}>
+          </input>  
+      </div>
+    </a>
 
   )
 }

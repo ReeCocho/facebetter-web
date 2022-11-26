@@ -28,22 +28,34 @@ function People({ first, last, login, picture, id}) {
       localStorage.setItem("login_profile", login);   
 
     }
+
+    function handleFollow(e) {
+      e.stopPropagation();
+      e.preventDefault();
+  
+      doFollow();
+      
+    }
+  
+    function handleChatClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      
+    }
     
   return (
     <a href="../User"
     onClick={viewProfile}>
       <div className='container'>
           <img src={picture} alt="" className="search_picture"></img>
-
-              <h1>{first}&nbsp;{last}</h1>
-          
+          <h1>{first}&nbsp;{last}</h1>
+          <button className="btn" onClick={handleChatClick}>Chat</button>
           <input
               className='btn'
               type='submit'
               value="Follow"
-              onClick={doFollow}>
+              onClick={handleFollow}>
           </input>
-
       </div>
     </a>
 
