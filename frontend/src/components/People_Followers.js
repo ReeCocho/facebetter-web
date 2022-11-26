@@ -45,14 +45,16 @@ function People({ first, last, work, school, picture, id, login}) {
       <div className='container'>
           <img src={picture} alt="" className="search_picture"></img>
           <h1>{first}&nbsp;{last}</h1>
-          <button className="btn" onClick={handleChatClick}>Chat</button>
-          <input
-            className='btn'
-            type='submit'
-            value="Follow"
-            onClick={handleFollow}
-            >
-          </input>  
+          <div>
+            <button className="btn" onClick={handleChatClick}>Chat</button>
+            <input
+              className='btn'
+              type='submit'
+              value="Follow"
+              onClick={handleFollow}
+              >
+            </input> 
+          </div> 
       </div>
     </a>
   )
