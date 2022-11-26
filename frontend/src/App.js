@@ -26,7 +26,8 @@ function App() {
       <Route path="/pages/ProfilePage" element={<ProfilePage />} />
       <Route path="/pages/ConfirmationPage/:token" element={<ConfirmationPage />} />
       <Route path="/pages/ChatExamples" element={<ChatExamples />} />
-      
+      <Route path="/components/User" element={<HomePage />} />
+\      
     </Routes>
   </BrowserRouter>
 );

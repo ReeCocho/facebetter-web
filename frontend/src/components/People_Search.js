@@ -1,13 +1,14 @@
 import React from 'react'
 import "./People.css"
 import axios from "axios";
+import User from './User';
 
-function People({ first, last, login, picture}) {
+function People({ first, last, login, picture, id}) {
 
     const doFollow = async () => {
       let ud = JSON.parse(localStorage.getItem('user_data'));
       var bp = require('./Path.js');
-      
+
       try {
         const res = await axios.post(bp.buildPath("api/follow"), {
           _id: ud.userId,
@@ -19,6 +20,8 @@ function People({ first, last, login, picture}) {
         console.log(error);
       }
     }
+
+    
     
     /*function doFollow(){
         axios
@@ -35,13 +38,17 @@ function People({ first, last, login, picture}) {
         });
     }*/
 
-
   return (
     <div className='container'>
         <img src={picture} alt="" className="search_picture"></img>
-        <div>
-          <h1>{first}&nbsp;{last}</h1>
-        </div>
+        <a href="../User">
+          <div>
+            <h1>{first}&nbsp;{last}</h1>
+          </div>    
+        </a>
+
+        
+        
         <input
             className='btn'
             type='submit'
