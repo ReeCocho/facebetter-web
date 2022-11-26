@@ -58,7 +58,7 @@ function HomeComp() {
           last={person.LastName} 
           login={person.Login}
           picture={person.ProfilePicture}
-          id={person._id}/>
+          id={person.Id}/>
       ))}
 
     </div>

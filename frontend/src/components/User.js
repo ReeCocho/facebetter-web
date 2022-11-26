@@ -9,20 +9,21 @@ function User() {
 
   // This function gets called once on page load
   useEffect(() => {
-    let ud = JSON.parse(localStorage.getItem('user_data'));
+    let searchUser = JSON.parse(localStorage.getItem('search_profile'));
     var bp = require('../components/Path.js');
 
     // This is turning an async call into a sync one
     (async () => {
 
-      const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
-        _id: ud.userId,
+      const profile = await axios.post(bp.buildPath('/api/retrieveprofile'), {
+        _id: searchUser.userId,
       });
 
 
       // Set the `profile` variable to be our new array
       setProfile(profile.data);
     })();
+    console.log(searchUser);
   }, []);
 
   /*let ud = JSON.parse(localStorage.getItem('user_data'));
