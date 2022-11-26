@@ -24,7 +24,8 @@ function People({ first, last, login, picture, id}) {
     const viewProfile = async () => {
       console.log(id);
       console.log(first);
-      localStorage.setItem("search_profile", id);    
+      localStorage.setItem("search_profile", id); 
+      localStorage.setItem("login_profile", login);   
 
     }
     
