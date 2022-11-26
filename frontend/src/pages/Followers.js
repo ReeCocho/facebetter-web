@@ -51,7 +51,8 @@ function Followers() {
             last={person.LastName} 
             school={person.School}
             work={person.Work} 
-            picture={person.ProfilePicture}/>
+            picture={person.ProfilePicture}
+            id={person.Id}/>
           );
         })}
     </div>

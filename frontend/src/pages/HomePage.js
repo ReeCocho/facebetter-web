@@ -12,6 +12,7 @@ import Chats from "./Chats";
 import Edit from "../components/Edit";
 import HomeComp from "../components/Home";
 import UploadFile from "../components/UploadFile";
+import User from "../components/User"
 
 const HomePage = () =>
 {
@@ -43,6 +44,9 @@ const HomePage = () =>
             break;
         case "/components/UploadFile":
             component = <UploadFile/>
+            break;
+        case "/components/User":
+            component = <User/>
             break;
         default:
             break;
