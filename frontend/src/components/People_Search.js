@@ -30,23 +30,22 @@ function People({ first, last, login, picture, id}) {
     }
     
   return (
-    <div className='container'>
-        <img src={picture} alt="" className="search_picture"></img>
-        <a href="../User"
-        onClick={viewProfile}>
-          <div>
-            <h1>{first}&nbsp;{last}</h1>
-          </div>    
-        </a>
-        
-        <input
-            className='btn'
-            type='submit'
-            value="Follow"
-            onClick={doFollow}>
-        </input>
+    <a href="../User"
+    onClick={viewProfile}>
+      <div className='container'>
+          <img src={picture} alt="" className="search_picture"></img>
 
-    </div>
+              <h1>{first}&nbsp;{last}</h1>
+          
+          <input
+              className='btn'
+              type='submit'
+              value="Follow"
+              onClick={doFollow}>
+          </input>
+
+      </div>
+    </a>
 
   )
 }
