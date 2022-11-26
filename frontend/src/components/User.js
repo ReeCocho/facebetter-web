@@ -71,7 +71,9 @@ function User() {
         </a>
       </div>
       <div className="profile_body">
-        <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+        <div className="center">
+          <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+        </div>
         <h2>First Name</h2>
         <h3>{profile.FirstName}</h3>
         <h2>Last Name</h2>

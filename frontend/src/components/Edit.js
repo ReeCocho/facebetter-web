@@ -79,7 +79,9 @@ function Edit() {
           />
       </div>
       <div className="profile_body">
-        <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+        <div className="center">
+          <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+        </div>
         <h2>Profile Picture</h2>
         <UploadFile
           onComplete={(result) => {
