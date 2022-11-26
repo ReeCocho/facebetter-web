@@ -10,12 +10,17 @@ const transporter = mailer.createTransport({
     },
   });
 
-exports.sendEmail = function ( username, password, email )
+exports.sendConfirmationEmail = function ( username, password, email )
 {
-  return _sendEmail( username, password, email );
+  return _sendConfirmationEmail( username, password, email );
 }
 
-_sendEmail = function ( username, password, email )
+exports.sendPwResetEmail = function ( id, email )
+{
+  return _sendPwResetEmail( id, email );
+}
+
+_sendConfirmationEmail = function ( username, password, email )
 {
     try
     {
@@ -36,6 +41,34 @@ _sendEmail = function ( username, password, email )
             to: email,
             subject: "Facebetter Confirmation Email",
             html: `Finish registration for Facebetter by clicking this link to confirm your email!: <a href="${url}">${url}</a>`,
+        });
+    } catch (e) {
+      console.log("Error: " + e.toString())
+      return e;
+    }
+    return null;
+}
+
+_sendPwResetEmail = function ( id, email )
+{
+    try
+    {
+        const emailToken = jwt.sign(
+            {
+                id: id,
+            },
+            process.env.EMAIL_SECRET,
+            {
+            expiresIn: '1d',
+            },  
+        );
+
+        const url = bp.buildPath(`pages/PWRecoveryPage/${emailToken}`);
+
+        transporter.sendMail({
+            to: email,
+            subject: "Facebetter Password Recovery",
+            html: `Reset your password with this link: <a href="${url}">${url}</a>`,
         });
     } catch (e) {
       console.log("Error: " + e.toString())

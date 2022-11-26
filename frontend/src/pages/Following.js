@@ -3,7 +3,6 @@ import '../components/Profile.css';
 import axios from "axios";
 import People from '../components/People_Following';
 
-
 function Following() {
   const [ followings, setFollowings ] = useState([]);
 
