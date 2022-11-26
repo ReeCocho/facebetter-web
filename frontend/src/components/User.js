@@ -2,31 +2,43 @@ import React, { useEffect, useState } from 'react';
 import './Profile.css';
 import axios from "axios";
 
-
-function Profile() {
+function User() {
 
   const [ profile, setProfile ] = useState([]);
 
   // This function gets called once on page load
   useEffect(() => {
-    let ud = JSON.parse(localStorage.getItem('user_data'));
     var bp = require('../components/Path.js');
 
     // This is turning an async call into a sync one
     (async () => {
-      try{
-        const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
-          _id: ud.userId,
-        });
-        // Set the `profile` variable to be our new array
-        setProfile(profile.data);
 
-      } catch(error){
-        console.log(error);
-      }
+      const profile = await axios.post(bp.buildPath('api/retrieveprofile'), {
+        _id: localStorage.getItem('search_profile'),
+      });
 
+
+      // Set the `profile` variable to be our new array
+      setProfile(profile.data);
     })();
   }, []);
+
+  const doFollow = async () => {
+    let ud = JSON.parse(localStorage.getItem('user_data'));
+    var bp = require('./Path.js');
+    console.log(localStorage.getItem("login_profile"));
+    try {
+      const res = await axios.post(bp.buildPath("api/follow"), {
+        _id: ud.userId,
+        ToFollow: localStorage.getItem("login_profile"),
+        JwtToken: localStorage.getItem("access_token")
+      })
+      console.log(res.data);
+    } catch (error){
+      console.log(error);
+    }
+  }
+
 
   /*let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('./Path.js');
@@ -49,11 +61,12 @@ function Profile() {
     <div className="main_div">
       <div className='header'>
         <h2>Profile</h2>
-        <a href="/components/Edit" id="link">
+        <a id="link">
           <input
             type="submit"
             id="editButton"
-            value="Edit"
+            value="Follow"
+            onClick={doFollow}
           />
         </a>
       </div>
@@ -71,4 +84,4 @@ function Profile() {
     </div>
     );
   }
-  export default Profile;
+  export default User;

@@ -17,7 +17,7 @@
       "request": "attach",
       "name": "Attach to remote",
       "address": "localhost",
-      "port": 5000,
+      "port": 3000,
     }
   ]
 }

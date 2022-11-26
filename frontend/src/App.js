@@ -30,7 +30,8 @@ function App() {
       <Route path="/pages/EnterEmailPage" element={<EnterEmailPage />} />
       <Route path="/pages/PWRecoveryPage/:token" element={<PWRecoveryPage />} />
       <Route path="/pages/ChatExamples" element={<ChatExamples />} />
-      
+      <Route path="/components/User" element={<HomePage />} />
+\      
     </Routes>
   </BrowserRouter>
 );

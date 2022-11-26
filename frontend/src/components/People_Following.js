@@ -4,7 +4,9 @@ import axios from "axios"
 
 
 
-function People({ first, last, work, school, id}) {
+
+function People({ first, last, work, school, id, picture}) {
+
   
   //console.log(localStorage.getItem("JwtToken"));
   
@@ -39,23 +41,65 @@ function People({ first, last, work, school, id}) {
     } catch (error){
       console.log(error);
     }
+    window.location.href = "Following";
+  }
+
+  function handleUnfollow(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    if(window.confirm("Are you sure you want to unfollow "+first+"?")){
+      doUnfollow();
+    }
+  }
+
+  function handleChatClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    
+  }
+
+
+  const viewProfile = async () => {
+    console.log(id);
+    console.log(first);
+    localStorage.setItem("search_profile", id);    
+
   }
 
   return (
-    <div className='container'>
-        <div>
-        <h1>{first}{last}</h1>
-        <h2>{work}   {school}</h2>
-        </div>
+    // <div className='container'>
+    //     <img src={picture} alt="" className="search_picture"></img>
+    //     <a href='../components/User'
+    //       onClick={viewProfile}>
+    //       <div>
+    //         <h1>{first}&nbsp;{last}</h1>
+    //       </div>    
+    //     </a>
 
-        <button className='btn'>Chat</button>
-        <input
-            className='btn'
-            type='submit'
-            value="Unfollow"
-            onClick={doUnfollow}>
-        </input>
-    </div>
+    //     <button className='btn'>Chat</button>
+    //     <input
+    //         className='btn'
+    //         type='submit'
+    //         value="Unfollow"
+    //         onClick={doUnfollow}>
+    //     </input>
+    // </div>
+
+    <a href="../components/User" onClick={viewProfile}>
+      <div className='container'>
+          <img src={picture} alt="" className="search_picture"></img>
+          <h1>{first}&nbsp;{last}</h1>
+          <div>
+            <button className="btn" onClick={handleChatClick}>Chat</button>
+            <input
+              className='btn'
+              type='submit'
+              value="Unfollow"
+              onClick={handleUnfollow}>
+            </input> 
+          </div> 
+      </div>
+    </a>
 
   )
 }

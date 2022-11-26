@@ -18,22 +18,28 @@ function Followers() {
     // This is turning an async call into a sync one
     (async () => {
       // Gets our followers list (list of user IDs)
-      const res = await axios.post(bp.buildPath("api/customrequest"), {
-        _id: ud.userId,
-        Request: "Followers"
-      });
 
-      // Populate a new array with the actual profiles of our followers
-      let followerProfiles = [];
-      for (const id of res.data.Result) {
-        const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
-          _id: id,
+      try{
+        const res = await axios.post(bp.buildPath("api/customrequest"), {
+          _id: ud.userId,
+          Request: "Followers"
         });
-        followerProfiles.push(profile.data);
-      }
+        
+        // Populate a new array with the actual profiles of our followers
+        let followerProfiles = [];
+        for (const id of res.data.Result) {
+          const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
+            _id: id,
+          });
+          followerProfiles.push(profile.data);
+        }
+        
+        // Set the `followers` variable to be our new array
+        setFollowers(followerProfiles);
 
-      // Set the `followers` variable to be our new array
-      setFollowers(followerProfiles);
+      }catch(error){
+        console.log(error);
+      }
     })();
   }, []);
 
@@ -49,7 +55,10 @@ function Followers() {
             first={person.FirstName}
             last={person.LastName} 
             school={person.School}
-            work={person.Work} />
+            work={person.Work} 
+            picture={person.ProfilePicture}
+            id={person.Id}
+            login={person.Login}/>
           );
         })}
     </div>

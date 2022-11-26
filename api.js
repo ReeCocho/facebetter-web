@@ -818,7 +818,8 @@ exports.setApp = function ( app, wss, client )
         Work: obj.Work,
         Followers: [],
         AccountVerified: false,
-        Channels: []
+        Channels: [],
+        ProfilePicture: "https://facebetter.s3.amazonaws.com/public/default.png"
       };
 
       db.collection('Users').insertOne(newUser);
@@ -1248,7 +1249,8 @@ exports.setApp = function ( app, wss, client )
             FirstName: 1,
             LastName: 1,
             School: 1,
-            Work: 1
+            Work: 1,
+            ProfilePicture: 1
           }
         )
         .toArray();
@@ -1558,72 +1560,6 @@ exports.setApp = function ( app, wss, client )
       res.status(200).json(ret);
     }
   });
-
-  app.post('/api/updateprofilepic', async (req, res, next) => {
-    // incoming: 
-    // outgoing: 
-    try
-    {
-      // Verify input
-      const obj = req.body;
-      let err = verifyObject(
-        obj,
-        {
-          _id: "string",
-          FileUrl: "string"
-        }
-      );
-
-      if (err !== null)
-      {
-        throw err;
-      }
-
-
-      let objId = new ObjectId(obj._id)
-      let filter = {_id: objId}
-      let updates = {
-        ProfilePicture: obj.FileUrl,
-      }
-      const db = client.db("SocialNetwork");
-      await db
-        .collection('Users')
-        .updateMany(filter, {$set: updates})
-
-      results = await db
-        .collection('Users')
-        .find({_id: objId})
-        .toArray();
-
-
-      if (results.length === 0)
-      {
-        throw "User with ID not found";
-      }
-      
-      var ret = 
-      { 
-        Id: results[0]._id, 
-        FirstName: results[0].FirstName, 
-        LastName: results[0].LastName, 
-        Following: results[0].Following,
-        Followers: results[0].Followers,
-        School: results[0].School,
-        Work: results[0].Work,
-        ProfilePicture: results[0].ProfilePicture,
-        Error: err
-      };
-
-      res.status(200).json(ret);
-    }
-    catch (e)
-    {
-      const ret = { Error: e.toString() };
-      res.status(200).json(ret);
-    }
-  });
-
-
 
 
   /**
