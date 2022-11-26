@@ -43,13 +43,22 @@ function People({ first, last, work, school, id, picture}) {
     }
   }
 
+  const viewProfile = async () => {
+    console.log(id);
+    console.log(first);
+    localStorage.setItem("search_profile", id);    
+
+  }
+
   return (
     <div className='container'>
         <img src={picture} alt="" className="search_picture"></img>
-        <div>
-        <h1>{first}&nbsp;{last}</h1>
-        {/* <h2>{work}   {school}</h2> */}
-        </div>
+        <a href='../components/User'
+          onClick={viewProfile}>
+          <div>
+            <h1>{first}&nbsp;{last}</h1>
+          </div>    
+        </a>
 
         <button className='btn'>Chat</button>
         <input
