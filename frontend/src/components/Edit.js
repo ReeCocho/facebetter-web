@@ -80,7 +80,9 @@ function Edit() {
       </div>
       <div className="profile_body">
         <div className="center">
-          <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+          <div className="brightness">
+              <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+          </div>
         </div>
         <h2>Profile Picture</h2>
         <UploadFile
