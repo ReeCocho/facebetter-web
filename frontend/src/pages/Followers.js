@@ -18,7 +18,6 @@ function Followers() {
     // This is turning an async call into a sync one
     (async () => {
       // Gets our followers list (list of user IDs)
-
       try{
         const res = await axios.post(bp.buildPath("api/customrequest"), {
           _id: ud.userId,

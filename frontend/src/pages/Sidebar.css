@@ -29,11 +29,12 @@ a:active { text-decoration: none; color:teal; } */
     background-color: var(--twitter-color) !important;
     border: none !important;
     color: white !important;
-    font-weight: 900 !important;
+    font-weight: 700 !important;
+    font-size: 20px;
     text-transform: inherit !important;
     border-radius: 30px !important;
     height: 50px !important;
-    margin-top: 20px !important;
+    margin-top: 50px !important;
 }
 
 .cursor{
