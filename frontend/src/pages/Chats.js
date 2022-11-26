@@ -24,11 +24,16 @@ function Chats() {
       let chats = []
 
       for(const id of res.data.Result){
-        const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
-
+        const chatNames = await axios.post(bp.buildPath("api/getchanneltitle"), {
+          JwtToken: localStorage.getItem("access_token"),
+          Channel: id
         });
+
+        chats.push(chatNames.data);
       }
-      
+
+      console.log(chats.Title);
+
 
       // // Populate a new array with the actual profiles of our channels
       // let chats = [];

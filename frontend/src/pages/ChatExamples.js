@@ -2,6 +2,7 @@ import React from 'react';
 import { buildPath } from '../components/Path';
 import axios from "axios";
 import { ChatListener } from '../chat';
+import './ChatExamples.css'
 
 /**
  * HOW TO USE:
@@ -167,7 +168,7 @@ const ChatExamples = () =>
     };
 
     return(
-        <div>
+        <div className='main_div'>
             <ul id="ChatList">
                 {
                     messages.map((message, i) => {
@@ -187,6 +188,11 @@ const ChatExamples = () =>
                 <h1>New Channel</h1>
                 <input type="text" onChange={handleChannelTitleChange} ref={channelTitleRef}></input>
                 <button type="button" onClick={newChannel}>Create Channel</button>
+
+                <h1>Delete Channel</h1>
+                <input type="text" onChange={handleChannelTitleChange} ref={channelTitleRef}></input>
+                <button type="button" onClick={newChannel}>Create Channel</button>
+
 
                 <h1>Channels</h1>
                 <button type="button" onClick={getChannels}>Get Channels</button>
