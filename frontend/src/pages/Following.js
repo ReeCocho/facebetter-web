@@ -15,23 +15,27 @@ function Following() {
     // This is turning an async call into a sync one
     (async () => {
       // Gets our followings list (list of user IDs)
-      const res = await axios.post(bp.buildPath("api/customrequest"), {
-        _id: ud.userId,
-        Request: "Following"
-      });
-
-      // Populate a new array with the actual profiles of the people we follow
-      let followingProfiles = [];
-      for (const id of res.data.Result) {
-        const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
-          _id: id,
+      try{
+        const res = await axios.post(bp.buildPath("api/customrequest"), {
+          _id: ud.userId,
+          Request: "Following"
         });
-        followingProfiles.push(profile.data);
+  
+        // Populate a new array with the actual profiles of the people we follow
+        let followingProfiles = [];
+        for (const id of res.data.Result) {
+          const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
+            _id: id,
+          });
+          followingProfiles.push(profile.data);
+        }
+  
+  
+        // Set the `followings` variable to be our new array
+        setFollowings(followingProfiles);
+      }catch(error){
+        console.log(error);
       }
-
-
-      // Set the `followings` variable to be our new array
-      setFollowings(followingProfiles);
     })();
   }, []);
 
