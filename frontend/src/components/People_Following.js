@@ -47,8 +47,9 @@ function People({ first, last, work, school, id, picture}) {
   function handleUnfollow(e) {
     e.stopPropagation();
     e.preventDefault();
-    
-    doUnfollow();
+    if(window.confirm("Are you sure you want to unfollow "+first+"?")){
+      doUnfollow();
+    }
   }
 
   function handleChatClick(e) {
