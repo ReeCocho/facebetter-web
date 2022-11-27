@@ -7,7 +7,7 @@ function PageTitle()
    return(
      <div className='organize'>
          <img className="title" src={logo} ></img>
-         <p className="subtitle">We don't steal your private information!</p>
+         <p className="subtitle">We Don't Steal Your Private Information!</p>
      </div>
    );
 };
