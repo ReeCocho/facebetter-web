@@ -96,7 +96,7 @@ function User() {
     return (
     <div className="main_div">
       <div className='header'>
-        <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
+        <h2>Profile</h2>
         {/* {isFollowing()} */}
         <a id="link">
           {isFollowing
@@ -109,6 +109,7 @@ function User() {
         <div className="center">
           <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
         </div> 
+        <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
         <h3>@{profile.Login}</h3>  
         <h2>Followers</h2>
         <h3>{numFollowers}</h3>  
