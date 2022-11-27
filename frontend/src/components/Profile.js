@@ -28,6 +28,8 @@ function Profile() {
     })();
   }, []);
 
+  console.log(profile);
+
   /*let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('./Path.js');
 
@@ -48,7 +50,7 @@ function Profile() {
     return (
     <div className="main_div">
       <div className='header'>
-        <h2>Profile</h2>
+        <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
         <a href="/components/Edit" id="link">
           <input
             type="submit"
@@ -61,14 +63,16 @@ function Profile() {
         <div className="center">
           <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
         </div>
-        <h2>First Name</h2>
-        <h3>{profile.FirstName}</h3>
-        <h2>Last Name</h2>
-        <h3>{profile.LastName}</h3>  
+        <h2>Followers</h2>
+        <h3>{profile.Followers.length}</h3>  
+        <h2>Following</h2>
+        <h3>{profile.Following.length}</h3>  
         <h2>Work</h2>
         <h3>{profile.Work}</h3>  
         <h2>School</h2>
         <h3>{profile.School}</h3>  
+        <h2>Bio</h2>
+        <h3>{profile.Bio}</h3>
       </div>
     </div>
     );

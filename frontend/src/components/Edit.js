@@ -7,7 +7,8 @@ function Edit() {
   var editFirstName;
   var editLastName;
   var editSchool;
-  var editWork
+  var editWork;
+  var editBio;
   
   // incoming: {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "NewFirst", LastName: "NewLast", ...}
 
@@ -49,6 +50,9 @@ function Edit() {
     if (editWork.value == "") {
       editWork.value = profile.Work;
     }
+    if (editBio.value == "") {
+      editBio.value = profile.Bio;
+    }
 
     axios
       .post(bp.buildPath("api/editprofile") , {
@@ -57,6 +61,7 @@ function Edit() {
         LastName: editLastName.value,
         School: editSchool.value,
         Work: editWork.value,
+        Bio: editBio.value,
         JwtToken: localStorage.getItem("access_token")
       })
       .then((res) => {
@@ -103,7 +108,6 @@ function Edit() {
             />
           </div>
         </div>
-        <h2>Profile Picture</h2>
         <h2>First Name</h2>
         <input 
           type="text"
@@ -132,6 +136,13 @@ function Edit() {
           placeholder={profile.School}
           ref={(c) => (editSchool = c)}
         />   
+        <h2>Bio</h2>
+        <input 
+          type="text"
+          id="editBio"
+          placeholder={profile.Bio}
+          ref={(c) => (editBio = c)}
+        /> 
       </div>
     </div>
     );

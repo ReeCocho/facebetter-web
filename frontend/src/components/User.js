@@ -92,7 +92,7 @@ function User() {
     return (
     <div className="main_div">
       <div className='header'>
-        <h2>Profile</h2>
+        <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
         {/* {isFollowing()} */}
         <a id="link">
           {isFollowing
@@ -104,11 +104,7 @@ function User() {
       <div className="profile_body">
         <div className="center">
           <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
-        </div>
-        <h2>First Name</h2>
-        <h3>{profile.FirstName}</h3>
-        <h2>Last Name</h2>
-        <h3>{profile.LastName}</h3>  
+        </div> 
         <h2>Work</h2>
         <h3>{profile.Work}</h3>  
         <h2>School</h2>
