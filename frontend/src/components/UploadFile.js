@@ -11,7 +11,6 @@ function UploadFile(props) {
 
   let ud = JSON.parse(localStorage.getItem('user_data'));
   let userId = ud.userId;
-  console.log(ud);
   const ref = useRef()
 
 
@@ -49,11 +48,14 @@ function UploadFile(props) {
 
   console.log(fileData);
 
+  let picLink = localStorage.getItem("profile_pic_link");
+
   return (
     <div>
       <div>
-        <input type="file" id="fileUpload" onInput={doFileUpload}/> 
-        {/* <img src={profile.ProfilePicture} alt="" className="profile_picture" onClick={handleClick}></img> */}
+        {/* <input type="file" id="fileUpload" onInput={doFileUpload}/>  */}
+        <input ref={ref} type="file" id="fileUpload" onInput={doFileUpload} style={{display:"none"}}/>
+        <img src={picLink} alt="" className="profile_picture" onClick={handleClick}></img>
         {/* <input ref={ref} type="file" id="fileUpload" onInput={doFileUpload}/> */}
       </div>    
       {/* <div>

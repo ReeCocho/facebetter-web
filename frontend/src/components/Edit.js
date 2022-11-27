@@ -15,7 +15,6 @@ function Edit() {
   let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('../components/Path.js');
   const ref = useRef()
-  console.log(ud);
 
   useEffect(() => {
 
@@ -29,6 +28,7 @@ function Edit() {
 
       // Set the `profile` variable to be our new array
       setProfile(profile.data);
+      localStorage.setItem("profile_pic_link", profile.data.ProfilePicture);
     })();
   }, []);
 
@@ -68,12 +68,6 @@ function Edit() {
       });
   }
 
-  const handleClick = (e) => {
-    ref.current.click()
-    
-  }
-
-
   return (
     <div className="main_div">
       <div className="header">
@@ -107,31 +101,9 @@ function Edit() {
                   });
               }}
             />
-              <img src={profile.ProfilePicture} alt="" className="profile_picture" onClick={handleClick}>
-              </img>
-              {/* <input ref={ref} type="file" /> */}
           </div>
         </div>
         <h2>Profile Picture</h2>
-        {/* <UploadFile
-          onComplete={(result) => {
-            let ud = JSON.parse(localStorage.getItem("user_data"));
-            let userId = ud.userId;
-            axios
-              .post(bp.buildPath("api/updateprofilepic"), {
-                _id: userId,
-                FileUrl: result.fileUrl,
-              })
-              .then((res) => {
-                localStorage.setItem("profile_info", JSON.stringify(res.data));
-                console.log(res);
-                window.location.href = "Edit";
-              })
-              .catch((error) => {
-                console.error(error);
-              });
-          }}
-        /> */}
         <h2>First Name</h2>
         <input 
           type="text"
