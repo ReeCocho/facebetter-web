@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../components/Profile.css';
 import axios from "axios";
-import People from '../components/People_Followers';
+import Chat from '../components/Chat_Select';
 
 function Chats() {
 
@@ -61,8 +61,8 @@ function Chats() {
       {channels.map((chat, i) => {
           console.log(chat.name + " " + i);
           return (
-            <People 
-            first={chat.Title}
+            <Chat 
+            title={chat.Title}
             picture="https://facebetter.s3.amazonaws.com/public/default.png"/>
           );
         })}
