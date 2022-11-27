@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../components/Profile.css';
 import axios from "axios";
+import Chat from "../components/ChatDM"
 
 function Chats() {
 
@@ -18,9 +19,10 @@ function Chats() {
         _id: ud.userId,
         Request: "Channels"
       });
-
-      console.log(res)
-
+      let channelIds = []
+      
+      channelIds = res.data.Result
+      console.log(channelIds)
       let chats = []
 
       for(const id of res.data.Result){
@@ -32,7 +34,8 @@ function Chats() {
         chats.push(chatNames.data);
       }
 
-      console.log(chats.Title);
+      console.log(chats)
+
 
 
       // // Populate a new array with the actual profiles of our channels
@@ -47,27 +50,23 @@ function Chats() {
 
 
       // // Set the `channels` variable to be our new array
-      // setChannels(chats);
+      setChannels(chats);
     })();
   }, []);
+
 
   return (
     <div className="main_div">
       <div className="header">
         <h2>Chats</h2>
       </div>
-      {/* {followings.map((chat, i) => {
-          console.log(chat.name + " " + i);
+      {channels.map((chat, i) => {
+          console.log(chat.Title + " " + i);
           return (
-            <People 
-            first={person.FirstName}
-            last={person.LastName} 
-            school={person.School}
-            work={person.Work}
-            id={person.Id} 
-            picture={person.ProfilePicture}/>
+            <Chat title = {chat.Title}
+            key={i} />
           );
-        })} */}
+        })}
     </div>
   );
 }
