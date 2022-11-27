@@ -6,6 +6,8 @@ import axios from "axios";
 function Profile() {
 
   const [ profile, setProfile ] = useState([]);
+  const [ numFollowers, setNumFollowers ] = useState([]);
+  const [ numFollowing, setNumFollowing ] = useState([]);
 
   // This function gets called once on page load
   useEffect(() => {
@@ -20,7 +22,8 @@ function Profile() {
         });
         // Set the `profile` variable to be our new array
         setProfile(profile.data);
-
+        setNumFollowers(profile.data.Followers.length);
+        setNumFollowing(profile.data.Following.length);
       } catch(error){
         console.log(error);
       }
@@ -28,7 +31,9 @@ function Profile() {
     })();
   }, []);
 
-  console.log(profile);
+
+  // console.log(profile);
+  // console.log(profile.Followers.length);
 
   /*let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('./Path.js');
@@ -64,9 +69,9 @@ function Profile() {
           <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
         </div>
         <h2>Followers</h2>
-        <h3>{profile.Followers.length}</h3>  
+        <h3>{numFollowers}</h3>  
         <h2>Following</h2>
-        <h3>{profile.Following.length}</h3>  
+        <h3>{numFollowing}</h3>  
         <h2>Work</h2>
         <h3>{profile.Work}</h3>  
         <h2>School</h2>
