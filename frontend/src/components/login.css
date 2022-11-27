@@ -10,10 +10,15 @@
   margin-left: 0;
   padding: 25px;
   padding: 14px 20px;
-  background-color: white;
   border-radius: 15px;
   width: 40%;
   max-width: 400px;
+  background: linear-gradient(to right, rgba(0,72,95,0.45), transparent 90%);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  -webkit-box-shadow: -14.5px 11px 16px 3px #00485f;
+  -moz-box-shadow: -14.5px 11px 16px 3px #00485f;
+  box-shadow: -14.5px 11px 16px 3px #00485f;
 }
 
 .loginSquare{
@@ -49,12 +54,23 @@
 }
 
 #loginButton{
-    background-color: #4267B2;
-    color: white;
+    background-color: #b0d7ff;
+    color: #00485f;
 }
 
 #loginButton:hover {
-    background-color: #1145ac;
+    background-color: #ffffff;
+    color: #b0d7ff;
+}
+
+#pwRecoveryButton{
+  background-color: #eae8ff; 
+  color: #00485f;
+}
+
+#pwRecoveryButton:hover {
+  background-color: #ffffff;
+  color: #b0d7ff;
 }
 
 #registerButton{

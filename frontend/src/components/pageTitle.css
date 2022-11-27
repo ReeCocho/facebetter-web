@@ -8,8 +8,12 @@
 
 .subtitle{
     max-width: 500px;
-    font-size: 28px;
-    text-align: left;  
+    font-size: 32px;
+    text-align: center;
+    font-family: Bradley Hand, cursive;
+    color: #00485f;  
+    text-shadow: 2px 2px #ffffff;
+    font-weight: bold;
 }
 
 .title{

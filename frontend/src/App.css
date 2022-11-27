@@ -48,9 +48,11 @@
 
 
 .background{
-  background-color: #e1e9e8;
+  background: rgba(176, 215, 255, 0.11);
+  background: -webkit-linear-gradient(218deg, rgba(176, 215, 255, 0.11) 0%, #b0d7ff 50%, rgba(0, 71, 94, 0.51) 100%);
+  background: linear-gradient(218deg, rgba(176, 215, 255, 0.11) 0%, #b0d7ff 50%, rgba(0, 71, 94, 0.51) 100%);
   height: 100vh;
-  display: flex;
+  display: flex;  
   /* flex-direction: column; */
   align-items: center;
   justify-content: space-around;
