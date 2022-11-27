@@ -85,6 +85,7 @@ function People({ first, last, login, picture, id}) {
     }
     
   return (
+
     <a href="../User"
     onClick={viewProfile}>
       <div className='container'>
@@ -99,6 +100,7 @@ function People({ first, last, login, picture, id}) {
           </div>
       </div>
     </a>
+
 
   )
 }

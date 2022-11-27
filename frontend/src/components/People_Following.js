@@ -1,15 +1,10 @@
-import React from 'react'
-import "./People.css"
-import axios from "axios"
+import React from "react";
+import "./People.css";
+import axios from "axios";
 
-
-
-
-function People({ first, last, work, school, id, picture}) {
-
-  
+function People({ first, last, work, school, id, picture }) {
   //console.log(localStorage.getItem("JwtToken"));
-  
+
   /*function doUnfollow(){
       axios
       .post(bp.buildPath("api/unfollow") , {
@@ -27,18 +22,18 @@ function People({ first, last, work, school, id, picture}) {
   }*/
 
   const doUnfollow = async () => {
-    let ud = JSON.parse(localStorage.getItem('user_data'));
-    var bp = require('./Path.js');
-    
+    let ud = JSON.parse(localStorage.getItem("user_data"));
+    var bp = require("./Path.js");
+
     try {
       const res = await axios.post(bp.buildPath("api/unfollow"), {
         _id: ud.userId,
         ToUnfollow: id,
-        JwtToken: localStorage.getItem("access_token")
-      })
+        JwtToken: localStorage.getItem("access_token"),
+      });
       console.log(res.data);
       console.log(first);
-    } catch (error){
+    } catch (error) {
       console.log(error);
     }
     window.location.href = "Following";
@@ -104,4 +99,4 @@ function People({ first, last, work, school, id, picture}) {
   )
 }
 
-export default People
+export default People;

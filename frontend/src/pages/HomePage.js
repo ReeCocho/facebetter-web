@@ -13,6 +13,8 @@ import Edit from "../components/Edit";
 import HomeComp from "../components/Home";
 import UploadFile from "../components/UploadFile";
 import User from "../components/User"
+import ChatExamples from "./ChatExamples";
+
 
 const HomePage = () =>
 {
@@ -58,6 +60,7 @@ const HomePage = () =>
         <div className="app">
             <Sidebar />
             {component}
+            <ChatExamples/>
         </div>
     );
 }

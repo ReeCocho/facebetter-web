@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import '../components/Profile.css';
 import axios from "axios";
+import '../components/Profile.css';
 import People from '../components/People_Followers';
 
 function Followers() {

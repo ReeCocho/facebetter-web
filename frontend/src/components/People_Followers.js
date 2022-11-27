@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import "./People.css"
 import axios from "axios"
@@ -102,4 +103,4 @@ function People({ first, last, work, school, picture, id, login}) {
   )
 }
 
-export default People
+export default People;

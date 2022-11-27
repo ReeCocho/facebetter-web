@@ -1561,6 +1561,119 @@ exports.setApp = function ( app, wss, client )
     }
   });
 
+  app.post('/api/updateprofilepic', async (req, res, next) => {
+    // incoming: 
+    // outgoing: 
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          _id: "string",
+          FileUrl: "string"
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+
+      let objId = new ObjectId(obj._id)
+      let filter = {_id: objId}
+      let updates = {
+        ProfilePicture: obj.FileUrl,
+      }
+      const db = client.db("SocialNetwork");
+      await db
+        .collection('Users')
+        .updateMany(filter, {$set: updates})
+
+      results = await db
+        .collection('Users')
+        .find({_id: objId})
+        .toArray();
+
+
+      if (results.length === 0)
+      {
+        throw "User with ID not found";
+      }
+      
+      var ret = 
+      { 
+        Id: results[0]._id, 
+        FirstName: results[0].FirstName, 
+        LastName: results[0].LastName, 
+        Following: results[0].Following,
+        Followers: results[0].Followers,
+        School: results[0].School,
+        Work: results[0].Work,
+        ProfilePicture: results[0].ProfilePicture,
+        Error: err
+      };
+
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  app.post('/api/getchanneltitle', async (req, res, next) => {
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Channel: "string",
+          JwtToken: "string",
+        }
+      );
+
+      if (err !== null)
+      {
+        throw err;
+      }
+
+      // Verify and decode token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+
+      // Ensure that the user has access to the channel
+      const db = client.db("SocialNetwork");
+      const channel = await db.collection('Channels')
+        .findOne({
+          _id: ObjectId(obj.Channel),
+          Members: ObjectId(ud.userId)
+        });
+		
+	  if (channel === null)
+	  {
+		  throw "Channel does not exist or user is not a member.";
+	  }
+
+      const ret = { Error: null, Title: channel.Title };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+
 
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data
