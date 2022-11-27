@@ -84,6 +84,26 @@
     object-fit: cover;
     clip-path: circle();
     margin: 0 auto;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.profile_picture_edit {
+    object-fit: cover;
+    clip-path: circle();
+    margin: 0 auto;
+    position: absolute;
+    top: 60px;
+    left: 60px;
+    max-width:30%;
+    height:auto;
+}
+
+.image_edit_container {
+    position: relative;
+    top: 0;
+    left: 0;
 }
 
 .search_picture {

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from 'react';
 import AWS from 'aws-sdk';
+import './Profile.css';
 
 const s3  = new AWS.S3({
   accessKeyId: process.env.REACT_APP_BUCKETEER_AWS_ACCESS_KEY_ID,
@@ -11,7 +12,8 @@ function UploadFile(props) {
 
   let ud = JSON.parse(localStorage.getItem('user_data'));
   let userId = ud.userId;
-  console.log(ud);
+  const ref = useRef()
+
 
   const [fileData, setFileData] = useState({});
 
@@ -40,16 +42,26 @@ function UploadFile(props) {
     }
   }
 
+  const handleClick = (e) => {
+    ref.current.click()
+    
+  }
+
   console.log(fileData);
+
+  let picLink = localStorage.getItem("profile_pic_link");
 
   return (
     <div>
       <div>
-        <input type="file" id="fileUpload"/>    
+        {/* <input type="file" id="fileUpload" onInput={doFileUpload}/>  */}
+        <input ref={ref} type="file" id="fileUpload" onInput={doFileUpload} style={{display:"none"}}/>
+        <div className='image_edit_container'>
+         <img src="https://facebetter.s3.amazonaws.com/public/636da7d3f459ca05f325a0c9/edit-icon-png-3602.png" className='profile_picture_edit'/>
+          <img src={picLink} alt="" className="profile_picture" onClick={handleClick}></img>
+        </div>
+        {/* <input ref={ref} type="file" id="fileUpload" onInput={doFileUpload}/> */}
       </div>    
-      <div> 
-        <button onClick={doFileUpload} id="uploadButton">Upload</button>    
-      </div>
       {/* <div>
         <img src={fileData.fileUrl} alt="" id="upload_picture"></img>
       </div> */}
