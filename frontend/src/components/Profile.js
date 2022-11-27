@@ -68,12 +68,18 @@ function Profile() {
         <div className="center">
           <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
         </div>
-        <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
-        <h3>@{profile.Login}</h3>  
-        <h2>Followers</h2>
-        <h3>{numFollowers}</h3>  
-        <h2>Following</h2>
-        <h3>{numFollowing}</h3>  
+        <div className='follow_counts'>
+          <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
+          <h2>@{profile.Login}</h2> 
+          <a href="/pages/Followers">
+            <h2>Followers {numFollowers}&nbsp;</h2>
+          </a>
+        </div>
+        <div className='follow_counts'>
+          <a href="/pages/Following">
+            <h2>Following {numFollowers}</h2>
+          </a>
+        </div>
         <h2>Work</h2>
         <h3>{profile.Work}</h3>  
         <h2>School</h2>

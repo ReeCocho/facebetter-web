@@ -124,3 +124,7 @@
 .brightness img:hover {
     opacity: .5;
 }
+
+.follow_counts {
+    display:inline-block;
+}
