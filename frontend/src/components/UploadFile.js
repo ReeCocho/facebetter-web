@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from 'react';
 import AWS from 'aws-sdk';
 
 const s3  = new AWS.S3({
@@ -12,6 +12,8 @@ function UploadFile(props) {
   let ud = JSON.parse(localStorage.getItem('user_data'));
   let userId = ud.userId;
   console.log(ud);
+  const ref = useRef()
+
 
   const [fileData, setFileData] = useState({});
 
@@ -40,16 +42,20 @@ function UploadFile(props) {
     }
   }
 
+  const handleClick = (e) => {
+    ref.current.click()
+    
+  }
+
   console.log(fileData);
 
   return (
     <div>
       <div>
-        <input type="file" id="fileUpload"/>    
+        <input type="file" id="fileUpload" onInput={doFileUpload}/> 
+        {/* <img src={profile.ProfilePicture} alt="" className="profile_picture" onClick={handleClick}></img> */}
+        {/* <input ref={ref} type="file" id="fileUpload" onInput={doFileUpload}/> */}
       </div>    
-      <div> 
-        <button onClick={doFileUpload} id="uploadButton">Upload</button>    
-      </div>
       {/* <div>
         <img src={fileData.fileUrl} alt="" id="upload_picture"></img>
       </div> */}

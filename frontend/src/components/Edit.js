@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './Profile.css';
 import axios from "axios";
 import UploadFile from "./UploadFile";
@@ -14,6 +14,8 @@ function Edit() {
   const [ profile, setProfile ] = useState([]);
   let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('../components/Path.js');
+  const ref = useRef()
+  console.log(ud);
 
   useEffect(() => {
 
@@ -66,6 +68,11 @@ function Edit() {
       });
   }
 
+  const handleClick = (e) => {
+    ref.current.click()
+    
+  }
+
 
   return (
     <div className="main_div">
@@ -81,11 +88,32 @@ function Edit() {
       <div className="profile_body">
         <div className="center">
           <div className="brightness">
-              <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+            <UploadFile
+              onComplete={(result) => {
+                let ud = JSON.parse(localStorage.getItem("user_data"));
+                let userId = ud.userId;
+                axios
+                  .post(bp.buildPath("api/updateprofilepic"), {
+                    _id: userId,
+                    FileUrl: result.fileUrl,
+                  })
+                  .then((res) => {
+                    localStorage.setItem("profile_info", JSON.stringify(res.data));
+                    console.log(res);
+                    window.location.href = "Edit";
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
+              }}
+            />
+              <img src={profile.ProfilePicture} alt="" className="profile_picture" onClick={handleClick}>
+              </img>
+              {/* <input ref={ref} type="file" /> */}
           </div>
         </div>
         <h2>Profile Picture</h2>
-        <UploadFile
+        {/* <UploadFile
           onComplete={(result) => {
             let ud = JSON.parse(localStorage.getItem("user_data"));
             let userId = ud.userId;
@@ -103,7 +131,7 @@ function Edit() {
                 console.error(error);
               });
           }}
-        />
+        /> */}
         <h2>First Name</h2>
         <input 
           type="text"
