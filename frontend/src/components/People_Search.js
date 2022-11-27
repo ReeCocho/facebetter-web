@@ -1,8 +1,27 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import "./People.css"
 import axios from "axios";
 
 function People({ first, last, login, picture, id}) {
+  const [ profileSelf, setProfileSelf ] = useState([]);
+  const [ isFollowing, setIsFollowing ] = useState([]);
+  let followingList;
+  
+  useEffect(() => {
+    var bp = require('../components/Path.js');
+
+    (async () => {
+      let ud = JSON.parse(localStorage.getItem('user_data'));
+      const profileSelf = await axios.post(bp.buildPath('api/retrieveprofile'), {
+          _id: ud.userId,
+      });
+
+      // Set the `profile` variable to be our new array
+      setProfileSelf(profileSelf.data);
+      followingList = profileSelf.data.Following;
+      setIsFollowing(followingList.includes(id))
+    })();
+  }, []);
 
     const doFollow = async () => {
       let ud = JSON.parse(localStorage.getItem('user_data'));
@@ -18,12 +37,26 @@ function People({ first, last, login, picture, id}) {
       } catch (error){
         console.log(error);
       }
+      window.location.href = "Search";
+    }
+
+    const doUnfollow = async () => {
+      let ud = JSON.parse(localStorage.getItem('user_data'));
+      var bp = require('./Path.js');
+      try {
+        const res = await axios.post(bp.buildPath("api/unfollow"), {
+          _id: ud.userId,
+          ToUnfollow: id,
+          JwtToken: localStorage.getItem("access_token")
+        })
+      } catch (error){
+        console.log(error);
+      }
+      window.location.href = "Search";
     }
 
 
     const viewProfile = async () => {
-      console.log(id);
-      console.log(first);
       localStorage.setItem("search_profile", id); 
       localStorage.setItem("login_profile", login);   
 
@@ -34,6 +67,14 @@ function People({ first, last, login, picture, id}) {
       e.preventDefault();
   
       doFollow();
+      
+    }
+
+    function handleUnfollow(e) {
+      e.stopPropagation();
+      e.preventDefault();
+  
+      doUnfollow();
       
     }
   
@@ -51,12 +92,10 @@ function People({ first, last, login, picture, id}) {
           <h1>{first}&nbsp;{last}</h1>
           <div>
             <button className="btn" onClick={handleChatClick}>Chat</button>
-            <input
-                className='btn'
-                type='submit'
-                value="Follow"
-                onClick={handleFollow}>
-            </input>
+            {isFollowing
+              ? <input className='btn' type='submit' value="Unfollow" onClick={handleUnfollow} />
+              : <input className='btn' type='submit' value="Follow" onClick={handleFollow} /> 
+            }   
           </div>
       </div>
     </a>
