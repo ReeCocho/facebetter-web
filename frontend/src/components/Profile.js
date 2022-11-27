@@ -77,7 +77,7 @@ function Profile() {
         </div>
         <div className='follow_counts'>
           <a href="/pages/Following">
-            <h2>Following {numFollowers}</h2>
+            <h2>Following {numFollowing}</h2>
           </a>
         </div>
         <h2>Work</h2>
