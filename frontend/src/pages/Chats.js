@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../components/Profile.css';
 import axios from "axios";
+import People from '../components/People_Followers';
 
 function Chats() {
 
@@ -31,6 +32,7 @@ function Chats() {
 
         chats.push(chatNames.data);
       }
+      setChannels(chats);
 
       console.log(chats.Title);
 
@@ -56,18 +58,14 @@ function Chats() {
       <div className="header">
         <h2>Chats</h2>
       </div>
-      {/* {followings.map((chat, i) => {
+      {channels.map((chat, i) => {
           console.log(chat.name + " " + i);
           return (
             <People 
-            first={person.FirstName}
-            last={person.LastName} 
-            school={person.School}
-            work={person.Work}
-            id={person.Id} 
-            picture={person.ProfilePicture}/>
+            first={chat.Title}
+            picture="https://facebetter.s3.amazonaws.com/public/default.png"/>
           );
-        })} */}
+        })}
     </div>
   );
 }
