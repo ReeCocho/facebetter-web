@@ -109,6 +109,7 @@ function User() {
         <div className="center">
           <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
         </div> 
+        <h3>@{profile.Login}</h3>  
         <h2>Followers</h2>
         <h3>{numFollowers}</h3>  
         <h2>Following</h2>
