@@ -23,7 +23,7 @@ function User() {
 
       // Set the `profile` variable to be our new array
       setProfile(profile.data);
-      localStorage.setItem("login-profile", profile.data.Login);
+      localStorage.setItem("login_profile", profile.data.Login);
       setNumFollowers(profile.data.Followers.length);
       setNumFollowing(profile.data.Following.length);
 
