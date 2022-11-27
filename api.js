@@ -1673,7 +1673,82 @@ exports.setApp = function ( app, wss, client )
     }
   });
 
-
+  
+  app.post('/api/createdm', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+      obj,
+      {
+        JwtToken: "string",
+        OtherUserId: "string"
+      }
+      );
+    
+      if (err !== null)
+      {
+      throw err;
+      }
+    
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+      throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
+      
+      // Check if a DM already exists
+      const db = client.db("SocialNetwork");
+      const channel = await db.collection('Channels')
+      .findOne({
+        Members:{$all:[ObjectId(ud.userId), ObjectId(obj.OtherUserId)]},
+        IsDM: true
+      });
+    
+      if (channel !== null)
+      {
+      const ret = { Error: null, JwtToken: refreshedToken, Channel: channel._id };
+      res.status(200).json(ret);
+      return;
+      }
+    
+      // Create the channel if it doesn't exist
+      const newChannel = await db.collection('Channels').insertOne({
+        Owner: ObjectId(ud.userId),
+        Title: "DM: " + ud.userId + " " + obj.OtherUserId,
+        Members: [ObjectId(ud.userId), ObjectId(obj.OtherUserId)],
+        DateCreated: new Date(Date.now()),
+        IsDM: true
+      });
+    
+      // Update the users with the new channel
+      await db
+      .collection('Users')
+      .updateOne(
+        { _id: ObjectId(ud.userId) }, 
+        { $addToSet: { DMs: newChannel.insertedId } }
+      );
+      
+      await db
+      .collection('Users')
+      .updateOne(
+        { _id: ObjectId(obj.OtherUserId) }, 
+        { $addToSet: { DMs: newChannel.insertedId } }
+      );
+    
+      const ret = { Error: null, JwtToken: refreshedToken, Channel: newChannel.insertedId };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+  
 
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data

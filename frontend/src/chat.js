@@ -8,8 +8,9 @@ export class ChatListener
      * 
      * @param accessToken The non-decoded token identifying the user which is received on login.
      */
-    constructor(accessToken) 
+    constructor(accessToken, defaultChannel = null) 
     {
+
         console.log("New chat listener");
 
         this.ws = new WebSocket(buildPathWs());
@@ -26,6 +27,9 @@ export class ChatListener
                 Channel: ""
             };
             this.ws.send(JSON.stringify(identify));
+            if(defaultChannel !== null){
+                this.setActiveChannel(defaultChannel)
+            }
         });
 
         this.ws.addEventListener('message', (event) => 
@@ -76,6 +80,7 @@ export class ChatListener
      */
     sendMessage(token, message)
     {
+
         // Must be in a channel
         if (this.ws.chat.channel === "")
         {

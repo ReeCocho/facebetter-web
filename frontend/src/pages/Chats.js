@@ -12,6 +12,7 @@ function Chats() {
     let ud = JSON.parse(localStorage.getItem('user_data'));
     var bp = require('../components/Path.js');
 
+    let arrayOfObjects = []; 
     // This is turning an async call into a sync one
     (async () => {
       // Gets our channels list (list of user IDs)
@@ -36,23 +37,18 @@ function Chats() {
 
       console.log(chats)
 
+      const combined = chats.map(function(c, i) {
+        return {
+            Title: c.Title,
+            Id: channelIds[i]
+        };
+    });
 
-
-      // // Populate a new array with the actual profiles of our channels
-      // let chats = [];
-      // for (const id of res.data.Result) {
-      //   const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
-      //     _id: id,
-      //   });
-      //   chats.push(profile.data);
-      // }
-
-
-
-      // // Set the `channels` variable to be our new array
-      setChannels(chats);
+      setChannels(combined);
     })();
   }, []);
+
+  console.log(channels)
 
 
   return (
@@ -64,6 +60,7 @@ function Chats() {
           console.log(chat.Title + " " + i);
           return (
             <Chat title = {chat.Title}
+            id = {chat.Id}
             key={i} />
           );
         })}
