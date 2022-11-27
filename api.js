@@ -1178,6 +1178,7 @@ exports.setApp = function ( app, wss, client )
       let newSchool = obj.School;
       let newWork = obj.Work;
       let newBio = obj.Bio;
+      let newLogin = obj.Login;
 
       let filter = {_id: objId}
       let updates = {
@@ -1185,7 +1186,8 @@ exports.setApp = function ( app, wss, client )
         LastName: newLastName,
         School: newSchool,
         Work: newWork,
-        Bio: newBio
+        Bio: newBio,
+        Login: newLogin
       }
 
       results = await db
