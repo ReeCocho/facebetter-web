@@ -116,7 +116,9 @@ function User() {
         <h2>Work</h2>
         <h3>{profile.Work}</h3>  
         <h2>School</h2>
-        <h3>{profile.School}</h3>  
+        <h3>{profile.School}</h3> 
+        <h2>Bio</h2>
+        <h3>{profile.Bio}</h3> 
       </div>
     </div>
     );
