@@ -33,6 +33,21 @@ function Edit() {
   const doEdit = async (event) => {
     console.log(ud.userId);
     event.preventDefault();
+
+    // Retain previous values if nothing is entered
+    if (editFirstName.value == "") {
+      editFirstName.value = profile.FirstName;
+    }
+    if (editLastName.value == "") {
+      editLastName.value = profile.LastName;
+    }
+    if (editSchool.value == "") {
+      editSchool.value = profile.School;
+    }
+    if (editWork.value == "") {
+      editWork.value = profile.Work;
+    }
+
     axios
       .post(bp.buildPath("api/editprofile") , {
         _id: ud.userId,
@@ -64,7 +79,11 @@ function Edit() {
           />
       </div>
       <div className="profile_body">
-        <img src={profile.ProfilePicture} alt="" id="profile_picture"></img>
+        <div className="center">
+          <div className="brightness">
+              <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+          </div>
+        </div>
         <h2>Profile Picture</h2>
         <UploadFile
           onComplete={(result) => {

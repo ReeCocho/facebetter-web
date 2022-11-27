@@ -14,14 +14,17 @@ function Profile() {
 
     // This is turning an async call into a sync one
     (async () => {
+      try{
+        const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
+          _id: ud.userId,
+        });
+        // Set the `profile` variable to be our new array
+        setProfile(profile.data);
 
-      const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
-        _id: ud.userId,
-      });
+      } catch(error){
+        console.log(error);
+      }
 
-
-      // Set the `profile` variable to be our new array
-      setProfile(profile.data);
     })();
   }, []);
 
@@ -55,7 +58,9 @@ function Profile() {
         </a>
       </div>
       <div className="profile_body">
-        <img src={profile.ProfilePicture} alt="" id="profile_picture"></img>
+        <div className="center">
+          <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+        </div>
         <h2>First Name</h2>
         <h3>{profile.FirstName}</h3>
         <h2>Last Name</h2>

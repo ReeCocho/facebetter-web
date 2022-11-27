@@ -72,14 +72,35 @@
     padding-bottom: 20px;
 }
 
-#profile_picture {
+
+.main_div{
+    flex: 0.4;
+    border-right: 1px solid var(--twitter-background);
+}
+
+.profile_picture {
     width: 170px;
     height: 170px;
     object-fit: cover;
+    clip-path: circle();
+    margin: 0 auto;
 }
 
-#search_picture {
+.search_picture {
     width: 50px;
     height: 50px;
     object-fit: cover; 
+}
+
+.center {
+    text-align: center;
+}
+
+.brightness {
+    background-color: white;
+    display: inline-block;
+
+}
+.brightness img:hover {
+    opacity: .5;
 }

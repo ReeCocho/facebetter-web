@@ -3,3 +3,9 @@
     justify-content: center;
     border: 1px solid var(--twitter-background);
 }
+
+.container:hover{
+    background-color: #e8f5fe;
+    color: var(--twitter-color);
+    transition: color 100ms ease-out;
+}

@@ -1,13 +1,32 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import "./People.css"
 import axios from "axios";
 
-function People({ first, last, login, picture}) {
+function People({ first, last, login, picture, id}) {
+  const [ profileSelf, setProfileSelf ] = useState([]);
+  const [ isFollowing, setIsFollowing ] = useState([]);
+  let followingList;
+  
+  useEffect(() => {
+    var bp = require('../components/Path.js');
+
+    (async () => {
+      let ud = JSON.parse(localStorage.getItem('user_data'));
+      const profileSelf = await axios.post(bp.buildPath('api/retrieveprofile'), {
+          _id: ud.userId,
+      });
+
+      // Set the `profile` variable to be our new array
+      setProfileSelf(profileSelf.data);
+      followingList = profileSelf.data.Following;
+      setIsFollowing(followingList.includes(id))
+    })();
+  }, []);
 
     const doFollow = async () => {
       let ud = JSON.parse(localStorage.getItem('user_data'));
       var bp = require('./Path.js');
-      
+
       try {
         const res = await axios.post(bp.buildPath("api/follow"), {
           _id: ud.userId,
@@ -18,39 +37,70 @@ function People({ first, last, login, picture}) {
       } catch (error){
         console.log(error);
       }
+      window.location.href = "Search";
     }
-    
-    /*function doFollow(){
-        axios
-        .post(bp.buildPath("api/follow") , {
+
+    const doUnfollow = async () => {
+      let ud = JSON.parse(localStorage.getItem('user_data'));
+      var bp = require('./Path.js');
+      try {
+        const res = await axios.post(bp.buildPath("api/unfollow"), {
           _id: ud.userId,
-          ToFollow: login,
+          ToUnfollow: id,
           JwtToken: localStorage.getItem("access_token")
         })
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }*/
+      } catch (error){
+        console.log(error);
+      }
+      window.location.href = "Search";
+    }
 
 
+    const viewProfile = async () => {
+      localStorage.setItem("search_profile", id); 
+      localStorage.setItem("login_profile", login);   
+
+    }
+
+    function handleFollow(e) {
+      e.stopPropagation();
+      e.preventDefault();
+  
+      doFollow();
+      
+    }
+
+    function handleUnfollow(e) {
+      e.stopPropagation();
+      e.preventDefault();
+  
+      doUnfollow();
+      
+    }
+  
+    function handleChatClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      
+    }
+    
   return (
-    <div className='container'>
-        <img src={picture} alt="" id="search_picture"></img>
-        <div>
-          <h1>{first}&nbsp;</h1>
-          <h1>{last}</h1>
-        </div>
-        <input
-            className='btn'
-            type='submit'
-            value="Follow"
-            onClick={doFollow}>
-        </input>
 
-    </div>
+    <a href="../User"
+    onClick={viewProfile}>
+      <div className='container'>
+          <img src={picture} alt="" className="search_picture"></img>
+          <h1>{first}&nbsp;{last}</h1>
+          <div>
+            <button className="btn" onClick={handleChatClick}>Chat</button>
+            {isFollowing
+              ? <input className='btn' type='submit' value="Unfollow" onClick={handleUnfollow} />
+              : <input className='btn' type='submit' value="Follow" onClick={handleFollow} /> 
+            }   
+          </div>
+      </div>
+    </a>
+
 
   )
 }
