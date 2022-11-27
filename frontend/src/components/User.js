@@ -5,6 +5,9 @@ import axios from "axios";
 function User() {
 
   const [ profile, setProfile ] = useState([]);
+  const [ profileSelf, setProfileSelf ] = useState([]);
+  const [ isFollowing, setIsFollowing ] = useState([]);
+  let followingList;
 
   // This function gets called once on page load
   useEffect(() => {
@@ -12,14 +15,26 @@ function User() {
 
     // This is turning an async call into a sync one
     (async () => {
-
       const profile = await axios.post(bp.buildPath('api/retrieveprofile'), {
         _id: localStorage.getItem('search_profile'),
       });
 
-
       // Set the `profile` variable to be our new array
       setProfile(profile.data);
+      localStorage.setItem("login-profile", profile.data.Login);
+
+    })();
+
+    (async () => {
+      let ud = JSON.parse(localStorage.getItem('user_data'));
+      const profileSelf = await axios.post(bp.buildPath('api/retrieveprofile'), {
+          _id: ud.userId,
+      });
+
+      // Set the `profile` variable to be our new array
+      setProfileSelf(profileSelf.data);
+      followingList = profileSelf.data.Following;
+      setIsFollowing(followingList.includes(localStorage.getItem('search_profile')))
     })();
   }, []);
 
@@ -37,7 +52,25 @@ function User() {
     } catch (error){
       console.log(error);
     }
+    window.location.href = "User";
   }
+
+
+  const doUnfollow = async () => {
+    let ud = JSON.parse(localStorage.getItem('user_data'));
+    var bp = require('./Path.js');
+    try {
+      const res = await axios.post(bp.buildPath("api/unfollow"), {
+        _id: ud.userId,
+        ToUnfollow: localStorage.getItem('search_profile'),
+        JwtToken: localStorage.getItem("access_token")
+      })
+    } catch (error){
+      console.log(error);
+    }
+    window.location.href = "User";
+  }
+
 
 
   /*let ud = JSON.parse(localStorage.getItem('user_data'));
@@ -56,18 +89,16 @@ function User() {
       });
 
   let user_info = JSON.parse(localStorage.getItem("profile_info"));*/
-
     return (
     <div className="main_div">
       <div className='header'>
         <h2>Profile</h2>
+        {/* {isFollowing()} */}
         <a id="link">
-          <input
-            type="submit"
-            id="editButton"
-            value="Follow"
-            onClick={doFollow}
-          />
+          {isFollowing
+            ? <input type="submit" id="editButton" value="Unfollow" onClick={doUnfollow} />
+            : <input type="submit" id="editButton" value="Follow" onClick={doFollow} />
+          }
         </a>
       </div>
       <div className="profile_body">
