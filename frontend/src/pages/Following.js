@@ -36,7 +36,7 @@ function Following() {
         console.log(error);
       }
     })();
-  }, [followings]);
+  }, []);
 
   return (
     <div className='main_div'>      

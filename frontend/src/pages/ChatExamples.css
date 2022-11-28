@@ -1,3 +1,66 @@
+
+.containerChat{
+    border: solid 0px var(--twitter-background);
+    border-color: black;
+    height: 70vh;
+    overflow-y: auto;
+    position:relative;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.containerChat::-webkit-scrollbar{
+    display: none;
+}
+
 .main_div{
-    flex: 0.3;
+    flex: 0.4;
+}
+
+.message{
+    list-style-type: none;
+    font-size: 14px;
+    width: 100%;
+    /* position: absolute; */
+    bottom: 0;
+}
+
+.weirdFlex{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.notYourself{
+    color: grey;
+    text-align: left;
+    width: fit-content;
+    border: solid 2px;
+    padding: 12px 8px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.yourself{
+    color: rgb(0, 139, 186);
+    text-align: right;
+    border: solid 2px;
+    padding: 12px 8px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.messageInput{
+    position: sticky;
+    top: 0;
+    width: 85%;
+}
+
+.sendInput{
+    width: 15%;
+}
+
+.bigRow{
+    margin: 0 auto;
 }

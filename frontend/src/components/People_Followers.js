@@ -24,7 +24,28 @@ function People({ first, last, work, school, picture, id, login}) {
     })();
   }, []);
 
-  
+  async function handleChatClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var bp = require("./Path.js");
+    try {
+      const res = await axios.post(bp.buildPath("api/createdm"), {
+        OtherUserId: id,
+        JwtToken: localStorage.getItem("access_token"),
+      });
+      console.log(res.data);
+      console.log(res.data.Channel);
+      localStorage.setItem("the_input", res.data.Channel);
+      localStorage.setItem("otherUserID", id);
+      document.dispatchEvent(
+        new CustomEvent("Rerender", { detail: { id: res.data.Channel } })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   const viewProfile = async () => {
     console.log(id);
     console.log(first);
@@ -81,20 +102,23 @@ function People({ first, last, work, school, picture, id, login}) {
     
   }
 
-  function handleChatClick(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    
-  }
+  // function handleChatClick(e) {
+  //   e.stopPropagation();
+  //   e.preventDefault();  
+  // }
+
+
   return (
-    <a href="../components/User" onClick={viewProfile}>
+    <a href="../components/User" className='anchorTag' onClick={viewProfile}>
       <div className='container'>
+        <div className="profileContainer">
           <img src={picture} alt="" className="search_picture"></img>
-          <h1>{first}&nbsp;{last}</h1>
+          <h1 className='truncate'>{first}&nbsp;{last}</h1>
+        </div>
           <div>
-            <button className="btn" onClick={handleChatClick}>Chat</button>
+            <button className="btn btnChat" onClick={handleChatClick}>Chat</button>
             {isFollowing
-              ? <input className='btn' type='submit' value="Unfollow" onClick={handleUnfollow} />
+              ? <input className='btn ' type='submit' value="Unfollow" onClick={handleUnfollow} />
               : <input className='btn' type='submit' value="Follow" onClick={handleFollow} /> 
             } 
           </div> 

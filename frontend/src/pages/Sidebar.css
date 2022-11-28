@@ -1,20 +1,23 @@
 .sidebar{
     border-right: 1px solid var(--twitter-background);
 
-    flex: 0.3;
+    flex: 0.15;
+    /* max-width: 200px; */
     /*flex: 0.20;*/
     /* min-width: 250px; */
     margin-top: 20px;
     padding: 0 20px;
+    text-align: center;
 }
 
 a{
     text-decoration: none;
+    color: white;
 }
 
 a:visited{
     text-decoration: none;
-    color: black;
+    color: white;
 }
 
 
@@ -51,6 +54,4 @@ a:active { text-decoration: none; color:teal; } */
 .title2{
     max-width: 100px;
     margin-left: 30px;
-
-    
 }

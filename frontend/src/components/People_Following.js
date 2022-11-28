@@ -37,29 +37,42 @@ function People({ first, last, work, school, id, picture }) {
       console.log(error);
     }
     window.location.href = "Following";
-  }
+  };
 
   function handleUnfollow(e) {
     e.stopPropagation();
     e.preventDefault();
-    if(window.confirm("Are you sure you want to unfollow "+first+"?")){
+    if (window.confirm("Are you sure you want to unfollow " + first + "?")) {
       doUnfollow();
     }
   }
 
-  function handleChatClick(e) {
+  async function handleChatClick(e) {
     e.stopPropagation();
     e.preventDefault();
-    
+    var bp = require("./Path.js");
+    try {
+      const res = await axios.post(bp.buildPath("api/createdm"), {
+        OtherUserId: id,
+        JwtToken: localStorage.getItem("access_token"),
+      });
+      console.log(res.data);
+      console.log(res.data.Channel);
+      localStorage.setItem("the_input", res.data.Channel);
+      localStorage.setItem("otherUserID", id);
+      document.dispatchEvent(
+        new CustomEvent("Rerender", { detail: { id: res.data.Channel } })
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
-
 
   const viewProfile = async () => {
     console.log(id);
     console.log(first);
-    localStorage.setItem("search_profile", id);    
-
-  }
+    localStorage.setItem("search_profile", id);
+  };
 
   return (
     // <div className='container'>
@@ -68,7 +81,7 @@ function People({ first, last, work, school, id, picture }) {
     //       onClick={viewProfile}>
     //       <div>
     //         <h1>{first}&nbsp;{last}</h1>
-    //       </div>    
+    //       </div>
     //     </a>
 
     //     <button className='btn'>Chat</button>
@@ -80,23 +93,28 @@ function People({ first, last, work, school, id, picture }) {
     //     </input>
     // </div>
 
-    <a href="../components/User" onClick={viewProfile}>
-      <div className='container'>
-          <img src={picture} alt="" className="search_picture"></img>
-          <h1>{first}&nbsp;{last}</h1>
-          <div>
-            <button className="btn" onClick={handleChatClick}>Chat</button>
-            <input
-              className='btn'
-              type='submit'
-              value="Unfollow"
-              onClick={handleUnfollow}>
-            </input> 
-          </div> 
+    <a href="../components/User" className='anchorTag' onClick={viewProfile}>
+      <div className="container">
+        <div className="profileContainer">
+
+        <img src={picture} alt="" className="search_picture"></img>
+        <h1 className='truncate'>{first}&nbsp;{last}</h1>
+
+        </div>
+        <div>
+          <button className="btn" onClick={handleChatClick}>
+            Chat
+          </button>
+          <input
+            className="btn btnFollow"
+            type="submit"
+            value="Unfollow"
+            onClick={handleUnfollow}
+          ></input>
+        </div>
       </div>
     </a>
-
-  )
+  );
 }
 
 export default People;

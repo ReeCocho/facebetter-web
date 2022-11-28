@@ -41,12 +41,13 @@ function HomeComp() {
         <h2>Home</h2>
       </div>
 
-      <h1>Get Started, Search For Another User!</h1>
+      <h1 className='titleHome'>Get Started, Search For A User!</h1>
       <input 
         type="text"
         id="searchName"
         placeholder="Enter Name..."
         ref={(c) => (searchName = c)}
+        full-width
       />
       <input 
         type="submit"

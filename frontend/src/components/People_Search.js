@@ -40,6 +40,27 @@ function People({ first, last, login, picture, id}) {
       window.location.href = "Search";
     }
 
+    async function handleChatClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      var bp = require("./Path.js");
+      try {
+        const res = await axios.post(bp.buildPath("api/createdm"), {
+          OtherUserId: id,
+          JwtToken: localStorage.getItem("access_token"),
+        });
+        console.log(res.data);
+        console.log(res.data.Channel);
+        localStorage.setItem("the_input", res.data.Channel);
+        localStorage.setItem("otherUserID", id);
+        document.dispatchEvent(
+          new CustomEvent("Rerender", { detail: { id: res.data.Channel } })
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     const doUnfollow = async () => {
       let ud = JSON.parse(localStorage.getItem('user_data'));
       var bp = require('./Path.js');
@@ -78,24 +99,27 @@ function People({ first, last, login, picture, id}) {
       
     }
   
-    function handleChatClick(e) {
-      e.stopPropagation();
-      e.preventDefault();
+    // function handleChatClick(e) {
+    //   e.stopPropagation();
+    //   e.preventDefault();
       
-    }
+    // }
     
   return (
 
     <a href="../User"
+    className='anchorTag'
     onClick={viewProfile}>
       <div className='container'>
+        <div className='profileContainer'>
           <img src={picture} alt="" className="search_picture"></img>
-          <h1>{first}&nbsp;{last}</h1>
+          <h1 className='truncate'>{first}&nbsp;{last}</h1>
+        </div>
           <div>
-            <button className="btn" onClick={handleChatClick}>Chat</button>
+            <button className="btn btnChat" onClick={handleChatClick}>Chat</button>
             {isFollowing
               ? <input className='btn' type='submit' value="Unfollow" onClick={handleUnfollow} />
-              : <input className='btn' type='submit' value="Follow" onClick={handleFollow} /> 
+              : <input className='btn btnFollow' type='submit' value="Follow" onClick={handleFollow} /> 
             }   
           </div>
       </div>

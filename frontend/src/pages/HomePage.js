@@ -18,6 +18,7 @@ import ChatExamples from "./ChatExamples";
 
 const HomePage = () =>
 {
+
     let component
     switch (window.location.pathname) {
         case "/pages/Followers":
@@ -53,14 +54,13 @@ const HomePage = () =>
         default:
             break;
     }
-    
-
     console.log(window.location.pathname)
+
     return(
         <div className="app">
             <Sidebar />
             {component}
-            <ChatExamples/>
+            <ChatExamples theInput={localStorage.getItem("the_input")}/>
         </div>
     );
 }

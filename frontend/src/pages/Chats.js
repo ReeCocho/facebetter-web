@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../components/Profile.css';
 import axios from "axios";
+import Chat from "../components/ChatDM"
 
 function Chats() {
 
@@ -11,6 +12,7 @@ function Chats() {
     let ud = JSON.parse(localStorage.getItem('user_data'));
     var bp = require('../components/Path.js');
 
+    let arrayOfObjects = []; 
     // This is turning an async call into a sync one
     (async () => {
       // Gets our channels list (list of user IDs)
@@ -18,9 +20,10 @@ function Chats() {
         _id: ud.userId,
         Request: "Channels"
       });
-
-      console.log(res)
-
+      let channelIds = []
+      
+      channelIds = res.data.Result
+      console.log(channelIds)
       let chats = []
 
       for(const id of res.data.Result){
@@ -32,42 +35,35 @@ function Chats() {
         chats.push(chatNames.data);
       }
 
-      console.log(chats.Title);
+      console.log(chats)
 
+      const combined = chats.map(function(c, i) {
+        return {
+            Title: c.Title,
+            Id: channelIds[i]
+        };
+    });
 
-      // // Populate a new array with the actual profiles of our channels
-      // let chats = [];
-      // for (const id of res.data.Result) {
-      //   const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
-      //     _id: id,
-      //   });
-      //   chats.push(profile.data);
-      // }
-
-
-
-      // // Set the `channels` variable to be our new array
-      // setChannels(chats);
+      setChannels(combined);
     })();
   }, []);
+
+  console.log(channels)
+
 
   return (
     <div className="main_div">
       <div className="header">
         <h2>Chats</h2>
       </div>
-      {/* {followings.map((chat, i) => {
-          console.log(chat.name + " " + i);
+      {channels.map((chat, i) => {
+          console.log(chat.Title + " " + i);
           return (
-            <People 
-            first={person.FirstName}
-            last={person.LastName} 
-            school={person.School}
-            work={person.Work}
-            id={person.Id} 
-            picture={person.ProfilePicture}/>
+            <Chat title = {chat.Title}
+            id = {chat.Id}
+            key={i} />
           );
-        })} */}
+        })}
     </div>
   );
 }
