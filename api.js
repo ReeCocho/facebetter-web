@@ -1253,6 +1253,7 @@ exports.setApp = function ( app, wss, client )
         )
         .project(
           {
+            _id: 1,
             Login: 1,
             FirstName: 1,
             LastName: 1,
