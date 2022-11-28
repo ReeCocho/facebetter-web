@@ -2,6 +2,12 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+    background: linear-gradient(to right, rgba(0,72,95,0.45), transparent 90%);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    -webkit-box-shadow: -6px 9.5px 32px -10px #00485f;
+    -moz-box-shadow: -6px 9.5px 32px -10px #00485f;
+    box-shadow: -6px 9.5px 32px -10px #00485f;
 }
 
 .sidebarOption:hover{
