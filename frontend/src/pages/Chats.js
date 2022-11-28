@@ -20,21 +20,21 @@ function Chats() {
         Request: "Channels"
       });
 
-      console.log(res)
+      // console.log(res);
 
       let chats = []
 
       for(const id of res.data.Result){
-        const chatNames = await axios.post(bp.buildPath("api/getchanneltitle"), {
+        const chatInfo = await axios.post(bp.buildPath("api/getchannelinfo"), {
           JwtToken: localStorage.getItem("access_token"),
           Channel: id
         });
 
-        chats.push(chatNames.data);
+        chats.push(chatInfo.data);
       }
       setChannels(chats);
 
-      console.log(chats.Title);
+      console.log(chats);
 
 
       // // Populate a new array with the actual profiles of our channels
@@ -59,10 +59,11 @@ function Chats() {
         <h2>Chats</h2>
       </div>
       {channels.map((chat, i) => {
-          console.log(chat.name + " " + i);
+          console.log(chat.Title + " " + i);
           return (
             <Chat 
             title={chat.Title}
+            id={chat._id}
             picture="https://facebetter.s3.amazonaws.com/public/default.png"/>
           );
         })}
