@@ -37,9 +37,9 @@ function Sidebar() {
           text="Following"
         />
       </a>
-      <a href="/pages/Chats">
+      {/* <a href="/pages/Chats">
         <SidebarOption className="cursor" Icon={MailOutlineIcon} text="Chats" />
-      </a>
+      </a> */}
       <a href="/components/Profile">
         <SidebarOption
           className="cursor"

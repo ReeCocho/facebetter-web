@@ -40,6 +40,27 @@ function People({ first, last, login, picture, id}) {
       window.location.href = "Search";
     }
 
+    async function handleChatClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      var bp = require("./Path.js");
+      try {
+        const res = await axios.post(bp.buildPath("api/createdm"), {
+          OtherUserId: id,
+          JwtToken: localStorage.getItem("access_token"),
+        });
+        console.log(res.data);
+        console.log(res.data.Channel);
+        localStorage.setItem("the_input", res.data.Channel);
+        localStorage.setItem("otherUserID", id);
+        document.dispatchEvent(
+          new CustomEvent("Rerender", { detail: { id: res.data.Channel } })
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     const doUnfollow = async () => {
       let ud = JSON.parse(localStorage.getItem('user_data'));
       var bp = require('./Path.js');
@@ -78,11 +99,11 @@ function People({ first, last, login, picture, id}) {
       
     }
   
-    function handleChatClick(e) {
-      e.stopPropagation();
-      e.preventDefault();
+    // function handleChatClick(e) {
+    //   e.stopPropagation();
+    //   e.preventDefault();
       
-    }
+    // }
     
   return (
 

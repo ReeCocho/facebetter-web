@@ -89,7 +89,7 @@ const ChatExamples = ({ theInput }) => {
         });
 
       document.addEventListener("Rerender", (e) => {
-        console.log("repeatTwice")
+        console.log("repeatTwice");
         chat.current.setActiveChannel(e.detail.id);
         // console.log(e.detail.id)
 
@@ -124,19 +124,18 @@ const ChatExamples = ({ theInput }) => {
           });
       });
     }
-    console.log("repeat")
-  },[messages]);
+    console.log("repeat");
+  }, [messages]);
 
   useEffect(() => {
-    
     // This is a callback that listens for new messages from the server
     chat.current.setListener(function (msg) {
-        // Set the messages to be whatever they were + the new message.
-        // NOTE: It is technically possible for messages to arrive out of order.
-        // You can use the `DateCreated` field to sort incoming messages to ensure
-        // strict ordering.
-        setMessages([...messages, msg]);
-      });
+      // Set the messages to be whatever they were + the new message.
+      // NOTE: It is technically possible for messages to arrive out of order.
+      // You can use the `DateCreated` field to sort incoming messages to ensure
+      // strict ordering.
+      setMessages([...messages, msg]);
+    });
   }, [messages]);
 
   function handleMsgChange(e) {
@@ -239,7 +238,9 @@ const ChatExamples = ({ theInput }) => {
     <div className="main_div">
       <ul id="ChatList">
         {messages.map((message, i) => {
-          return <li key={i}>{message.Content}</li>;
+          return <>
+          <li key={i}>{message.Content}</li>
+          </>
         })}
       </ul>
       <div>
@@ -248,7 +249,7 @@ const ChatExamples = ({ theInput }) => {
           Send
         </button>
       </div>
-      </div>
+    </div>
   );
 };
 

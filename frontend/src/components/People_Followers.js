@@ -24,7 +24,28 @@ function People({ first, last, work, school, picture, id, login}) {
     })();
   }, []);
 
-  
+  async function handleChatClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var bp = require("./Path.js");
+    try {
+      const res = await axios.post(bp.buildPath("api/createdm"), {
+        OtherUserId: id,
+        JwtToken: localStorage.getItem("access_token"),
+      });
+      console.log(res.data);
+      console.log(res.data.Channel);
+      localStorage.setItem("the_input", res.data.Channel);
+      localStorage.setItem("otherUserID", id);
+      document.dispatchEvent(
+        new CustomEvent("Rerender", { detail: { id: res.data.Channel } })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   const viewProfile = async () => {
     console.log(id);
     console.log(first);
@@ -81,11 +102,12 @@ function People({ first, last, work, school, picture, id, login}) {
     
   }
 
-  function handleChatClick(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    
-  }
+  // function handleChatClick(e) {
+  //   e.stopPropagation();
+  //   e.preventDefault();  
+  // }
+
+
   return (
     <a href="../components/User" onClick={viewProfile}>
       <div className='container'>
