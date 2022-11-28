@@ -47,10 +47,13 @@ const ChatExamples = ({ theInput }) => {
   const [messages, setMessages] = useState([]);
   const [msgInput, setMsgInput] = useState("");
   const [channelInput, setChannelInput] = useState("");
+  const [otherUserID, setOtherUserID] = useState([]);
   const [channelTitleInput, setChannelTitleInput] = useState("");
+  const chatScroll = useRef(null);
   const chat = useRef(null);
 
   useEffect(() => {
+    setOtherUserID(localStorage.getItem("otherUserID"));
     // This initializes the chat once on page load
     if (chat.current === null) {
       // The chat listener requires the JWT access token during intialization
@@ -136,6 +139,7 @@ const ChatExamples = ({ theInput }) => {
       // strict ordering.
       setMessages([...messages, msg]);
     });
+    chatScroll.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
 
   function handleMsgChange(e) {
@@ -152,11 +156,11 @@ const ChatExamples = ({ theInput }) => {
 
   const sendMessage = async (event) => {
     event.preventDefault();
-
     // Send the message to the server.
     // NOTE: We don't need to add our message to the message list because once the server reads
     // it, it will be rebroadcasted back to us.
     chat.current.sendMessage(localStorage.getItem("access_token"), msgInput);
+    msgRef.current.value = ''
   };
 
   const getChannels = async (event) => {
@@ -236,16 +240,40 @@ const ChatExamples = ({ theInput }) => {
 
   return (
     <div className="main_div">
-      <ul id="ChatList">
-        {messages.map((message, i) => {
-          return <>
-          <li key={i}>{message.Content}</li>
-          </>
-        })}
-      </ul>
+      <div className="containerChat">
+        <ul id="ChatList" ref={chatScroll}>
+          {messages.map((message, i) => {
+            return (
+              <>
+                {/* <li key={i}>{message.Content}</li> */}
+                {message.SenderId === otherUserID ? (
+                  <div className="message">
+                    <li className="notYourself" key={i}>
+                      {message.Content}
+                    </li>
+                  </div>
+                ) : (
+                  <div className="message" >
+                    <div className="weirdFlex"> 
+                    <li className="yourself" key={i}>
+                      {message.Content}
+                    </li>
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })}
+        </ul>
+      </div>
       <div>
-        <input type="text" onChange={handleMsgChange} ref={msgRef}></input>
-        <button type="button" onClick={sendMessage}>
+        <input
+          className="messageInput"
+          type="text"
+          onChange={handleMsgChange}
+          ref={msgRef}
+        ></input>
+        <button className="sendInput" type="button" onClick={sendMessage}>
           Send
         </button>
       </div>

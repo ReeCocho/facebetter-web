@@ -93,18 +93,20 @@ function People({ first, last, work, school, id, picture }) {
     //     </input>
     // </div>
 
-    <a href="../components/User" onClick={viewProfile}>
+    <a href="../components/User" className='anchorTag' onClick={viewProfile}>
       <div className="container">
+        <div className="profileContainer">
+
         <img src={picture} alt="" className="search_picture"></img>
-        <h1>
-          {first}&nbsp;{last}
-        </h1>
+        <h1 className='truncate'>{first}&nbsp;{last}</h1>
+
+        </div>
         <div>
           <button className="btn" onClick={handleChatClick}>
             Chat
           </button>
           <input
-            className="btn"
+            className="btn btnFollow"
             type="submit"
             value="Unfollow"
             onClick={handleUnfollow}

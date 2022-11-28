@@ -1,7 +1,7 @@
 .main_div{
     flex: 0.4;
     border-right: 1px solid var(--twitter-background);
-    min-width: fit-content;
+    min-width: 500px;
     overflow-y: scroll;
 }
 
@@ -28,6 +28,7 @@
     text-shadow: 2px 2px #ffffff;
     font-weight: bold;
 }
+
 
 #editButton{
     background-color: var(--twitter-color);
@@ -99,6 +100,10 @@
     left: 0;
 }
 
+#searchName{
+
+}
+
 .profile_picture_edit {
     object-fit: cover;
     clip-path: circle();
@@ -138,3 +143,4 @@
 .follow_counts {
     display:inline-block;
 }
+

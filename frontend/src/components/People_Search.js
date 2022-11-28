@@ -108,15 +108,18 @@ function People({ first, last, login, picture, id}) {
   return (
 
     <a href="../User"
+    className='anchorTag'
     onClick={viewProfile}>
       <div className='container'>
+        <div className='profileContainer'>
           <img src={picture} alt="" className="search_picture"></img>
-          <h1>{first}&nbsp;{last}</h1>
+          <h1 className='truncate'>{first}&nbsp;{last}</h1>
+        </div>
           <div>
-            <button className="btn" onClick={handleChatClick}>Chat</button>
+            <button className="btn btnChat" onClick={handleChatClick}>Chat</button>
             {isFollowing
               ? <input className='btn' type='submit' value="Unfollow" onClick={handleUnfollow} />
-              : <input className='btn' type='submit' value="Follow" onClick={handleFollow} /> 
+              : <input className='btn btnFollow' type='submit' value="Follow" onClick={handleFollow} /> 
             }   
           </div>
       </div>
