@@ -12,9 +12,9 @@
 .header{
     position: sticky;
     top: 0;
-    background: linear-gradient(to right, rgba(0,72,95,0.45), transparent 50%);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+    background-image: radial-gradient(circle at center center, rgba(0, 71, 94, 0.06), rgba(71, 212, 255, 0.52)), repeating-radial-gradient(circle at center center, rgba(0, 71, 94, 0.06), rgba(0, 71, 94, 0.06), 35px, transparent 70px, transparent 35px);
+    background-blend-mode: multiply;
+    background-color: rgba(71, 212, 255, 0.52);
     -webkit-box-shadow: -6px 9.5px 32px -10px #00485f;
     -moz-box-shadow: -6px 9.5px 32px -10px #00485f;
     box-shadow: -6px 9.5px 32px -10px #00485f;
@@ -22,6 +22,11 @@
     border: 1px solid var(--twitter-background);
     padding: 15px 20px;
     display: flex;
+    text-align: center;
+    font-family: Bradley Hand, cursive;
+    color: #00485f;  
+    text-shadow: 2px 2px #ffffff;
+    font-weight: bold;
 }
 
 #editButton{
