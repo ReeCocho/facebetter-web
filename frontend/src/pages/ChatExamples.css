@@ -63,11 +63,14 @@
 .messageInput{
     position: sticky;
     top: 0;
-    width: 85%;
+    width: 84%;
+    padding: 4px;
+    padding-left: 8px;
 }
 
 .sendInput{
-    width: 15%;
+    width: 16%;
+    padding: 4px;
 }
 
 .bigRow{

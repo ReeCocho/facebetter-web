@@ -29,6 +29,21 @@
     font-weight: bold;
 }
 
+#searchName{
+    width: 84%;
+    padding: 4px;
+    padding-left: 8px;
+}
+
+#searchBtn{
+    width: 16%;
+    padding: 4px;
+}
+
+.titleHome{
+    text-align: center;
+    padding-bottom: 8px;
+}
 
 #editButton{
     background: #ffffff;
