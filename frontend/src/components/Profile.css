@@ -36,10 +36,11 @@
     background: radial-gradient(circle, #ffffff 0%, #eae8ff 100%);
     text-transform: inherit !important;
     border-radius: 30px !important;
-    width: 90px;
+    min-width: 90px;
+    width: fit-content;
     height: auto !important;
     margin-left: auto;
-
+    padding: 4px;
 }
 
 #uploadButton{
@@ -169,9 +170,6 @@
 
 .countsAnchor{
     color: #00485f !important;
-}
-
-.countsAnchor:hover{
 }
 
 .countsAnchor:visited{

@@ -65,7 +65,7 @@ const ChatExamples = ({ theInput }) => {
         .post(buildPath("api/getmessages"), {
           Channel: theInput,
           JwtToken: localStorage.getItem("access_token"),
-          Count: 50,
+          Count: 100,
           // NOTE: When adding lazy-loading, the before date should initially be whatever
           // the current time is. Subsequent loads should be the `DateCreated` within the
           // oldest message returned from `getmessages`.
@@ -101,7 +101,7 @@ const ChatExamples = ({ theInput }) => {
           .post(buildPath("api/getmessages"), {
             Channel: e.detail.id,
             JwtToken: localStorage.getItem("access_token"),
-            Count: 50,
+            Count: 100,
             // NOTE: When adding lazy-loading, the before date should initially be whatever
             // the current time is. Subsequent loads should be the `DateCreated` within the
             // oldest message returned from `getmessages`.
@@ -153,7 +153,6 @@ const ChatExamples = ({ theInput }) => {
   function handleChannelTitleChange(e) {
     setChannelTitleInput(e.target.value);
   }
-
   const sendMessage = async (event) => {
     event.preventDefault();
     // Send the message to the server.
@@ -162,6 +161,16 @@ const ChatExamples = ({ theInput }) => {
     chat.current.sendMessage(localStorage.getItem("access_token"), msgInput);
     msgRef.current.value = ''
   };
+
+  function hitEnter(e){
+    if (e.key !== "Enter"){
+      return
+    }
+    else {
+      chat.current.sendMessage(localStorage.getItem("access_token"), msgInput);
+      msgRef.current.value = ''
+    }
+  }
 
   const getChannels = async (event) => {
     event.preventDefault();
@@ -193,7 +202,7 @@ const ChatExamples = ({ theInput }) => {
       .post(buildPath("api/getmessages"), {
         Channel: channelInput,
         JwtToken: localStorage.getItem("access_token"),
-        Count: 50,
+        Count: 100,
         // NOTE: When adding lazy-loading, the before date should initially be whatever
         // the current time is. Subsequent loads should be the `DateCreated` within the
         // oldest message returned from `getmessages`.
@@ -272,7 +281,8 @@ const ChatExamples = ({ theInput }) => {
           type="text"
           onChange={handleMsgChange}
           ref={msgRef}
-        ></input>
+          onKeyDown={hitEnter}
+          ></input>
         <button className="sendInput" type="button" onClick={sendMessage}>
           Send
         </button>

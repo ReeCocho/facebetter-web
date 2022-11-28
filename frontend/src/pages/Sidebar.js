@@ -15,9 +15,11 @@ import { Button } from "@mui/material";
 function Sidebar() {
   const doLogout = event => 
   {
-    event.preventDefault();
-    localStorage.clear(); 
-    window.location.href = '/';
+    setTimeout(() => {
+      event.preventDefault();
+      localStorage.clear(); 
+      window.location.href = '/';
+    }, 500);
   };  
 
 
