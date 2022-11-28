@@ -106,25 +106,41 @@ function User() {
         </a>
       </div>
       <div className="profile_body">
-        <div className="center">
-          <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
-        </div> 
-        <div className='follow_counts'>
-          <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
-          <h2>@{profile.Login}</h2> 
-          <a href="/pages/Followers">
-            <h2>Followers {numFollowers}&nbsp;</h2>
-          </a>
+        <div className="topProfile">
+          <div className="center">
+            <img
+              src={profile.ProfilePicture}
+              alt=""
+              className="profile_picture"
+            ></img>
+          </div>
+          <div className="separateLine"></div>
+          <div className="follow_counts">
+            <h2>
+              {profile.FirstName}&nbsp;{profile.LastName}
+            </h2>
+            <h2 className="username">@{profile.Login}</h2>
+            <div className="counts">
+              <a href="/pages/Followers" className="anchorTag countsAnchor">
+                <h2>Followers {numFollowers}&nbsp;</h2>
+              </a>
+              <div className="follow_counts">
+                <a href="/pages/Following" className="anchorTag countsAnchor">
+                  <h2>Following {numFollowing}</h2>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className='follow_counts'>
-          <a href="/pages/Following">
-            <h2>Following {numFollowing}</h2>
-          </a>
-        </div>
+        <div className="separateLine"></div>
         <h2>Work</h2>
         <h3>{profile.Work}</h3>  
+        <div className="separateLine"></div>
+
         <h2>School</h2>
         <h3>{profile.School}</h3> 
+        <div className="separateLine"></div>
+
         <h2>Bio</h2>
         <h3>{profile.Bio}</h3> 
       </div>
