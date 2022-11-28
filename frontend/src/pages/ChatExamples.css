@@ -3,7 +3,7 @@
     border: solid 0px var(--twitter-background);
     border-left: solid 1px;
     border-right: solid 1px;
-    border-color: #00485f;
+    border-color: white;
     height: 70vh;
     overflow-y: auto;
     position:relative;

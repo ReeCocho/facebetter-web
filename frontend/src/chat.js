@@ -37,7 +37,9 @@ export class ChatListener
             try
             {
                 let json = JSON.parse(event.data);
-
+                if(json.Ping !== undefined){
+                    return;
+                }
                 // Ignore if not from our active channel
                 if (json.ChannelId !== this.ws.chat.channel)
                 {
