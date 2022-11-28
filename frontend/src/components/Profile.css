@@ -31,9 +31,9 @@
 
 
 #editButton{
-    background-color: var(--twitter-color);
-    border: none !important;
-    color: white !important;
+    background: #ffffff;
+    background: -webkit-radial-gradient(circle, #ffffff 0%, #eae8ff 100%);
+    background: radial-gradient(circle, #ffffff 0%, #eae8ff 100%);
     text-transform: inherit !important;
     border-radius: 30px !important;
     width: 90px;
@@ -60,7 +60,7 @@
 }
 
 #editButton:hover{
-    background-color: #2990af;
+    background: #eae8ff;
 }
 
 #uploadButton:hover{
@@ -156,6 +156,7 @@
     display: flex;
     padding-top: 12px;
     padding-bottom: 12px;
+    text-shadow: 2px 2px #00485f !important;
 }
 
 .username{

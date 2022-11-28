@@ -73,11 +73,11 @@ function Profile() {
             <h2 className="username">@{profile.Login}</h2>
             <div className="counts">
               <a href="/pages/Followers" className="anchorTag countsAnchor">
-                <h2>Followers {numFollowers}&nbsp;</h2>
+                <h2>Followers: {numFollowers}&nbsp;&nbsp;&nbsp;&nbsp;</h2>
               </a>
               <div className="follow_counts">
                 <a href="/pages/Following" className="anchorTag countsAnchor">
-                  <h2>Following {numFollowing}</h2>
+                  <h2>Following: {numFollowing}</h2>
                 </a>
               </div>
             </div>
