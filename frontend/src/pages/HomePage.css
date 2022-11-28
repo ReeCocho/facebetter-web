@@ -1,8 +1,6 @@
 body{
     --twitter-color: #50b7f5;
-    background: rgba(176, 215, 255, 0.11);
-    background: -webkit-linear-gradient(218deg, rgba(176, 215, 255, 0.11) 0%, #b0d7ff 50%, rgba(0, 71, 94, 0.51) 100%);
-    background: linear-gradient(218deg, rgba(176, 215, 255, 0.11) 0%, #b0d7ff 50%, rgba(0, 71, 94, 0.51) 100%);
+    --twitter-background: #e6ecf0;
 }
 
 .app{
@@ -13,7 +11,17 @@ body{
     padding: 0 10px;
 }
 
+button, input[type="button"], input[type="submit"] { 
+    background: rgba(0, 191, 255, 0.78);
+    background: -webkit-linear-gradient(101deg, rgba(0, 191, 255, 0.78) 0%, #b0d7ff 100%);
+    background: linear-gradient(101deg, rgba(0, 191, 255, 0.78) 0%, #b0d7ff 100%);
+    -webkit-box-shadow: -6px 9.5px 32px -10px #00485f;
+    -moz-box-shadow: -6px 9.5px 32px -10px #00485f;
+    box-shadow: -6px 9.5px 32px -10px #00485f;
+} 
 
-
+button, input[type="button"], input[type="submit"]:hover {
+    background-color: #4b9b3b;
+}
 
 
