@@ -12,7 +12,12 @@
 .header{
     position: sticky;
     top: 0;
-    background-color: white;
+    background: linear-gradient(to right, rgba(0,72,95,0.45), transparent 50%);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    -webkit-box-shadow: -6px 9.5px 32px -10px #00485f;
+    -moz-box-shadow: -6px 9.5px 32px -10px #00485f;
+    box-shadow: -6px 9.5px 32px -10px #00485f;
     z-index: 100;
     border: 1px solid var(--twitter-background);
     padding: 15px 20px;

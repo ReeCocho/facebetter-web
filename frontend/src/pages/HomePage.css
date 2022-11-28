@@ -1,6 +1,8 @@
 body{
     --twitter-color: #50b7f5;
-    --twitter-background: #e6ecf0;
+    background: rgba(176, 215, 255, 0.11);
+    background: -webkit-linear-gradient(218deg, rgba(176, 215, 255, 0.11) 0%, #b0d7ff 50%, rgba(0, 71, 94, 0.51) 100%);
+    background: linear-gradient(218deg, rgba(176, 215, 255, 0.11) 0%, #b0d7ff 50%, rgba(0, 71, 94, 0.51) 100%);
 }
 
 
