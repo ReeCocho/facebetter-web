@@ -1,22 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import './Profile.css';
+import React, { useEffect, useState } from "react";
+import "./Profile.css";
 import axios from "axios";
 
-
 function Profile() {
-
-  const [ profile, setProfile ] = useState([]);
-  const [ numFollowers, setNumFollowers ] = useState([]);
-  const [ numFollowing, setNumFollowing ] = useState([]);
+  const [profile, setProfile] = useState([]);
+  const [numFollowers, setNumFollowers] = useState([]);
+  const [numFollowing, setNumFollowing] = useState([]);
 
   // This function gets called once on page load
   useEffect(() => {
-    let ud = JSON.parse(localStorage.getItem('user_data'));
-    var bp = require('../components/Path.js');
+    let ud = JSON.parse(localStorage.getItem("user_data"));
+    var bp = require("../components/Path.js");
 
     // This is turning an async call into a sync one
     (async () => {
-      try{
+      try {
         const profile = await axios.post(bp.buildPath("api/retrieveprofile"), {
           _id: ud.userId,
         });
@@ -24,13 +22,11 @@ function Profile() {
         setProfile(profile.data);
         setNumFollowers(profile.data.Followers.length);
         setNumFollowing(profile.data.Following.length);
-      } catch(error){
+      } catch (error) {
         console.log(error);
       }
-
     })();
   }, []);
-
 
   // console.log(profile);
   // console.log(profile.Followers.length);
@@ -52,42 +48,53 @@ function Profile() {
 
   let user_info = JSON.parse(localStorage.getItem("profile_info"));*/
 
-    return (
+  return (
     <div className="main_div">
-      <div className='header'>
+      <div className="header">
         <h2>Profile</h2>
         <a href="/components/Edit" id="link">
-          <input
-            type="submit"
-            id="editButton"
-            value="Edit"
-          />
+          <input type="submit" id="editButton" value="Edit" />
         </a>
       </div>
       <div className="profile_body">
-        <div className="center">
-          <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+        <div className="topProfile">
+          <div className="center">
+            <img
+              src={profile.ProfilePicture}
+              alt=""
+              className="profile_picture"
+            ></img>
+          </div>
+          <div className="separateLine"></div>
+          <div className="follow_counts">
+            <h2>
+              {profile.FirstName}&nbsp;{profile.LastName}
+            </h2>
+            <h2 className="username">@{profile.Login}</h2>
+            <div className="counts">
+              <a href="/pages/Followers" className="anchorTag countsAnchor">
+                <h2>Followers {numFollowers}&nbsp;</h2>
+              </a>
+              <div className="follow_counts">
+                <a href="/pages/Following" className="anchorTag countsAnchor">
+                  <h2>Following {numFollowing}</h2>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className='follow_counts'>
-          <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
-          <h2>@{profile.Login}</h2> 
-          <a href="/pages/Followers">
-            <h2>Followers {numFollowers}&nbsp;</h2>
-          </a>
-        </div>
-        <div className='follow_counts'>
-          <a href="/pages/Following">
-            <h2>Following {numFollowing}</h2>
-          </a>
-        </div>
+        <div className="separateLine"></div>
         <h2>Work</h2>
-        <h3>{profile.Work}</h3>  
+        <h3>{profile.Work}</h3>
+        <div className="separateLine"></div>
         <h2>School</h2>
-        <h3>{profile.School}</h3>  
+        <h3>{profile.School}</h3>
+        <div className="separateLine"></div>
         <h2>Bio</h2>
         <h3>{profile.Bio}</h3>
+        <div className="separateLine"></div>
       </div>
     </div>
-    );
-  }
-  export default Profile;
+  );
+}
+export default Profile;
