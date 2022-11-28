@@ -12,11 +12,21 @@
 .header{
     position: sticky;
     top: 0;
-    background-color: white;
+    background-image: radial-gradient(circle at center center, rgba(0, 71, 94, 0.06), rgba(71, 212, 255, 0.52)), repeating-radial-gradient(circle at center center, rgba(0, 71, 94, 0.06), rgba(0, 71, 94, 0.06), 35px, transparent 70px, transparent 35px);
+    background-blend-mode: multiply;
+    background-color: rgba(71, 212, 255, 0.52);
+    -webkit-box-shadow: -6px 9.5px 32px -10px #00485f;
+    -moz-box-shadow: -6px 9.5px 32px -10px #00485f;
+    box-shadow: -6px 9.5px 32px -10px #00485f;
     z-index: 100;
     border: 1px solid var(--twitter-background);
     padding: 15px 20px;
     display: flex;
+    text-align: center;
+    font-family: Bradley Hand, cursive;
+    color: #00485f;  
+    text-shadow: 2px 2px #ffffff;
+    font-weight: bold;
 }
 
 #editButton{
@@ -84,6 +94,26 @@
     object-fit: cover;
     clip-path: circle();
     margin: 0 auto;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.profile_picture_edit {
+    object-fit: cover;
+    clip-path: circle();
+    margin: 0 auto;
+    position: absolute;
+    top: 60px;
+    left: 60px;
+    max-width:30%;
+    height:auto;
+}
+
+.image_edit_container {
+    position: relative;
+    top: 0;
+    left: 0;
 }
 
 .search_picture {
@@ -103,4 +133,8 @@
 }
 .brightness img:hover {
     opacity: .5;
+}
+
+.follow_counts {
+    display:inline-block;
 }

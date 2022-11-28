@@ -1132,6 +1132,7 @@ exports.setApp = function ( app, wss, client )
       School: results[0].School,
       Work: results[0].Work,
       ProfilePicture: results[0].ProfilePicture,
+      Bio: results[0].Bio,
       Error: err
     };
     res.status(200).json(ret);
@@ -1151,6 +1152,7 @@ exports.setApp = function ( app, wss, client )
       LastName: "string", 
       School: "string", 
       Work: "string",
+      Bio: "string",
       JwtToken: "string"
     });
   
@@ -1177,13 +1179,17 @@ exports.setApp = function ( app, wss, client )
       let newLastName = obj.LastName;
       let newSchool = obj.School;
       let newWork = obj.Work;
+      let newBio = obj.Bio;
+      let newLogin = obj.Login;
 
       let filter = {_id: objId}
       let updates = {
         FirstName: newFirstName,
         LastName: newLastName,
         School: newSchool,
-        Work: newWork
+        Work: newWork,
+        Bio: newBio,
+        Login: newLogin
       }
 
       results = await db

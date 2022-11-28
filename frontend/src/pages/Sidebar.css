@@ -39,6 +39,9 @@ a:active { text-decoration: none; color:teal; } */
     border-radius: 30px !important;
     height: 50px !important;
     margin-top: 50px !important;
+    background: rgba(0, 191, 255, 0.78);
+    background: -webkit-linear-gradient(101deg, rgba(0, 191, 255, 0.78) 0%, #b0d7ff 100%);
+    background: linear-gradient(101deg, rgba(0, 191, 255, 0.78) 0%, #b0d7ff 100%);
 }
 
 .cursor{

@@ -7,6 +7,8 @@ function User() {
   const [ profile, setProfile ] = useState([]);
   const [ profileSelf, setProfileSelf ] = useState([]);
   const [ isFollowing, setIsFollowing ] = useState([]);
+  const [ numFollowers, setNumFollowers ] = useState([]);
+  const [ numFollowing, setNumFollowing ] = useState([]);
   let followingList;
 
   // This function gets called once on page load
@@ -21,7 +23,9 @@ function User() {
 
       // Set the `profile` variable to be our new array
       setProfile(profile.data);
-      localStorage.setItem("login-profile", profile.data.Login);
+      localStorage.setItem("login_profile", profile.data.Login);
+      setNumFollowers(profile.data.Followers.length);
+      setNumFollowing(profile.data.Following.length);
 
     })();
 
@@ -34,7 +38,7 @@ function User() {
       // Set the `profile` variable to be our new array
       setProfileSelf(profileSelf.data);
       followingList = profileSelf.data.Following;
-      setIsFollowing(followingList.includes(localStorage.getItem('search_profile')))
+      setIsFollowing(followingList.includes(localStorage.getItem('search_profile')));
     })();
   }, []);
 
@@ -104,15 +108,25 @@ function User() {
       <div className="profile_body">
         <div className="center">
           <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
+        </div> 
+        <div className='follow_counts'>
+          <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
+          <h2>@{profile.Login}</h2> 
+          <a href="/pages/Followers">
+            <h2>Followers {numFollowers}&nbsp;</h2>
+          </a>
         </div>
-        <h2>First Name</h2>
-        <h3>{profile.FirstName}</h3>
-        <h2>Last Name</h2>
-        <h3>{profile.LastName}</h3>  
+        <div className='follow_counts'>
+          <a href="/pages/Following">
+            <h2>Following {numFollowing}</h2>
+          </a>
+        </div>
         <h2>Work</h2>
         <h3>{profile.Work}</h3>  
         <h2>School</h2>
-        <h3>{profile.School}</h3>  
+        <h3>{profile.School}</h3> 
+        <h2>Bio</h2>
+        <h3>{profile.Bio}</h3> 
       </div>
     </div>
     );

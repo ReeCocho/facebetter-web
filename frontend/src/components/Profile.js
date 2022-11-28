@@ -6,6 +6,8 @@ import axios from "axios";
 function Profile() {
 
   const [ profile, setProfile ] = useState([]);
+  const [ numFollowers, setNumFollowers ] = useState([]);
+  const [ numFollowing, setNumFollowing ] = useState([]);
 
   // This function gets called once on page load
   useEffect(() => {
@@ -20,13 +22,18 @@ function Profile() {
         });
         // Set the `profile` variable to be our new array
         setProfile(profile.data);
-
+        setNumFollowers(profile.data.Followers.length);
+        setNumFollowing(profile.data.Following.length);
       } catch(error){
         console.log(error);
       }
 
     })();
   }, []);
+
+
+  // console.log(profile);
+  // console.log(profile.Followers.length);
 
   /*let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('./Path.js');
@@ -61,14 +68,24 @@ function Profile() {
         <div className="center">
           <img src={profile.ProfilePicture} alt="" className="profile_picture"></img>
         </div>
-        <h2>First Name</h2>
-        <h3>{profile.FirstName}</h3>
-        <h2>Last Name</h2>
-        <h3>{profile.LastName}</h3>  
+        <div className='follow_counts'>
+          <h2>{profile.FirstName}&nbsp;{profile.LastName}</h2>
+          <h2>@{profile.Login}</h2> 
+          <a href="/pages/Followers">
+            <h2>Followers {numFollowers}&nbsp;</h2>
+          </a>
+        </div>
+        <div className='follow_counts'>
+          <a href="/pages/Following">
+            <h2>Following {numFollowing}</h2>
+          </a>
+        </div>
         <h2>Work</h2>
         <h3>{profile.Work}</h3>  
         <h2>School</h2>
         <h3>{profile.School}</h3>  
+        <h2>Bio</h2>
+        <h3>{profile.Bio}</h3>
       </div>
     </div>
     );
