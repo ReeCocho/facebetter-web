@@ -116,6 +116,7 @@
     position: relative;
     top: 0;
     left: 0;
+    background-color: transparent;
 }
 
 .search_picture {
@@ -129,7 +130,7 @@
 }
 
 .brightness {
-    background-color: white;
+    background-color: transparent;
     display: inline-block;
 
 }
