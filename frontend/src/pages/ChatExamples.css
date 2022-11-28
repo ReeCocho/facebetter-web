@@ -1,7 +1,9 @@
 
 .containerChat{
     border: solid 0px var(--twitter-background);
-    border-color: black;
+    border-left: solid 1px;
+    border-right: solid 1px;
+    border-color: #00485f;
     height: 70vh;
     overflow-y: auto;
     position:relative;
@@ -9,6 +11,7 @@
     left: 0;
     display: flex;
     flex-direction: column-reverse;
+    /* border: 10px 10px solid #00485f; */
 }
 
 .containerChat::-webkit-scrollbar{
@@ -33,22 +36,28 @@
 }
 
 .notYourself{
-    color: grey;
+    color: white;
+    background-color: rgb(65, 65, 65);
     text-align: left;
     width: fit-content;
-    border: solid 2px;
+    border: solid 2px rgb(65, 65, 65);
     padding: 12px 8px;
     overflow: hidden;
     border-radius: 10px;
+    margin-top: 1px;
+    max-width: 400px;
 }
 
 .yourself{
-    color: rgb(0, 139, 186);
+    color: white;
+    background-color: rgb(31, 160, 203);
     text-align: right;
-    border: solid 2px;
+    border: solid 2px rgb(31, 160, 203);
     padding: 12px 8px;
     overflow: hidden;
     border-radius: 10px;
+    max-width: 400px;
+    margin-top: 1px;
 }
 
 .messageInput{

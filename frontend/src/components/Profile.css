@@ -141,3 +141,37 @@
     display:inline-block;
 }
 
+.separateLine{
+    border-top: solid 1px #00485f;
+}
+
+.topProfile{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.counts{
+    display: flex;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.username{
+    color: #686868;
+    text-align: center;
+    font-size: 20px;
+    padding-bottom: 12px;
+}
+
+.countsAnchor{
+    color: #00485f !important;
+}
+
+.countsAnchor:hover{
+}
+
+.countsAnchor:visited{
+    color: white !important;
+}
