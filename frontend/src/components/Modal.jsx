@@ -88,28 +88,28 @@ function Modal({ unRegisterPop }) {
           <input
             className="inputBoxR loginNameR"
             type="email"
-            placeholder="  Email"
+            placeholder="Email"
             required
             ref={(c) => (registerEmail = c)}
           />
           <input
             className="inputBoxR loginNameR"
             type="text"
-            placeholder="  Username"
+            placeholder="Username"
             ref={(c) => (registerName = c)}
             required
           />
           <input
             className="inputBoxR loginPasswordR password1"
             type="password"
-            placeholder="  Password"
+            placeholder="Password"
             ref={(c) => (registerPassword = c)}
             required
           />
           <input
             className="inputBoxR loginPasswordR password2"
             type="password"
-            placeholder="  Confirm Password"
+            placeholder="Confirm Password"
             ref={(c) => (registerPasswordConfirmation = c)}
             required
           />
@@ -117,14 +117,14 @@ function Modal({ unRegisterPop }) {
             <input
               className="inputBoxR loginPasswordR"
               type="Text"
-              placeholder="  First Name"
+              placeholder="First Name"
               ref={(c) => (registerFirst = c)}
               required
             />
             <input
               className="inputBoxR loginPasswordR"
               type="Text"
-              placeholder="  Last Name"
+              placeholder="Last Name"
               ref={(c) => (registerLast = c)}
               required
             />

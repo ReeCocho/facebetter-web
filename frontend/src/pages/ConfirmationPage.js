@@ -7,7 +7,7 @@ import "../App.css";
 const ConfirmationPage = () =>
 {
     return(
-        <div>
+        <div className="confirmationPagina">
             <PageTitle />
             <ConfirmRegistration />
         </div>

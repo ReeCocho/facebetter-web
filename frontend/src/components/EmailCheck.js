@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import './ConfirmRegistration.css'
 var bp = require('./Path.js');
 
 function EmailCheck() {

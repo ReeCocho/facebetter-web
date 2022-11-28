@@ -103,7 +103,7 @@ function Login({ registerPop }) {
               className="inputBox"
               type="text"
               id="loginName"
-              placeholder="  Username"
+              placeholder="Username"
               ref={(c) => (loginName = c)}
               required
             />
@@ -111,7 +111,7 @@ function Login({ registerPop }) {
               className="inputBox"
               type="password"
               id="loginPassword"
-              placeholder="  Password"
+              placeholder="Password"
               ref={(c) => (loginPassword = c)}
               required
             />
