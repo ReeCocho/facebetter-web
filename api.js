@@ -18,6 +18,18 @@ exports.setApp = function ( app, wss, client )
     clients: new Map(),
   };
 
+  setInterval(function() {
+    try {
+      wss.chat.clients.forEach((client) => {
+        client.send(JSON.stringify({
+          Ping: true
+        }));
+      });
+    } catch (e) {
+      console.log(e.toString());
+    }
+  }, 5000);
+
   wss.on('connection', function(ws, request) 
   {
     ws.on('message', function(msg) {
@@ -25,6 +37,9 @@ exports.setApp = function ( app, wss, client )
       {
         // Verify identification message was successful
         const data = JSON.parse(msg.toString());
+        if(data.Ping !== undefined){
+          return;
+        }
         let err = verifyObject(
           data,
           {
@@ -71,6 +86,7 @@ exports.setApp = function ( app, wss, client )
         }
 
         // Remove client from old channel
+        wss.chat.clients.delete(oldId);
         if (ws.channel !== undefined && oldId !== undefined)
         {
           wss.chat.channels.get(ws.channel).delete(oldId);
@@ -1253,6 +1269,7 @@ exports.setApp = function ( app, wss, client )
         )
         .project(
           {
+            _id: 1,
             Login: 1,
             FirstName: 1,
             LastName: 1,
