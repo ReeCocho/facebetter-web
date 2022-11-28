@@ -48,6 +48,8 @@ exports.setApp = function ( app, wss, client )
         let ud = jwt.decode(data.JwtToken, { complete: true });
 
         // Generate a unique ID for the connected client
+        const oldId = ws.clientId;
+
         while (true)
         {
           ws.clientId = ud.payload.userId + Math.random().toString(16).slice(2);
@@ -69,9 +71,9 @@ exports.setApp = function ( app, wss, client )
         }
 
         // Remove client from old channel
-        if (ws.channel !== undefined)
+        if (ws.channel !== undefined && oldId !== undefined)
         {
-          wss.chat.channels.get(ws.channel).delete(ws.clientId);
+          wss.chat.channels.get(ws.channel).delete(oldId);
         }
         ws.channel = channel;
 

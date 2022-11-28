@@ -54,11 +54,8 @@ const HomePage = () =>
         default:
             break;
     }
-
-
-
-
     console.log(window.location.pathname)
+
     return(
         <div className="app">
             <Sidebar />

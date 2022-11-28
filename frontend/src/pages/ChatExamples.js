@@ -79,7 +79,7 @@ const ChatExamples = ({ theInput }) => {
           res.data.Messages.slice()
             .reverse()
             .forEach((msg) => {
-              newMessages.push(msg.Content);
+              newMessages.push(msg);
             });
 
           setMessages(newMessages);
@@ -115,7 +115,7 @@ const ChatExamples = ({ theInput }) => {
             res.data.Messages.slice()
               .reverse()
               .forEach((msg) => {
-                newMessages.push(msg.Content);
+                newMessages.push(msg);
               });
             setMessages(newMessages);
           })
@@ -135,8 +135,7 @@ const ChatExamples = ({ theInput }) => {
         // NOTE: It is technically possible for messages to arrive out of order.
         // You can use the `DateCreated` field to sort incoming messages to ensure
         // strict ordering.
-        setMessages((oldMessages) => [...oldMessages, msg.Content]);
-        // setMessages(messages);
+        setMessages([...messages, msg]);
       });
   }, [messages]);
 
@@ -208,7 +207,7 @@ const ChatExamples = ({ theInput }) => {
         res.data.Messages.slice()
           .reverse()
           .forEach((msg) => {
-            newMessages.push(msg.Content);
+            newMessages.push(msg);
           });
 
         setMessages(newMessages);
@@ -240,7 +239,7 @@ const ChatExamples = ({ theInput }) => {
     <div className="main_div">
       <ul id="ChatList">
         {messages.map((message, i) => {
-          return <li key={i}>{message}</li>;
+          return <li key={i}>{message.Content}</li>;
         })}
       </ul>
       <div>
@@ -249,38 +248,7 @@ const ChatExamples = ({ theInput }) => {
           Send
         </button>
       </div>
-      <div>
-        <input
-          type="text"
-          onChange={handleChannelChange}
-          ref={channelRef}
-        ></input>
-        <button type="button" onClick={setChannel}>
-          Set Channel
-        </button>
       </div>
-      <div>
-        <h1>New Channel</h1>
-        <input
-          type="text"
-          onChange={handleChannelTitleChange}
-          ref={channelTitleRef}
-        ></input>
-        <button type="button" onClick={newChannel}>
-          Create Channel
-        </button>
-
-        <h1>Channels</h1>
-        <button type="button" onClick={getChannels}>
-          Get Channels
-        </button>
-        <ul id="ChannelList">
-          {channels.map((message, i) => {
-            return <li key={i}>{message}</li>;
-          })}
-        </ul>
-      </div>
-    </div>
   );
 };
 
