@@ -3,3 +3,45 @@
     justify-content: space-between;
     border: 1px solid var(--twitter-background);
 }
+
+.container:hover{
+    background-color: #e8f5fe;
+    color: var(--twitter-color);
+    transition: color 100ms ease-out;
+}
+
+.profileContainer{
+    display: flex;
+}
+
+.btnChat{
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.btnFollow{
+    margin-top: 10px;
+    margin-left: 23px;
+}
+
+h1{
+    padding-top: 10px;
+
+}
+
+.truncate {
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .anchorTag{
+    text-decoration: none;
+    color: black;
+  }
+  .anchorTag:visited{
+    text-decoration: none;
+    color: black;
+  }
+  

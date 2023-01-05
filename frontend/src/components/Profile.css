@@ -1,23 +1,61 @@
+.main_div{
+    flex: 0.4;
+    border-right: 1px solid var(--twitter-background);
+    min-width: 500px;
+    overflow-y: scroll;
+}
+
+.main_div::-webkit-scrollbar{
+    display: none;
+}
+
 .header{
     position: sticky;
     top: 0;
-    background-color: white;
+    background-image: radial-gradient(circle at center center, rgba(0, 71, 94, 0.06), rgba(71, 212, 255, 0.52)), repeating-radial-gradient(circle at center center, rgba(0, 71, 94, 0.06), rgba(0, 71, 94, 0.06), 35px, transparent 70px, transparent 35px);
+    background-blend-mode: multiply;
+    background-color: rgba(71, 212, 255, 0.52);
+    -webkit-box-shadow: -6px 9.5px 32px -10px #00485f;
+    -moz-box-shadow: -6px 9.5px 32px -10px #00485f;
+    box-shadow: -6px 9.5px 32px -10px #00485f;
     z-index: 100;
     border: 1px solid var(--twitter-background);
     padding: 15px 20px;
     display: flex;
+    text-align: center;
+    font-family: Bradley Hand, cursive;
+    color: #00485f;  
+    text-shadow: 2px 2px #ffffff;
+    font-weight: bold;
+}
+
+#searchName{
+    width: 84%;
+    padding: 4px;
+    padding-left: 8px;
+}
+
+#searchBtn{
+    width: 16%;
+    padding: 4px;
+}
+
+.titleHome{
+    text-align: center;
+    padding-bottom: 8px;
 }
 
 #editButton{
-    background-color: var(--twitter-color);
-    border: none !important;
-    color: white !important;
+    background: #ffffff;
+    background: -webkit-radial-gradient(circle, #ffffff 0%, #eae8ff 100%);
+    background: radial-gradient(circle, #ffffff 0%, #eae8ff 100%);
     text-transform: inherit !important;
     border-radius: 30px !important;
-    width: 90px;
+    min-width: 90px;
+    width: fit-content;
     height: auto !important;
     margin-left: auto;
-
+    padding: 4px;
 }
 
 #uploadButton{
@@ -38,7 +76,7 @@
 }
 
 #editButton:hover{
-    background-color: #2990af;
+    background: #eae8ff;
 }
 
 #uploadButton:hover{
@@ -61,19 +99,94 @@
     padding-bottom: 20px;
 }
 
+
 .main_div{
     flex: 0.4;
     border-right: 1px solid var(--twitter-background);
 }
 
-#profile_picture {
+.profile_picture {
     width: 170px;
     height: 170px;
     object-fit: cover;
+    clip-path: circle();
+    margin: 0 auto;
+    position: relative;
+    top: 0;
+    left: 0;
 }
 
-#search_picture {
+
+.profile_picture_edit {
+    object-fit: cover;
+    clip-path: circle();
+    margin: 0 auto;
+    position: absolute;
+    top: 60px;
+    left: 60px;
+    max-width:30%;
+    height:auto;
+}
+
+.image_edit_container {
+    position: relative;
+    top: 0;
+    left: 0;
+    background-color: transparent;
+}
+
+.search_picture {
     width: 50px;
     height: 50px;
     object-fit: cover; 
+}
+
+.center {
+    text-align: center;
+}
+
+.brightness {
+    background-color: transparent;
+    display: inline-block;
+
+}
+.brightness img:hover {
+    opacity: .5;
+}
+
+.follow_counts {
+    display:inline-block;
+}
+
+.separateLine{
+    border-top: solid 1px #00485f;
+}
+
+.topProfile{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.counts{
+    display: flex;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-shadow: 2px 2px #00485f !important;
+}
+
+.username{
+    color: #686868;
+    text-align: center;
+    font-size: 20px;
+    padding-bottom: 12px;
+}
+
+.countsAnchor{
+    color: #00485f !important;
+}
+
+.countsAnchor:visited{
+    color: white !important;
 }

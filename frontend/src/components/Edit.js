@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './Profile.css';
 import axios from "axios";
 import UploadFile from "./UploadFile";
@@ -7,13 +7,16 @@ function Edit() {
   var editFirstName;
   var editLastName;
   var editSchool;
-  var editWork
+  var editWork;
+  var editBio;
+  var editLogin;
   
   // incoming: {_id: "6344e4ea7c568d2a25ed0f6f", FirstName: "NewFirst", LastName: "NewLast", ...}
 
   const [ profile, setProfile ] = useState([]);
   let ud = JSON.parse(localStorage.getItem('user_data'));
   var bp = require('../components/Path.js');
+  const ref = useRef()
 
   useEffect(() => {
 
@@ -27,12 +30,34 @@ function Edit() {
 
       // Set the `profile` variable to be our new array
       setProfile(profile.data);
+      localStorage.setItem("profile_pic_link", profile.data.ProfilePicture);
     })();
   }, []);
 
   const doEdit = async (event) => {
     console.log(ud.userId);
     event.preventDefault();
+
+    // Retain previous values if nothing is entered
+    if (editFirstName.value == "") {
+      editFirstName.value = profile.FirstName;
+    }
+    if (editLastName.value == "") {
+      editLastName.value = profile.LastName;
+    }
+    if (editSchool.value == "") {
+      editSchool.value = profile.School;
+    }
+    if (editWork.value == "") {
+      editWork.value = profile.Work;
+    }
+    if (editBio.value == "") {
+      editBio.value = profile.Bio;
+    }
+    if (editLogin.value == "") {
+      editLogin.value = profile.Login;
+    }
+
     axios
       .post(bp.buildPath("api/editprofile") , {
         _id: ud.userId,
@@ -40,6 +65,8 @@ function Edit() {
         LastName: editLastName.value,
         School: editSchool.value,
         Work: editWork.value,
+        Bio: editBio.value,
+        Login: editLogin.value,
         JwtToken: localStorage.getItem("access_token")
       })
       .then((res) => {
@@ -50,7 +77,6 @@ function Edit() {
         console.error(error);
       });
   }
-
 
   return (
     <div className="main_div">
@@ -64,26 +90,35 @@ function Edit() {
           />
       </div>
       <div className="profile_body">
-        <img src={profile.ProfilePicture} alt="" id="profile_picture"></img>
-        <h2>Profile Picture</h2>
-        <UploadFile
-          onComplete={(result) => {
-            let ud = JSON.parse(localStorage.getItem("user_data"));
-            let userId = ud.userId;
-            axios
-              .post(bp.buildPath("api/updateprofilepic"), {
-                _id: userId,
-                FileUrl: result.fileUrl,
-              })
-              .then((res) => {
-                localStorage.setItem("profile_info", JSON.stringify(res.data));
-                console.log(res);
-                window.location.href = "Edit";
-              })
-              .catch((error) => {
-                console.error(error);
-              });
-          }}
+        <div className="center">
+          <div className="brightness">
+            <UploadFile
+              onComplete={(result) => {
+                let ud = JSON.parse(localStorage.getItem("user_data"));
+                let userId = ud.userId;
+                axios
+                  .post(bp.buildPath("api/updateprofilepic"), {
+                    _id: userId,
+                    FileUrl: result.fileUrl,
+                  })
+                  .then((res) => {
+                    localStorage.setItem("profile_info", JSON.stringify(res.data));
+                    console.log(res);
+                    window.location.href = "Edit";
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
+              }}
+            />
+          </div>
+        </div>
+        <h2>Handle</h2>
+        <input 
+          type="text"
+          id="editLogin"
+          placeholder={profile.Login}
+          ref={(c) => (editLogin = c)}
         />
         <h2>First Name</h2>
         <input 
@@ -113,6 +148,13 @@ function Edit() {
           placeholder={profile.School}
           ref={(c) => (editSchool = c)}
         />   
+        <h2>Bio</h2>
+        <input 
+          type="text"
+          id="editBio"
+          placeholder={profile.Bio}
+          ref={(c) => (editBio = c)}
+        /> 
       </div>
     </div>
     );

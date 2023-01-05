@@ -13,6 +13,16 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button } from "@mui/material";
 
 function Sidebar() {
+  const doLogout = event => 
+  {
+    setTimeout(() => {
+      event.preventDefault();
+      localStorage.clear(); 
+      window.location.href = '/';
+    }, 500);
+  };  
+
+
   return (
     <div className="sidebar">
       <img className="title2" src={logo}></img>
@@ -29,9 +39,9 @@ function Sidebar() {
           text="Following"
         />
       </a>
-      <a href="/pages/Chats">
+      {/* <a href="/pages/Chats">
         <SidebarOption className="cursor" Icon={MailOutlineIcon} text="Chats" />
-      </a>
+      </a> */}
       <a href="/components/Profile">
         <SidebarOption
           className="cursor"
@@ -39,6 +49,9 @@ function Sidebar() {
           text="Profile"
         />
       </a>
+      <Button variant='outlined' className='sidebar__tweet' onClick={doLogout} fullWidth>
+          Log Out
+      </Button>
     </div>
   );
 }

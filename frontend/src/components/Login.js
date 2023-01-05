@@ -14,13 +14,17 @@ function Login({ registerPop }) {
 
   const [message, setMessage] = useState("");
 
-  function yesError() {
-    setMessage("Username/password are incorrect");
+  function yesError(error) {
+    setMessage(error.toString());
   }
 
   function noError() {
     setMessage("");
   }
+
+  const switchToEmailPage = async (event) => {
+    window.location.href = "./pages/EnterEmailPage";
+  };
 
   const doLogin = async (event) => {
     let password1 = loginPassword.value
@@ -36,22 +40,29 @@ function Login({ registerPop }) {
         Password: hash,
       })
       .then((res) => {
-        noError();
-        console.log(res);
-        localStorage.setItem("JwtToken", res.data.JwtToken);
-        const token = res.data.JwtToken.accessToken;
-        var decode1 = jwt_decode(token);
-        console.log(decode1);
-        localStorage.setItem("access_token", res.data.JwtToken.accessToken);
-        localStorage.setItem("user_data", JSON.stringify(decode1));
-        console.log(localStorage.getItem("user_data"));
-        window.location.href = "./pages/HomePage";
+        if(res.data.Error != null)
+        {
+          console.log(res.data.Error);
+          yesError(res.data.Error);
+        }
+        else
+        {
+          noError();
+          localStorage.setItem("JwtToken", res.data.JwtToken);
+          const token = res.data.JwtToken.accessToken;
+          var decode1 = jwt_decode(token);
+          console.log(decode1);
+          localStorage.setItem("access_token", res.data.JwtToken.accessToken);
+          localStorage.setItem("user_data", JSON.stringify(decode1));
+          console.log(localStorage.getItem("user_data"));
+          window.location.href = "./pages/HomePage";
+        }
       })
       .catch((error) => {
         console.error(error);
-        yesError();
+        yesError(error);
       });
-
+      
     /*var obj = { Login: loginName.value, Password: loginPassword.value };
     var js = JSON.stringify(obj);
 
@@ -92,7 +103,7 @@ function Login({ registerPop }) {
               className="inputBox"
               type="text"
               id="loginName"
-              placeholder="  Username"
+              placeholder="Username"
               ref={(c) => (loginName = c)}
               required
             />
@@ -100,7 +111,7 @@ function Login({ registerPop }) {
               className="inputBox"
               type="password"
               id="loginPassword"
-              placeholder="  Password"
+              placeholder="Password"
               ref={(c) => (loginPassword = c)}
               required
             />
@@ -110,6 +121,13 @@ function Login({ registerPop }) {
               className="buttons inputBox"
               value="Log In"
               onClick={doLogin}
+            />
+            <input
+              type="submit"
+              id="pwRecoveryButton"
+              className="buttons inputBox"
+              value="Forgot Password?"
+              onClick={switchToEmailPage}
             />
           <span id="loginResult">{message}</span>
           </div>

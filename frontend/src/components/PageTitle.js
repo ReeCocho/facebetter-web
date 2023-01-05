@@ -6,8 +6,8 @@ function PageTitle()
 {
    return(
      <div className='organize'>
-        <img className="title" src={logo} ></img>
-        <p className="subtitle">We dont steal your private information</p>
+         <img className="title" src={logo} ></img>
+         <p className="subtitle">We Don't Steal Your Private Information!</p>
      </div>
    );
 };

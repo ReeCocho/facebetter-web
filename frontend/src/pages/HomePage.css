@@ -3,15 +3,27 @@ body{
     --twitter-background: #e6ecf0;
 }
 
+
 .app{
     display: flex;
+    justify-content: center;
     height: 100vh;
-    max-width: 1300px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 10px;
 }
 
+button, input[type="button"], input[type="submit"] { 
+    background: rgba(0, 191, 255, 0.78);
+    background: -webkit-linear-gradient(101deg, rgba(0, 191, 255, 0.78) 0%, #b0d7ff 100%);
+    background: linear-gradient(101deg, rgba(0, 191, 255, 0.78) 0%, #b0d7ff 100%);
+    -webkit-box-shadow: -6px 9.5px 32px -10px #00485f;
+    -moz-box-shadow: -6px 9.5px 32px -10px #00485f;
+    box-shadow: -6px 9.5px 32px -10px #00485f;
+} 
 
-
+button, input[type="button"], input[type="submit"]:hover {
+    background-color: #4b9b3b;
+}
 
 

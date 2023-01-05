@@ -3,7 +3,7 @@ const { ObjectId, ObjectID } = require('mongodb');
 require('express');
 require('mongodb');
 const token = require("./createJWT.js");
-const mailer = require("./emailConfirmation.js");
+const mailer = require("./mailer.js");
 const jwt = require("jsonwebtoken");
 
 exports.setApp = function ( app, wss, client )
@@ -18,6 +18,18 @@ exports.setApp = function ( app, wss, client )
     clients: new Map(),
   };
 
+  setInterval(function() {
+    try {
+      wss.chat.clients.forEach((client) => {
+        client.send(JSON.stringify({
+          Ping: true
+        }));
+      });
+    } catch (e) {
+      console.log(e.toString());
+    }
+  }, 5000);
+
   wss.on('connection', function(ws, request) 
   {
     ws.on('message', function(msg) {
@@ -25,6 +37,9 @@ exports.setApp = function ( app, wss, client )
       {
         // Verify identification message was successful
         const data = JSON.parse(msg.toString());
+        if(data.Ping !== undefined){
+          return;
+        }
         let err = verifyObject(
           data,
           {
@@ -48,6 +63,8 @@ exports.setApp = function ( app, wss, client )
         let ud = jwt.decode(data.JwtToken, { complete: true });
 
         // Generate a unique ID for the connected client
+        const oldId = ws.clientId;
+
         while (true)
         {
           ws.clientId = ud.payload.userId + Math.random().toString(16).slice(2);
@@ -69,9 +86,10 @@ exports.setApp = function ( app, wss, client )
         }
 
         // Remove client from old channel
-        if (ws.channel !== undefined)
+        wss.chat.clients.delete(oldId);
+        if (ws.channel !== undefined && oldId !== undefined)
         {
-          wss.chat.channels.get(ws.channel).delete(ws.clientId);
+          wss.chat.channels.get(ws.channel).delete(oldId);
         }
         ws.channel = channel;
 
@@ -825,7 +843,7 @@ exports.setApp = function ( app, wss, client )
       db.collection('Users').insertOne(newUser);
 
       // Send the verification email
-      let e = mailer.sendEmail(obj.Login, obj.Password, obj.Email);
+      let e = mailer.sendConfirmationEmail(obj.Login, obj.Password, obj.Email);
       if(e !== null)
       {
         throw e;
@@ -1130,6 +1148,7 @@ exports.setApp = function ( app, wss, client )
       School: results[0].School,
       Work: results[0].Work,
       ProfilePicture: results[0].ProfilePicture,
+      Bio: results[0].Bio,
       Error: err
     };
     res.status(200).json(ret);
@@ -1149,6 +1168,7 @@ exports.setApp = function ( app, wss, client )
       LastName: "string", 
       School: "string", 
       Work: "string",
+      Bio: "string",
       JwtToken: "string"
     });
   
@@ -1175,13 +1195,17 @@ exports.setApp = function ( app, wss, client )
       let newLastName = obj.LastName;
       let newSchool = obj.School;
       let newWork = obj.Work;
+      let newBio = obj.Bio;
+      let newLogin = obj.Login;
 
       let filter = {_id: objId}
       let updates = {
         FirstName: newFirstName,
         LastName: newLastName,
         School: newSchool,
-        Work: newWork
+        Work: newWork,
+        Bio: newBio,
+        Login: newLogin
       }
 
       results = await db
@@ -1245,6 +1269,7 @@ exports.setApp = function ( app, wss, client )
         )
         .project(
           {
+            _id: 1,
             Login: 1,
             FirstName: 1,
             LastName: 1,
@@ -1346,22 +1371,42 @@ exports.setApp = function ( app, wss, client )
       {
         throw err;
       }
-
-      // Verify and refresh token
-      if (token.isExpired(obj.JwtToken))
+      
+      // Verify the token is still valid
+      const isError = jwt.verify(
+        obj.JwtToken, 
+        process.env.EMAIL_SECRET, (err, verifiedJwt) =>
+        {
+          if (err)
+          {
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
+      );
+      
+      if (isError)
       {
         throw "Token is expired";
-      }
-      const refreshedToken = token.refresh(obj.JwtToken);
+      }      
+      // Verify and refresh token
+      //if (token.isExpired(obj.JwtToken))
+      //{
+      //  throw "Token is expired";
+      //}
+      //const refreshedToken = token.refresh(obj.JwtToken);
 
       const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
       const db = client.db("SocialNetwork");
-      let ObjId = ObjectId(ud.userId);
+      let ObjId = ObjectId(ud.id);
       let filter = {_id: ObjId};
 
       let results = await db
         .collection('Users')
-        .updateOne(filter, {$set: {Password: NewPassword}});
+        .updateOne(filter, {$set: {Password: obj.NewPassword}});
 
       if (results.matchedCount === 0)
       {
@@ -1373,11 +1418,12 @@ exports.setApp = function ( app, wss, client )
         throw "Already using this password";
       }
 
-      const ret = { Error: null, JwtToken: refreshedToken };
+      const ret = { Error: null };
       res.status(200).json(ret);
     }
     catch (e)
     {
+      console.log(e.toString());
       const ret = { Error: e.toString() };
       res.status(200).json(ret);
     }
@@ -1413,6 +1459,14 @@ exports.setApp = function ( app, wss, client )
       {
         throw "User with this email does not exist";
       }
+
+      //Send Password Reset Link
+      let e = mailer.sendPwResetEmail(results[0]._id, obj.Email);
+      if(e !== null)
+      {
+        console.log(e.toString());
+        throw e;
+      } 
       
       const ret = { Error: null, _id: results[0]._id };
       res.status(200).json(ret);
@@ -1596,8 +1650,130 @@ exports.setApp = function ( app, wss, client )
     }
   });
 
+  app.post('/api/getchanneltitle', async (req, res, next) => {
+    try
+    {
+      // Verify input
+      const obj = req.body;
+      let err = verifyObject(
+        obj,
+        {
+          Channel: "string",
+          JwtToken: "string",
+        }
+      );
 
+      if (err !== null)
+      {
+        throw err;
+      }
 
+      // Verify and decode token
+      if (token.isExpired(obj.JwtToken))
+      {
+        throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+
+      // Ensure that the user has access to the channel
+      const db = client.db("SocialNetwork");
+      const channel = await db.collection('Channels')
+        .findOne({
+          _id: ObjectId(obj.Channel),
+          Members: ObjectId(ud.userId)
+        });
+		
+	  if (channel === null)
+	  {
+		  throw "Channel does not exist or user is not a member.";
+	  }
+
+      const ret = { Error: null, Title: channel.Title };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+
+  
+  app.post('/api/createdm', async (req, res, next) => {
+    try
+    {
+      // Verification
+      const obj = req.body;
+      let err = verifyObject(
+      obj,
+      {
+        JwtToken: "string",
+        OtherUserId: "string"
+      }
+      );
+    
+      if (err !== null)
+      {
+      throw err;
+      }
+    
+      // Verify and refresh token
+      if (token.isExpired(obj.JwtToken))
+      {
+      throw "Token is expired";
+      }
+      const ud = jwt.decode(obj.JwtToken, { complete: true }).payload;
+      const refreshedToken = token.refresh(obj.JwtToken);
+      
+      // Check if a DM already exists
+      const db = client.db("SocialNetwork");
+      const channel = await db.collection('Channels')
+      .findOne({
+        Members:{$all:[ObjectId(ud.userId), ObjectId(obj.OtherUserId)]},
+        IsDM: true
+      });
+    
+      if (channel !== null)
+      {
+      const ret = { Error: null, JwtToken: refreshedToken, Channel: channel._id };
+      res.status(200).json(ret);
+      return;
+      }
+    
+      // Create the channel if it doesn't exist
+      const newChannel = await db.collection('Channels').insertOne({
+        Owner: ObjectId(ud.userId),
+        Title: "DM: " + ud.userId + " " + obj.OtherUserId,
+        Members: [ObjectId(ud.userId), ObjectId(obj.OtherUserId)],
+        DateCreated: new Date(Date.now()),
+        IsDM: true
+      });
+    
+      // Update the users with the new channel
+      await db
+      .collection('Users')
+      .updateOne(
+        { _id: ObjectId(ud.userId) }, 
+        { $addToSet: { DMs: newChannel.insertedId } }
+      );
+      
+      await db
+      .collection('Users')
+      .updateOne(
+        { _id: ObjectId(obj.OtherUserId) }, 
+        { $addToSet: { DMs: newChannel.insertedId } }
+      );
+    
+      const ret = { Error: null, JwtToken: refreshedToken, Channel: newChannel.insertedId };
+      res.status(200).json(ret);
+    }
+    catch (e)
+    {
+      const ret = { Error: e.toString() };
+      res.status(200).json(ret);
+    }
+  });
+  
 
   /**
    * Takes in an `obj` to verify the layout and data types of. Use this any time you receive data

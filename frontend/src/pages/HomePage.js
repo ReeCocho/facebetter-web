@@ -12,9 +12,13 @@ import Chats from "./Chats";
 import Edit from "../components/Edit";
 import HomeComp from "../components/Home";
 import UploadFile from "../components/UploadFile";
+import User from "../components/User"
+import ChatExamples from "./ChatExamples";
+
 
 const HomePage = () =>
 {
+
     let component
     switch (window.location.pathname) {
         case "/pages/Followers":
@@ -44,16 +48,19 @@ const HomePage = () =>
         case "/components/UploadFile":
             component = <UploadFile/>
             break;
+        case "/components/User":
+            component = <User/>
+            break;
         default:
             break;
     }
-    
-
     console.log(window.location.pathname)
+
     return(
         <div className="app">
             <Sidebar />
             {component}
+            <ChatExamples theInput={localStorage.getItem("the_input")}/>
         </div>
     );
 }
